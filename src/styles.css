@@ -221,6 +221,33 @@ button {
   cursor: none !important;
 }
 
+.full-screen-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.full-screen-screen,
+.full-screen-screen * {
+  cursor: auto !important;
+}
+
+.full-screen-screen {
+  box-shadow: none;
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
+.full-screen-screen input,
+.full-screen-screen textarea,
+.full-screen-screen select,
+.full-screen-screen button,
+.full-screen-screen a {
+  cursor: auto !important;
+}
+
 .device-screen input,
 .device-screen textarea,
 .device-screen button,
@@ -250,6 +277,10 @@ button {
 .mobile-app-viewport {
   position: absolute;
   inset: 0;
+}
+
+.mobile-app-viewport[data-full-screen="true"] {
+  bottom: 0 !important;
 }
 
 .mobile-app-viewport[data-platform="android"][data-keyboard-visible="false"] {

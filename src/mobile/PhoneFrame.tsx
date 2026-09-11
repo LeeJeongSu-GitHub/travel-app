@@ -61,13 +61,17 @@ function useDeviceScale(deviceWidth: number, deviceHeight: number) {
   return scale;
 }
 
-export function PhoneFrame({ children }: PropsWithChildren) {
+export function PhoneFrame({ children, fullScreen = false }: PropsWithChildren<{ fullScreen?: boolean }>) {
   const { device } = useMobileDevice();
   const { geometry } = device;
   const scale = useDeviceScale(geometry.device.width, geometry.device.height);
   const screenRef = useRef<HTMLDivElement | null>(null);
   const contextValue = useMemo(() => ({ screenRef }), []);
   const mobileCursor = useMobileCursor();
+
+  if (fullScreen) {
+    return <ScreenPortalContext.Provider value={contextValue}><div className="full-screen-stage"><div ref={screenRef} className="device-screen full-screen-screen" data-cursor-debug={mobileCursor.cursorDebug ? "true" : "false"} data-device={device.id} data-phone-screen data-testid="device-screen" {...mobileCursor.cursorHandlers} style={{ "--device-safe-area-bottom": "env(safe-area-inset-bottom, 0px)", left: 0, top: 0, width: "100%", height: "100%", borderRadius: 0, zIndex: 1 } as CSSProperties}>{children}{mobileCursor.cursorElement}</div></div></ScreenPortalContext.Provider>;
+  }
 
   return (
     <ScreenPortalContext.Provider value={contextValue}>

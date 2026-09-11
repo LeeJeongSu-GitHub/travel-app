@@ -47,6 +47,11 @@
   backdrop-filter: blur(14px);
 }
 
+.full-screen-screen .trip-header {
+  min-height: 64px;
+  padding-top: max(env(safe-area-inset-top, 0px), 12px);
+}
+
 .header-copy {
   display: grid;
   gap: 3px;
@@ -1346,6 +1351,10 @@
   background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 -8px 22px rgba(31, 50, 78, 0.06);
   backdrop-filter: blur(16px);
+}
+
+.full-screen-screen .trip-bottom-nav {
+  bottom: var(--device-safe-area-bottom, 0px);
 }
 
 .mobile-app-viewport[data-platform="android"] .trip-bottom-nav {
