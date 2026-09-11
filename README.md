@@ -31,6 +31,7 @@
 - [현재 구현·작업 내역](#현재-작업-완료-내역)
 - [공통 UI 컴포넌트 계약](#공통-ui-컴포넌트-계약)
 - [공통 UI 스킬](#공통-ui-스킬)
+- [프롬프트 패키지](#프롬프트-패키지)
 - [디자인 고정 규칙](#디자인-고정-규칙)
 - [새 여행 입력 방법](#가장-쉬운-입력-방법-권장)
 - [조사자료 받기용 프롬프트](#조사자료-받기용-프롬프트)
@@ -76,6 +77,9 @@ src/                       # 공통 모바일 앱 엔진
     category.ts            # 카테고리 색상·한글 라벨·아이콘 공통 매핑
     index.ts               # 공통 UI·타입·카테고리의 단일 import 진입점
 public/                    # 공통 디바이스·지도 자산
+prompts/
+  travel-plan-research.md  # 간단한 여행 정보 → travel-research.v1 조사자료
+  travel-app-build.md      # 계획/조사자료 → 앱 생성·검수·선택적 배포
 ```
 
 새 여행은 `<destination-slug>/index.html`과 `<destination-slug>/trip.json`을 추가하고, 루트 `index.html`에 여행지 카드를 연결합니다. 공통 UI는 `src/travel-ui/` 컴포넌트와 `src/prototype.css`를 재사용하고 여행별 내용은 각 폴더의 `trip.json`으로 분리합니다.
@@ -450,9 +454,27 @@ node scripts/capture-readme-screenshots.mjs
 
 이 저장소는 여행 계획을 입력받아 여행지별 폴더와 모바일 일정 앱을 만드는 템플릿입니다. 여행 계획을 아래 포맷으로 전달하면 AI가 장소 조사, 지도 연결, 일정 JSON 작성, 대표 이미지, 메뉴 번역, 대체 식당, 실제 방문 기록 기능까지 기존 앱 구조에 맞춰 구성합니다.
 
-### 복붙용 기본 프롬프트
+### 프롬프트 패키지
 
-아래 코드블록을 그대로 복사한 뒤, 알고 있는 값만 채워 Claude Code·Gemini CLI·Codex에 전달하세요.
+여행 정보가 메모 수준이면 먼저 여행 계획·조사 프롬프트를 실행하고, 결과 JSON을 앱 생성 프롬프트에 넘기는 2단계 방식을 권장합니다. 두 파일 모두 저장소에 포함되어 있어 clone/fork 후에도 그대로 사용할 수 있습니다.
+
+| 단계 | 정본 파일 | 결과 |
+| --- | --- | --- |
+| 1. 계획·조사 | [`prompts/travel-plan-research.md`](./prompts/travel-plan-research.md) | 날짜별 일정, 장소 정보, 지도 링크, 메뉴, 이미지, 출처가 들어간 `travel-research.v1` JSON |
+| 2. 앱 생성 | [`prompts/travel-app-build.md`](./prompts/travel-app-build.md) | 새 destination 폴더, `trip.json`, 허브 카드, 공통 UI 적용, 검수, 요청 시 GitHub Pages 배포 |
+
+```text
+1) 여행 계획·조사 프롬프트에 여행지·기간·숙소·가고 싶은 곳만 입력한다.
+2) 반환된 `travel-research.v1` JSON을 `<destination-slug>-research.json`으로 저장한다.
+3) 앱 생성·배포 원샷 프롬프트에 그 파일 경로와 “앱 생성만” 또는 “배포까지”를 적는다.
+4) AI가 기존 여행과 분리된 새 폴더를 만들고 공통 UI로 변환한다.
+```
+
+계획을 먼저 만들 필요가 없으면 앱 생성 프롬프트에 간단한 여행 정보만 직접 넣어도 됩니다. 부족한 정보는 조사하고, 확인할 수 없는 값은 `확인 필요`로 남깁니다.
+
+### 복붙용 기본 프롬프트 (이전 호환)
+
+아래 블록은 기존 사용자를 위한 호환용입니다. 새로 시작할 때는 [앱 생성·배포 원샷 프롬프트](./prompts/travel-app-build.md)를 우선 사용하세요. 아래 코드블록을 그대로 복사한 뒤, 알고 있는 값만 채워 Claude Code·Gemini CLI·Codex에 전달해도 됩니다.
 
 ```text
 이 저장소의 travel-map-builder 스킬을 사용해 새 여행 앱을 만들어줘.
@@ -538,7 +560,7 @@ AI는 부족한 정보를 다음 원칙으로 보완합니다.
 
 ### 조사자료 받기용 프롬프트
 
-여행 계획을 바로 앱으로 만들지 않고 먼저 조사하고 싶다면, 아래 프롬프트를 조사 기능이 있는 AI에게 보내세요. 결과는 다른 AI나 이 저장소의 `travel-map-builder` 스킬에 그대로 전달할 수 있는 `travel-research.v1` JSON 패킷으로 받습니다. 이 단계에서는 코드·HTML·앱을 만들지 않도록 명시합니다.
+여행 계획을 바로 앱으로 만들지 않고 먼저 조사하고 싶다면, 새로 정리한 [여행 계획·조사 프롬프트](./prompts/travel-plan-research.md)를 우선 사용하세요. 아래 블록은 기존 사용자를 위한 상세 호환 형식이며, 결과는 다른 AI나 이 저장소의 `travel-map-builder` 스킬에 전달할 수 있는 `travel-research.v1` JSON 패킷입니다. 이 단계에서는 코드·HTML·앱을 만들지 않도록 명시합니다.
 
 ```text
 아래 여행 계획을 앱 생성 전 단계의 조사자료로 정리해줘. 코드를 만들거나 HTML을 작성하지 말고, 장소·운영 정보·출처·이미지·메뉴를 조사해줘.
