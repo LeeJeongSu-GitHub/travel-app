@@ -957,6 +957,34 @@
   color: var(--blue);
 }
 
+.place-closed-days {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 5px;
+  color: #a36f16;
+  font-size: 0.64rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.place-closed-days svg {
+  flex: 0 0 auto;
+}
+
+.place-closed-days > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.place-closed-days.is-warning {
+  color: #c45463;
+}
+
 .nearby-label {
   color: #597493;
   font-size: 0.67rem;
@@ -1750,6 +1778,53 @@
   font-size: 0.73rem;
   font-weight: 750;
   line-height: 1.4;
+}
+
+.detail-closure {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #f0d8a7;
+  border-radius: 11px;
+  background: #fff9ed;
+  color: #a36f16;
+}
+
+.detail-closure > svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.detail-closure > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.detail-closure small {
+  color: #b38742;
+  font-size: 0.6rem;
+  font-weight: 850;
+}
+
+.detail-closure strong {
+  color: #8e6118;
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
+.detail-closure.is-warning {
+  border-color: #f1c7ce;
+  background: #fff3f4;
+  color: #c45463;
+}
+
+.detail-closure.is-warning small,
+.detail-closure.is-warning strong {
+  color: #bd4c5d;
 }
 
 .nearby-callout svg {

@@ -54,7 +54,8 @@
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Honke+Daiichi+Asahi+Kyoto",
           "reservationStatus": "not_required",
           "menuPoint": "교토역 라멘",
-          "hours": "06:00–익일 01:00 · 목요일 휴무",
+          "hours": "06:00–익일 01:00",
+          "closedDays": "목요일",
           "price": "¥780–¥1,230",
           "admission": "해당 없음",
           "menu": [
@@ -226,6 +227,7 @@
           "reservationUrl": "https://www.google.com/maps/search/?api=1&query=Yamamoto+Menzo+Kyoto",
           "menuPoint": "우동",
           "hours": "월·화·금 10:00–16:00 · 수 10:00–15:30 · 토·일·공휴일 10:00–17:00",
+          "closedDays": "목요일·부정기",
           "price": "약 ¥950–¥1,250",
           "admission": "해당 없음",
           "menu": [
@@ -275,6 +277,7 @@
           "reservationUrl": "https://www.google.com/maps/search/?api=1&query=Kichi+Kichi+Kyoto",
           "menuPoint": "오므라이스",
           "hours": "평일 17:00–21:00 · 토·일·공휴일 12:00–14:00 / 17:00–21:00",
+          "closedDays": "부정기",
           "price": "¥2,000–¥4,000",
           "admission": "해당 없음",
           "menu": [
@@ -371,7 +374,8 @@
           "address": "Okazaki, Sakyo Ward, Kyoto",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Gontaro+Okazaki+Kyoto",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Gontaro+Okazaki+Kyoto",
-          "hours": "11:00–21:30 · 수요일 휴무",
+          "hours": "11:00–21:30",
+          "closedDays": "수요일",
           "price": "¥1,000–¥2,400",
           "admission": "해당 없음",
           "menu": [
@@ -397,7 +401,8 @@
           "address": "Kawaramachi, Nakagyo Ward, Kyoto",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Sashisu+Kyoto+Kawaramachi",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Sashisu+Kyoto+Kawaramachi",
-          "hours": "11:00–23:00 · L.O. 22:30 · 부정기 휴무",
+          "hours": "11:00–23:00 · L.O. 22:30",
+          "closedDays": "부정기",
           "price": "약 ¥2,000–¥3,000",
           "admission": "해당 없음",
           "menu": [
@@ -504,6 +509,7 @@
           "reservationUrl": "https://www.google.com/maps/search/?api=1&query=Steak+Ishida+Kobe",
           "menuPoint": "고베규",
           "hours": "11:30–15:00 (L.O. 14:00) / 17:00–21:30 (L.O. 20:30)",
+          "closedDays": "화요일·부정기",
           "price": "런치·코스별 상이",
           "admission": "해당 없음",
           "menu": [
@@ -613,6 +619,7 @@
           "reservationStatus": "not_required",
           "menuPoint": "맥주와 저녁",
           "hours": "11:00–22:00 · L.O. 21:30",
+          "closedDays": "확인 필요",
           "price": "런치 약 ¥1,650~ · 디너 약 ¥2,500~",
           "admission": "해당 없음",
           "menu": [
@@ -653,6 +660,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Steakland+Kobe",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Steakland+Kobe",
           "hours": "평일 11:00–22:00 · 토·일·공휴일 11:00–22:00",
+          "closedDays": "확인 필요",
           "price": "런치 ¥1,080~ · 코스 ¥2,880~",
           "admission": "해당 없음",
           "menu": [
@@ -723,7 +731,8 @@
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Nishimura+Coffee+Nakayamatedori+Kobe",
           "reservationStatus": "not_required",
           "menuPoint": "아침 커피",
-          "hours": "08:30–22:00 · 매월 마지막 월요일 휴무(예외 있음)",
+          "hours": "08:30–22:00",
+          "closedDays": "매월 마지막 월요일(예외 있음)",
           "price": "커피 약 ¥700~ · 디저트 약 ¥900~",
           "admission": "해당 없음",
           "menu": [
@@ -772,7 +781,8 @@
           "reservationStatus": "recommended",
           "reservationUrl": "https://www.google.com/maps/search/?api=1&query=Grill+Ippei+Sannomiya+Kobe",
           "menuPoint": "양식 런치",
-          "hours": "11:00–15:00 (L.O. 14:30) / 17:00–20:30 (L.O. 20:00) · 수요일 휴무",
+          "hours": "11:00–15:00 (L.O. 14:30) / 17:00–20:30 (L.O. 20:00)",
+          "closedDays": "수요일",
           "price": "약 ¥1,000–¥3,000",
           "admission": "해당 없음",
           "menu": [

@@ -38,6 +38,7 @@ Keep `dayNumber`, `dayOfMonth`, and each place `order` numeric. Use stable kebab
   "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=...",
   "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=35.0116,135.7681",
   "hours": "11:00–21:00 · L.O. 20:30",
+  "closedDays": "화요일",
   "price": "약 ¥1,000–¥2,000",
   "admission": "해당 없음",
   "reservationStatus": "recommended",
@@ -61,7 +62,7 @@ Allowed categories:
 - `airport`: 공항
 - `logistics`: 짐 보관, 이동 준비, 기타 운영 지점
 
-Useful optional fields are `photoPoint`, `menuPoint`, `operatingNote`, `budget`, `optional`, `alternativeFor`, and `nearbyWalk`. A fallback restaurant should use `optional: true` and identify the primary place with `alternativeFor`.
+Useful optional fields are `photoPoint`, `menuPoint`, `operatingNote`, `closedDays`, `budget`, `optional`, `alternativeFor`, and `nearbyWalk`. For restaurants and cafes, provide `closedDays` explicitly; use `확인 필요` when the source does not confirm a regular closure day. A fallback restaurant should use `optional: true` and identify the primary place with `alternativeFor`.
 
 ## Uncertainty and links
 
