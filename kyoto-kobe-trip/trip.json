@@ -343,25 +343,6 @@
           "notes": "대체 코스 · 기본 Route에는 포함하지 않음"
         },
         {
-          "id": "saihoji",
-          "order": 13,
-          "name": "사이호지",
-          "nameJa": "西芳寺",
-          "category": "photo",
-          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Matsuojingatanicho%2C_Nishikyo_Ward%2C_Kyoto%2C_Kyoto_Prefecture_615-8286%2C_Japan_-_panoramio_%281%29.jpg/330px-Matsuojingatanicho%2C_Nishikyo_Ward%2C_Kyoto%2C_Kyoto_Prefecture_615-8286%2C_Japan_-_panoramio_%281%29.jpg",
-          "latitude": 34.9901,
-          "longitude": 135.6853,
-          "address": "56 Matsuojingatanicho, Nishikyo Ward, Kyoto",
-          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Saihoji+Kyoto",
-          "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Saihoji+Kyoto",
-          "hours": "사전 예약·지정 시간제",
-          "price": "예약·공개 시기별 상이",
-          "admission": "예약·공개 시기별 상이",
-          "operatingNote": "苔寺는 사전 신청과 운영일 확인이 필요합니다.",
-          "optional": true,
-          "notes": "대체 코스 · 사전 확인 필요"
-        },
-        {
           "id": "ruriko-in",
           "order": 14,
           "name": "루리코인",
