@@ -218,6 +218,49 @@
   outline-offset: 2px;
 }
 
+.day-intro-tools {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.record-view-button,
+.record-add-button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 8px;
+  border: 1px solid #dce5f1;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.record-view-button.is-active {
+  border-color: #b6d0ff;
+  background: #edf4ff;
+  color: var(--blue);
+}
+
+.record-add-button {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+}
+
+.record-add-button:hover,
+.record-add-button:focus-visible {
+  background: var(--blue-dark);
+}
+
 .trip-map {
   padding: 0 14px 12px;
 }
@@ -1686,6 +1729,179 @@
   box-shadow: 0 0 0 3px rgba(20, 87, 217, 0.1);
 }
 
+.floating-place-actions {
+  position: absolute;
+  z-index: 22;
+  right: 18px;
+  bottom: calc(var(--device-safe-area-bottom, 34px) + 78px);
+  left: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid #e1e7ef;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 9px 25px rgba(28, 47, 78, 0.16);
+  backdrop-filter: blur(12px);
+}
+
+.floating-place-actions button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: 840;
+}
+
+.floating-place-actions button:hover,
+.floating-place-actions button:focus-visible {
+  border-color: #b6c9e7;
+  background: #f3f7fd;
+}
+
+.floating-place-actions button.danger-action {
+  color: #d14d5f;
+}
+
+.editor-sheet-content {
+  display: grid;
+  gap: 13px;
+  padding-bottom: 8px;
+}
+
+.editor-help {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 10px 11px;
+  border: 1px solid #d8e5fa;
+  border-radius: 11px;
+  background: #f3f7ff;
+  color: #5d7190;
+  font-size: 0.68rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.editor-help svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--blue);
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 8px;
+}
+
+.editor-field {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.editor-field-wide {
+  grid-column: 1 / -1;
+}
+
+.editor-field > span {
+  color: #687991;
+  font-size: 0.66rem;
+  font-weight: 850;
+}
+
+.editor-field > span small {
+  color: #a3afbe;
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+
+.editor-field input,
+.editor-field select,
+.editor-field textarea {
+  width: 100%;
+  min-height: 40px;
+  box-sizing: border-box;
+  padding: 9px 10px;
+  border: 1px solid #dce4ee;
+  border-radius: 10px;
+  background: #fbfcfe;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.73rem;
+  outline: 0;
+}
+
+.editor-field textarea {
+  min-height: 72px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.editor-field input:focus,
+.editor-field select:focus,
+.editor-field textarea:focus {
+  border-color: rgba(20, 87, 217, 0.55);
+  box-shadow: 0 0 0 3px rgba(20, 87, 217, 0.1);
+}
+
+.visited-checkbox {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 10px;
+  border: 1px solid #cde8e1;
+  border-radius: 10px;
+  background: #effaf7;
+  color: #197c6d;
+  font-size: 0.72rem;
+  font-weight: 820;
+}
+
+.visited-checkbox input {
+  accent-color: var(--mint);
+}
+
+.editor-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.editor-actions button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.editor-actions .secondary-link {
+  border: 1px solid var(--line);
+}
+
+.editor-actions .primary-link {
+  border: 0;
+}
+
+.editor-actions .primary-link:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 button:focus-visible,
 a:focus-visible {
   outline: 3px solid rgba(20, 87, 217, 0.24);
@@ -1697,6 +1913,10 @@ a:focus-visible {
     align-items: flex-start;
     flex-direction: column;
     gap: 8px;
+  }
+
+  .day-intro-tools {
+    justify-content: flex-start;
   }
 
   .alternative-toggle {
