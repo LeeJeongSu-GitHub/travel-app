@@ -1,0 +1,13 @@
+{
+  "name": "괌 태교 여행 지도",
+  "short_name": "괌 여행",
+  "description": "괌 3박 4일 임산부 동반 힐링 여행 일정 지도",
+  "start_url": "../../guam-trip/",
+  "display": "standalone",
+  "background_color": "#f5f8fc",
+  "theme_color": "#1457d9",
+  "icons": [
+    { "src": "../icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" },
+    { "src": "../icons/icon-512.svg", "sizes": "512x512", "type": "image/svg+xml" }
+  ]
+}

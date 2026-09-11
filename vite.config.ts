@@ -28,6 +28,7 @@ export default defineConfig(({ command }) => ({
     rollupOptions: {
       input: {
         hub: resolve(repoRoot, "index.html"),
+        guam: resolve(repoRoot, "guam-trip/index.html"),
         kyotoKobe: resolve(repoRoot, "kyoto-kobe-trip/index.html"),
       },
     },

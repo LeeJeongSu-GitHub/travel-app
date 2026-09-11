@@ -45,7 +45,7 @@ setWorkerUrl(maplibreWorkerUrl);
 type Category = "photo" | "restaurant" | "cafe" | "hotel" | "station" | "airport" | "logistics";
 type ReservationStatus = "required" | "recommended" | "not_required" | "check_required" | "completed";
 type Coordinate = [number, number];
-type View = "schedule" | "map" | "reservations" | "saved";
+type View = "schedule" | "map" | "reservations" | "saved" | "planner";
 type DayFilter = number | "all";
 type CategoryFilter = Category | "all";
 type MenuImageKey = "ramen" | "gyoza" | "rice" | "udon" | "tempura" | "curry" | "omurice" | "croquette" | "stew" | "soba" | "oyakodon" | "sushi" | "unagi" | "potato-salad" | "steak" | "karaage" | "sausage" | "pilaf" | "beer" | "coffee" | "pudding" | "pancake" | "katsu";
@@ -86,7 +86,7 @@ type TripDay = { id: string; dayNumber: number; dayOfMonth: number; city: string
 type Trip = { title: string; days: TripDay[] };
 type MapPlace = Place & { dayNumber: number; dayOfMonth: number; dayTitle: string };
 type PlaceDraft = { name: string; category: Category; plannedTime: string; address: string; hours: string; closedDays: string; price: string; admission: string; latitude: string; longitude: string; googleMapsUrl: string; directionsUrl: string; notes: string; markVisited: boolean };
-type LocalTripState = { selectedDay: number; completedPlaceIds: string[]; favoritePlaceIds: string[]; notes: Record<string, string>; reservationDoneIds: string[]; placeEdits: Record<string, Partial<Place>>; hiddenPlaceIds: string[]; addedPlaces: MapPlace[]; actualOnly: boolean };
+type LocalTripState = { selectedDay: number; completedPlaceIds: string[]; favoritePlaceIds: string[]; notes: Record<string, string>; reservationDoneIds: string[]; placeEdits: Record<string, Partial<Place>>; hiddenPlaceIds: string[]; addedPlaces: MapPlace[]; actualOnly: boolean; plannerText?: string };
 
 const tripSlug = window.location.pathname.split("/").filter(Boolean).at(-1) ?? "kyoto-kobe-trip";
 const trip = tripDataFiles[`../${tripSlug}/trip.json`] ?? tripDataFiles["../kyoto-kobe-trip/trip.json"] ?? { title: "여행 지도", days: [] };
@@ -157,6 +157,88 @@ const reservationLabels: Record<ReservationStatus, string> = {
   completed: "예약 완료",
 };
 
+const DEFAULT_PLAN_TEXT = `# 1일차
+- 시간: 14:00~16:00
+- 지역: 투몬
+- 장소: 투몬 비치
+- 식사: 타시 그릴
+
+# 2일차
+- 시간: 09:00~12:30
+- 식사: 피카스 카페
+- 장소: 사랑의 절벽
+- 지역: 북부 괌`;
+
+type PlanPlaceDraft = { dayNumber: number; name: string; category: Category; plannedTime?: string; notes?: string };
+type ParsedPlan = { places: PlanPlaceDraft[]; dayNumbers: number[]; errors: string[] };
+
+function planCategory(key: string, value: string): Category {
+  const normalized = `${key} ${value}`.toLowerCase();
+  if (/식사|맛집|저녁|점심|아침|브런치|restaurant|burger|grill|cafe|카페/.test(normalized)) return /카페|cafe/.test(normalized) ? "cafe" : "restaurant";
+  if (/숙소|호텔|hotel|리조트|resort/.test(normalized)) return "hotel";
+  if (/공항|airport/.test(normalized)) return "airport";
+  if (/역|터미널|이동|렌터카|주차|쇼핑|마트|shopping|station/.test(normalized)) return "logistics";
+  return "photo";
+}
+
+function splitPlanPlaces(value: string) {
+  return value.split(/[,，/、·•]+/).map((item) => item.trim()).filter(Boolean);
+}
+
+function parsePlanText(value: string): ParsedPlan {
+  const places: PlanPlaceDraft[] = [];
+  const dayNumbers = new Set<number>();
+  const errors: string[] = [];
+  let currentDay = trip.days[0]?.dayNumber ?? 1;
+  let plannedTime = "";
+  let pendingNote = "";
+  let sawHeading = false;
+
+  for (const rawLine of value.replace(/\r/g, "").split("\n")) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    const heading = line.match(/^#{1,6}\s*(?:day\s*)?(\d+)(?:\s*일차?)?\s*$/i) ?? line.match(/^(?:day\s*)?(\d+)\s*일차?\s*$/i);
+    if (heading) {
+      currentDay = Number(heading[1]);
+      dayNumbers.add(currentDay);
+      plannedTime = "";
+      pendingNote = "";
+      sawHeading = true;
+      continue;
+    }
+
+    const bullet = line.match(/^[-*]\s*(?:(?:([^:：]+)\s*[:：])\s*)?(.+)$/);
+    if (!bullet) continue;
+    const key = bullet[1]?.trim() || "장소";
+    const itemValue = bullet[2].trim();
+    if (!itemValue) continue;
+    if (/시간|time/i.test(key)) {
+      plannedTime = itemValue;
+      continue;
+    }
+    if (/메모|비고|설명|note/i.test(key)) {
+      pendingNote = itemValue;
+      continue;
+    }
+    const names = splitPlanPlaces(itemValue);
+    for (const name of names) {
+      places.push({ dayNumber: currentDay, name, category: planCategory(key, name), plannedTime: plannedTime || undefined, notes: pendingNote || `${key}에서 입력한 일정` });
+      pendingNote = "";
+    }
+  }
+
+  if (!places.length) errors.push("장소를 찾지 못했습니다. # 1일차와 - 장소: 형식으로 입력해 주세요.");
+  if (!sawHeading && places.length) dayNumbers.add(currentDay);
+  for (const dayNumber of dayNumbers) {
+    if (!trip.days.some((day) => day.dayNumber === dayNumber)) errors.push(`${dayNumber}일차는 현재 여행의 날짜 범위에 없습니다.`);
+  }
+  return { places, dayNumbers: [...dayNumbers].sort((left, right) => left - right), errors: [...new Set(errors)] };
+}
+
+function planSlug(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9가-힣]+/g, "-").replace(/^-+|-+$/g, "") || "place";
+}
+
 const KOREAN_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
 const KOREAN_LABEL_EXPRESSION = [
   "coalesce",
@@ -184,6 +266,7 @@ function readLocalState(): LocalTripState | null {
       hiddenPlaceIds: Array.isArray(parsed.hiddenPlaceIds) ? parsed.hiddenPlaceIds : [],
       addedPlaces: Array.isArray(parsed.addedPlaces) ? parsed.addedPlaces : [],
       actualOnly: Boolean(parsed.actualOnly),
+      plannerText: typeof parsed.plannerText === "string" ? parsed.plannerText : undefined,
     };
   } catch {
     return null;
@@ -453,8 +536,8 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, userLocation, o
 }
 
 function AppHeader({ view, menuOpen, setMenuOpen, setView }: { view: View; menuOpen: boolean; setMenuOpen: (open: boolean) => void; setView: (view: View) => void }) {
-  const title = view === "schedule" ? trip.title : view === "map" ? "전체 지도" : view === "reservations" ? "예약·운영 확인" : "저장한 장소";
-  return <header className="trip-header"><button type="button" className="icon-button header-back" aria-label={view === "schedule" ? "일정 홈" : "일정으로 돌아가기"} onClick={() => setView("schedule")}><ArrowLeft size={22} strokeWidth={1.8} /></button><div className="header-copy"><strong>{title}</strong><span>{tripDateLabel}</span></div><button type="button" className="icon-button header-menu-button" aria-label="빠른 메뉴" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={21} strokeWidth={1.8} /> : <Menu size={22} strokeWidth={1.8} />}</button>{menuOpen ? <div className="quick-menu" role="menu"><button type="button" role="menuitem" onClick={() => { setView("schedule"); setMenuOpen(false); }}><CalendarDays size={16} /> 오늘 일정</button><button type="button" role="menuitem" onClick={() => { setView("map"); setMenuOpen(false); }}><MapIcon size={16} /> 전체 지도</button><button type="button" role="menuitem" onClick={() => { setView("reservations"); setMenuOpen(false); }}><Bookmark size={16} /> 예약 확인</button></div> : null}</header>;
+  const title = view === "schedule" ? trip.title : view === "map" ? "전체 지도" : view === "reservations" ? "예약·운영 확인" : view === "planner" ? "여행 계획 입력" : "저장한 장소";
+  return <header className="trip-header"><button type="button" className="icon-button header-back" aria-label={view === "schedule" ? "일정 홈" : "일정으로 돌아가기"} onClick={() => setView("schedule")}><ArrowLeft size={22} strokeWidth={1.8} /></button><div className="header-copy"><strong>{title}</strong><span>{tripDateLabel}</span></div><button type="button" className="icon-button header-menu-button" aria-label="빠른 메뉴" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={21} strokeWidth={1.8} /> : <Menu size={22} strokeWidth={1.8} />}</button>{menuOpen ? <div className="quick-menu" role="menu"><button type="button" role="menuitem" onClick={() => { setView("schedule"); setMenuOpen(false); }}><CalendarDays size={16} /> 오늘 일정</button><button type="button" role="menuitem" onClick={() => { setView("planner"); setMenuOpen(false); }}><Pencil size={16} /> 계획 입력</button><button type="button" role="menuitem" onClick={() => { setView("map"); setMenuOpen(false); }}><MapIcon size={16} /> 전체 지도</button><button type="button" role="menuitem" onClick={() => { setView("reservations"); setMenuOpen(false); }}><Bookmark size={16} /> 예약 확인</button></div> : null}</header>;
 }
 
 function DayTabs({ days, selectedDay, onChange }: { days: TripDay[]; selectedDay: number; onChange: (day: number) => void }) {
@@ -547,7 +630,7 @@ function PlaceDetailSheet({ place, day, open, onClose, note, onNoteChange, compl
   return <EditablePlaceDetailSheet place={place} day={day} open={open} onClose={onClose} note={note} onNoteChange={onNoteChange} completed={completed} favorite={favorite} onToggleComplete={onToggleComplete} onToggleFavorite={onToggleFavorite} onEdit={onEdit} onDelete={onDelete} />;
 }
 
-function ScheduleView({ activeDay, selectedPlace, selectedPlaceId, showAlternatives, setShowAlternatives, actualOnly, onToggleActualOnly, onAddPlace, onSelectPlace, onToggleComplete, onToggleFavorite, completedIds, favoriteIds, userLocation, onUserLocation, onDayChange }: { activeDay: TripDay; selectedPlace: Place | null; selectedPlaceId: string | null; showAlternatives: boolean; setShowAlternatives: (show: boolean) => void; actualOnly: boolean; onToggleActualOnly: () => void; onAddPlace: () => void; onSelectPlace: (place: MapPlace) => void; onToggleComplete: (id: string) => void; onToggleFavorite: (id: string) => void; completedIds: string[]; favoriteIds: string[]; userLocation: Coordinate | null; onUserLocation: (location: Coordinate) => void; onDayChange: (day: number) => void }) {
+function ScheduleView({ activeDay, selectedPlace, selectedPlaceId, showAlternatives, setShowAlternatives, actualOnly, onToggleActualOnly, onAddPlace, onOpenPlanner, onSelectPlace, onToggleComplete, onToggleFavorite, completedIds, favoriteIds, userLocation, onUserLocation, onDayChange }: { activeDay: TripDay; selectedPlace: Place | null; selectedPlaceId: string | null; showAlternatives: boolean; setShowAlternatives: (show: boolean) => void; actualOnly: boolean; onToggleActualOnly: () => void; onAddPlace: () => void; onOpenPlanner: () => void; onSelectPlace: (place: MapPlace) => void; onToggleComplete: (id: string) => void; onToggleFavorite: (id: string) => void; completedIds: string[]; favoriteIds: string[]; userLocation: Coordinate | null; onUserLocation: (location: Coordinate) => void; onDayChange: (day: number) => void }) {
   const primaryPlaces = activeDay.places.filter((place) => !place.optional);
   const restaurantAlternatives = activeDay.places.filter((place) => place.optional && place.category === "restaurant");
   const otherAlternatives = activeDay.places.filter((place) => place.optional && place.category !== "restaurant");
@@ -569,6 +652,7 @@ function ScheduleView({ activeDay, selectedPlace, selectedPlaceId, showAlternati
           <label className="alternative-toggle"><input type="checkbox" checked={showAlternatives} onChange={(event) => setShowAlternatives(event.target.checked)} /><span className="toggle-track" /><span>대체 후보</span></label>
         </div>
       </section>
+      <button type="button" className="planner-entry" onClick={onOpenPlanner}><span className="planner-entry-icon"><Pencil size={16} /></span><span><strong>여행 계획을 한 번에 입력</strong><small># 1일차 · - 식사: · - 장소: 형식으로 작성하면 일정에 추가돼요.</small></span><ChevronRight size={17} /></button>
       <TripMap places={primaryPlaces.map(withDay)} routePlaces={primaryPlaces.map(withDay)} selectedPlace={selectedPlace} onSelect={onSelectPlace} userLocation={userLocation} onUserLocation={onUserLocation} />
       <section className="itinerary-section" aria-label={`${activeDay.dayOfMonth}일 일정 목록`}>
         <div className="section-heading"><div><span className="eyebrow">{primaryPlaces.length} STOPS</span><h2>{actualOnly ? "실제 방문 기록" : "오늘의 동선"}</h2></div><span className="section-hint">체크=실제 방문</span></div>
@@ -602,6 +686,10 @@ function SavedView({ places, favoriteIds, notes, onSelectPlace }: { places: MapP
   return <main className="simple-view saved-view"><section className="view-heading"><span className="eyebrow">SAVED</span><h1>저장한 장소</h1><p>즐겨찾기와 현지에서 적어둔 메모를 모아봤어요.</p></section><section className="saved-section"><div className="section-heading"><div><span className="eyebrow">FAVORITES</span><h2>즐겨찾기</h2></div><span className="count-chip">{savedPlaces.length}</span></div>{savedPlaces.length ? <div className="saved-list">{savedPlaces.map((place) => <button type="button" key={place.id} onClick={() => onSelectPlace(place)}><Heart size={16} fill="currentColor" /><span><strong>{place.name}</strong><small>DAY {place.dayNumber} · {categoryLabels[place.category]}</small></span><ChevronRight size={16} /></button>)}</div> : <div className="empty-card"><Heart size={22} /><strong>아직 저장한 장소가 없어요</strong><span>일정 카드의 하트 버튼으로 모아둘 수 있어요.</span></div>}</section><section className="saved-section"><div className="section-heading"><div><span className="eyebrow">FIELD NOTES</span><h2>현지 메모</h2></div><span className="count-chip">{notedPlaces.length}</span></div>{notedPlaces.length ? <div className="saved-list">{notedPlaces.map((place) => <button type="button" key={place.id} onClick={() => onSelectPlace(place)}><StickyNote size={16} /><span><strong>{place.name}</strong><small>{notes[place.id]}</small></span><ChevronRight size={16} /></button>)}</div> : <div className="empty-card"><StickyNote size={22} /><strong>메모가 비어 있어요</strong><span>장소 상세에서 현지 메모를 남겨보세요.</span></div>}</section></main>;
 }
 
+function PlannerView({ value, onChange, onExecute, onReset, message, error }: { value: string; onChange: (value: string) => void; onExecute: () => void; onReset: () => void; message: string; error: string }) {
+  return <main className="planner-view simple-view"><section className="view-heading"><span className="eyebrow">PLAN INPUT</span><h1>여행 계획 입력</h1><p>자연어로 적은 계획을 날짜별 장소 목록으로 바꿔볼 수 있어요.</p></section><section className="planner-card"><div className="planner-help"><Info size={16} /><div><strong>이 형식으로 편하게 입력하세요</strong><span>지역·식사·장소·시간을 적으면 일정 카드와 Google Maps 검색 링크를 만듭니다.</span></div></div><pre className="planner-example">{DEFAULT_PLAN_TEXT}</pre><label className="planner-field"><span>여행 계획</span><KeyboardTextarea value={value} onChange={(event) => onChange(event.target.value)} placeholder={DEFAULT_PLAN_TEXT} aria-label="여행 계획 입력" rows={13} /></label><div className="planner-actions"><button type="button" className="secondary-link" onClick={onReset}>예시로 되돌리기</button><button type="button" className="primary-link" onClick={onExecute} disabled={!value.trim()}><Check size={16} /> 일정 생성</button></div>{error ? <p className="planner-error" role="alert"><CircleHelp size={15} /> {error}</p> : null}{message ? <p className="planner-success" role="status"><Check size={15} /> {message}</p> : null}<p className="planner-note"><Info size={14} /> 현재는 입력 내용을 기기 안에서 일정 카드로 변환합니다. 주소·좌표·영업시간은 장소 상세에서 확인·수정해 주세요.</p></section></main>;
+}
+
 function BottomNav({ view, setView }: { view: View; setView: (view: View) => void }) {
   const items: Array<{ key: View; label: string; icon: typeof CalendarDays }> = [{ key: "schedule", label: "일정", icon: CalendarDays }, { key: "map", label: "지도", icon: MapIcon }, { key: "reservations", label: "예약", icon: Bookmark }, { key: "saved", label: "저장", icon: Heart }];
   return <nav className="trip-bottom-nav" aria-label="주요 메뉴">{items.map(({ key, label, icon: Icon }) => <button type="button" key={key} className={view === key ? "is-active" : ""} onClick={() => setView(key)} aria-current={view === key ? "page" : undefined}><Icon size={20} fill={key === "saved" && view === key ? "currentColor" : "none"} /><span>{label}</span></button>)}</nav>;
@@ -626,6 +714,9 @@ export default function Prototype() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [editorPlace, setEditorPlace] = useState<MapPlace | null>(null);
   const [userLocation, setUserLocation] = useState<Coordinate | null>(null);
+  const [plannerText, setPlannerText] = useState(persisted?.plannerText || DEFAULT_PLAN_TEXT);
+  const [plannerMessage, setPlannerMessage] = useState("");
+  const [plannerError, setPlannerError] = useState("");
   const editedDays = useMemo(() => trip.days.map((day) => {
     const originalPlaces = day.places.filter((place) => !hiddenPlaceIds.includes(place.id)).map((place) => ({ ...place, ...(placeEdits[place.id] ?? {}) }));
     const manualPlaces = addedPlaces.filter((place) => place.dayNumber === day.dayNumber).map(({ dayNumber: _dayNumber, dayOfMonth: _dayOfMonth, dayTitle: _dayTitle, ...place }) => place);
@@ -637,7 +728,7 @@ export default function Prototype() {
   const selectedPlace = allPlaces.find((place) => place.id === selectedPlaceId) ?? null;
   const selectedPlaceDay = selectedPlace ? visibleDays.find((day) => day.dayNumber === selectedPlace.dayNumber) : activeDay;
 
-  useEffect(() => { window.localStorage.setItem(tripStorageKey, JSON.stringify({ selectedDay, completedPlaceIds: completedIds, favoritePlaceIds: favoriteIds, notes, reservationDoneIds, placeEdits, hiddenPlaceIds, addedPlaces, actualOnly } satisfies LocalTripState)); }, [selectedDay, completedIds, favoriteIds, notes, reservationDoneIds, placeEdits, hiddenPlaceIds, addedPlaces, actualOnly]);
+  useEffect(() => { window.localStorage.setItem(tripStorageKey, JSON.stringify({ selectedDay, completedPlaceIds: completedIds, favoritePlaceIds: favoriteIds, notes, reservationDoneIds, placeEdits, hiddenPlaceIds, addedPlaces, actualOnly, plannerText } satisfies LocalTripState)); }, [selectedDay, completedIds, favoriteIds, notes, reservationDoneIds, placeEdits, hiddenPlaceIds, addedPlaces, actualOnly, plannerText]);
   useEffect(() => { const query = new URLSearchParams(window.location.search); query.set("day", String(selectedDay)); window.history.replaceState({}, "", `${window.location.pathname}?${query.toString()}`); }, [selectedDay]);
   useEffect(() => { if ("serviceWorker" in navigator) navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => undefined); }, []);
 
@@ -662,6 +753,52 @@ export default function Prototype() {
     setEditorOpen(false);
     setEditorPlace(null);
   };
+  const executePlan = () => {
+    const parsed = parsePlanText(plannerText);
+    if (parsed.errors.length || !parsed.places.length) {
+      setPlannerError(parsed.errors.join(" ") || "입력한 계획에서 장소를 찾지 못했습니다.");
+      setPlannerMessage("");
+      return;
+    }
+    const dayCounts = new Map<number, number>();
+    const generatedPlaces = parsed.places.flatMap((draft) => {
+      const day = trip.days.find((candidate) => candidate.dayNumber === draft.dayNumber);
+      if (!day) return [];
+      const index = (dayCounts.get(day.dayNumber) ?? 0) + 1;
+      dayCounts.set(day.dayNumber, index);
+      const query = `${draft.name} ${day.city}`.trim();
+      const isFood = draft.category === "restaurant" || draft.category === "cafe";
+      return [{
+        id: `plan-${day.dayNumber}-${index}-${planSlug(draft.name)}`,
+        order: day.places.length + index,
+        name: draft.name,
+        category: draft.category,
+        address: `${day.city} · 정확한 주소 확인 필요`,
+        plannedTime: draft.plannedTime,
+        googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`,
+        directionsUrl: `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`,
+        reservationStatus: isFood ? "check_required" as ReservationStatus : undefined,
+        closedDays: isFood ? "확인 필요" : undefined,
+        dayNumber: day.dayNumber,
+        dayOfMonth: day.dayOfMonth,
+        dayTitle: day.title,
+        notes: draft.notes ?? "입력한 여행 계획에서 생성됨 · 주소·좌표·운영 정보 확인 필요",
+      } satisfies MapPlace];
+    });
+    if (!generatedPlaces.length) {
+      setPlannerError("현재 여행의 날짜 범위와 맞는 장소가 없습니다.");
+      setPlannerMessage("");
+      return;
+    }
+    setAddedPlaces((current) => [...current.filter((place) => !place.id.startsWith("plan-")), ...generatedPlaces]);
+    const firstDay = trip.days.find((day) => day.dayNumber === parsed.dayNumbers[0]) ?? trip.days[0];
+    setSelectedDay(firstDay.dayOfMonth);
+    setSelectedPlaceId(null);
+    setPlannerError("");
+    setPlannerMessage(`${generatedPlaces.length}개 장소를 일정에 반영했습니다.`);
+    setView("schedule");
+    setMenuOpen(false);
+  };
   const deleteSelectedPlace = () => {
     if (!selectedPlace || !window.confirm(`${selectedPlace.name}을(를) 이 기기에서 숨길까요? 원본 일정은 바뀌지 않습니다.`)) return;
     if (addedPlaces.some((place) => place.id === selectedPlace.id)) setAddedPlaces((current) => current.filter((place) => place.id !== selectedPlace.id));
@@ -673,7 +810,7 @@ export default function Prototype() {
     setSelectedPlaceId(null);
     setSheetOpen(false);
   };
-  const appContent: ReactNode = view === "schedule" ? <ScheduleView activeDay={activeDay} selectedPlace={selectedPlace} selectedPlaceId={selectedPlaceId} showAlternatives={showAlternatives} setShowAlternatives={setShowAlternatives} actualOnly={actualOnly} onToggleActualOnly={() => { setActualOnly((current) => !current); setSheetOpen(false); }} onAddPlace={() => openEditor()} onSelectPlace={selectPlace} onToggleComplete={(id) => toggleId(setCompletedIds, id)} onToggleFavorite={(id) => toggleId(setFavoriteIds, id)} completedIds={completedIds} favoriteIds={favoriteIds} userLocation={userLocation} onUserLocation={setUserLocation} onDayChange={selectDay} /> : view === "map" ? <AllMapView allPlaces={allPlaces} selectedPlace={selectedPlace} onSelectPlace={selectPlace} onUserLocation={setUserLocation} userLocation={userLocation} /> : view === "reservations" ? <ReservationsView places={allPlaces} reservationDoneIds={reservationDoneIds} onToggleReservation={(id) => toggleId(setReservationDoneIds, id)} onSelectPlace={selectPlace} /> : <SavedView places={allPlaces} favoriteIds={favoriteIds} notes={notes} onSelectPlace={selectPlace} />;
+  const appContent: ReactNode = view === "planner" ? <PlannerView value={plannerText} onChange={(value) => { setPlannerText(value); setPlannerError(""); }} onExecute={executePlan} onReset={() => { setPlannerText(DEFAULT_PLAN_TEXT); setPlannerError(""); setPlannerMessage(""); }} message={plannerMessage} error={plannerError} /> : view === "schedule" ? <ScheduleView activeDay={activeDay} selectedPlace={selectedPlace} selectedPlaceId={selectedPlaceId} showAlternatives={showAlternatives} setShowAlternatives={setShowAlternatives} actualOnly={actualOnly} onToggleActualOnly={() => { setActualOnly((current) => !current); setSheetOpen(false); }} onAddPlace={() => openEditor()} onOpenPlanner={() => { setView("planner"); setMenuOpen(false); setSheetOpen(false); }} onSelectPlace={selectPlace} onToggleComplete={(id) => toggleId(setCompletedIds, id)} onToggleFavorite={(id) => toggleId(setFavoriteIds, id)} completedIds={completedIds} favoriteIds={favoriteIds} userLocation={userLocation} onUserLocation={setUserLocation} onDayChange={selectDay} /> : view === "map" ? <AllMapView allPlaces={allPlaces} selectedPlace={selectedPlace} onSelectPlace={selectPlace} onUserLocation={setUserLocation} userLocation={userLocation} /> : view === "reservations" ? <ReservationsView places={allPlaces} reservationDoneIds={reservationDoneIds} onToggleReservation={(id) => toggleId(setReservationDoneIds, id)} onSelectPlace={selectPlace} /> : <SavedView places={allPlaces} favoriteIds={favoriteIds} notes={notes} onSelectPlace={selectPlace} />;
 
   return <div className="trip-app"><MobileScroll className="trip-scroll"><div className="trip-scroll-content"><AppHeader view={view} menuOpen={menuOpen} setMenuOpen={setMenuOpen} setView={setView} />{appContent}</div></MobileScroll><BottomNav view={view} setView={(nextView) => { setView(nextView); setMenuOpen(false); }} /><PlaceDetailSheet place={selectedPlace} day={selectedPlaceDay} open={sheetOpen} onClose={() => setSheetOpen(false)} note={selectedPlace ? notes[selectedPlace.id] ?? "" : ""} onNoteChange={(note) => { if (selectedPlace) setNotes((current) => ({ ...current, [selectedPlace.id]: note })); }} completed={selectedPlace ? completedIds.includes(selectedPlace.id) : false} favorite={selectedPlace ? favoriteIds.includes(selectedPlace.id) : false} onToggleComplete={() => { if (selectedPlace) toggleId(setCompletedIds, selectedPlace.id); }} onToggleFavorite={() => { if (selectedPlace) toggleId(setFavoriteIds, selectedPlace.id); }} onEdit={() => { if (selectedPlace) openEditor(selectedPlace); }} onDelete={deleteSelectedPlace} /><PlaceEditorSheet place={editorPlace} open={editorOpen} completed={editorPlace ? completedIds.includes(editorPlace.id) : false} onClose={() => { setEditorOpen(false); setEditorPlace(null); }} onSave={savePlaceDraft} /></div>;
 }
