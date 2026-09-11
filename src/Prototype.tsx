@@ -64,6 +64,7 @@ type Place = {
   directionsUrl?: string;
   reservationUrl?: string;
   reservationStatus?: ReservationStatus;
+  imageUrl?: string;
   photoPoint?: string;
   menuPoint?: string;
   menu?: MenuItem[];
@@ -99,6 +100,10 @@ const CATEGORY_COLORS: Record<Category, string> = {
   station: "#1457d9",
   airport: "#2d76c7",
   logistics: "#62718a",
+};
+const CATEGORY_IMAGE_URLS: Partial<Record<Category, string>> = {
+  restaurant: "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Shoyu_Ramen%EF%BC%88Tokyo_Ramen%EF%BC%89_-_01.jpg/330px-Shoyu_Ramen%EF%BC%88Tokyo_Ramen%EF%BC%89_-_01.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  cafe: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Latte_and_dark_coffee.jpg/330px-Latte_and_dark_coffee.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
 };
 const categoryLabels: Record<Category, string> = {
   photo: "사진 명소",
@@ -213,6 +218,19 @@ function mapTileUrl(point: Coordinate, zoom = 15) {
   const latitude = (point[0] * Math.PI) / 180;
   const y = Math.floor(((1 - Math.asinh(Math.tan(latitude)) / Math.PI) / 2) * scale);
   return `https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`;
+}
+
+function PlacePreview({ place }: { place: Place }) {
+  const point = coordinates(place);
+  const imageUrl = place.imageUrl ?? CATEGORY_IMAGE_URLS[place.category];
+  const [imageState, setImageState] = useState<"loading" | "loaded" | "failed">(imageUrl ? "loading" : "failed");
+  useEffect(() => {
+    setImageState(imageUrl ? "loading" : "failed");
+  }, [imageUrl]);
+  const hasImage = Boolean(imageUrl) && imageState !== "failed";
+  const showImage = hasImage && imageState === "loaded";
+  const previewStyle = point ? { backgroundImage: `url("${mapTileUrl(point)}")` } : undefined;
+  return <span className={`place-preview ${showImage ? "has-image" : point ? "" : "is-empty"}`} style={previewStyle} aria-hidden="true">{hasImage ? <img className={`place-preview-image ${showImage ? "is-loaded" : ""}`} src={imageUrl} alt="" loading="lazy" referrerPolicy="no-referrer" onLoad={() => setImageState("loaded")} onError={() => setImageState("failed")} /> : null}{showImage ? <span className="place-preview-caption">{place.imageUrl ? "대표 이미지" : "카테고리 이미지"}</span> : point ? <><span className="place-preview-pin" /><span className="place-preview-caption">지도 미리보기</span></> : <MapIcon size={18} />}</span>;
 }
 
 function distanceKm(start: Coordinate, end: Coordinate) {
@@ -369,9 +387,7 @@ function ReservationBadge({ status, completed }: { status?: ReservationStatus; c
 
 function PlaceCard({ place, day, selected, completed, favorite, onSelect, onToggleComplete, onToggleFavorite }: { place: Place; day: TripDay; selected: boolean; completed: boolean; favorite: boolean; onSelect: () => void; onToggleComplete: () => void; onToggleFavorite: () => void }) {
   const Icon = categoryIcons[place.category];
-  const point = coordinates(place);
-  const previewStyle = point ? { backgroundImage: `url("${mapTileUrl(point)}")` } : undefined;
-  return <article id={`place-${place.id}`} className={`place-card category-${place.category} ${selected ? "is-selected" : ""} ${completed ? "is-completed" : ""} ${place.optional ? "is-optional" : ""}`}><button type="button" className="place-main" onClick={onSelect} aria-label={`${place.order}번 ${place.name} 상세 보기`}><span className="place-number" style={{ "--number-color": CATEGORY_COLORS[place.category] } as CSSProperties} title={categoryLabels[place.category]}>{place.order}</span><span className="place-copy"><span className="place-title-row"><strong>{place.name}</strong>{place.optional ? <span className="optional-tag">대체</span> : null}</span><span className="place-meta"><span className={`category-icon category-${place.category}`}><Icon size={14} /></span><span>{categoryLabels[place.category]}</span>{place.plannedTime ? ` · ${place.plannedTime}` : ""}</span>{place.optional && place.nearbyWalk ? <span className="nearby-label"><MapPinned size={13} /> {place.nearbyWalk}</span> : null}{place.hours || place.price || place.admission ? <span className="place-facts">{place.hours ? <span><Clock3 size={12} /> {place.hours}</span> : null}{place.price ? <span><CircleDollarSign size={12} /> {place.price}</span> : null}{place.admission ? <span><Ticket size={12} /> {place.admission}</span> : null}</span> : null}{place.notes ? <span className="place-note">{place.notes}</span> : null}{!point ? <span className="location-warning"><Info size={13} /> 지도 위치 확인 필요</span> : null}<span className="place-actions"><a href={place.googleMapsUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}><MapIcon size={14} /> 지도</a>{place.directionsUrl ? <a href={place.directionsUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}><Navigation size={14} /> 길찾기</a> : null}</span></span><span className={`place-preview ${point ? "" : "is-empty"}`} style={previewStyle} aria-hidden="true">{point ? <><span className="place-preview-pin" /><span className="place-preview-caption">지도 미리보기</span></> : <MapIcon size={18} />}</span></button><div className="place-card-controls"><button type="button" className={`favorite-button ${favorite ? "is-active" : ""}`} onClick={onToggleFavorite} aria-label={favorite ? `${place.name} 즐겨찾기 해제` : `${place.name} 즐겨찾기`} aria-pressed={favorite}><Heart size={17} fill={favorite ? "currentColor" : "none"} /></button><button type="button" className={`complete-button ${completed ? "is-active" : ""}`} onClick={onToggleComplete} aria-label={completed ? `${place.name} 완료 해제` : `${place.name} 방문 완료`} aria-pressed={completed}>{completed ? <Check size={16} /> : <span /> }<span>{completed ? "완료" : "체크"}</span></button></div>{place.reservationStatus && place.reservationStatus !== "not_required" ? <ReservationBadge status={place.reservationStatus} /> : null}</article>;
+  return <article id={`place-${place.id}`} className={`place-card category-${place.category} ${selected ? "is-selected" : ""} ${completed ? "is-completed" : ""} ${place.optional ? "is-optional" : ""}`}><button type="button" className="place-main" onClick={onSelect} aria-label={`${place.order}번 ${place.name} 상세 보기`}><span className="place-number" style={{ "--number-color": CATEGORY_COLORS[place.category] } as CSSProperties} title={categoryLabels[place.category]}>{place.order}</span><span className="place-copy"><span className="place-title-row"><strong>{place.name}</strong>{place.optional ? <span className="optional-tag">대체</span> : null}</span><span className="place-meta"><span className={`category-icon category-${place.category}`}><Icon size={14} /></span><span>{categoryLabels[place.category]}</span>{place.plannedTime ? ` · ${place.plannedTime}` : ""}</span>{place.optional && place.nearbyWalk ? <span className="nearby-label"><MapPinned size={13} /> {place.nearbyWalk}</span> : null}{place.hours || place.price || place.admission ? <span className="place-facts">{place.hours ? <span><Clock3 size={12} /> {place.hours}</span> : null}{place.price ? <span><CircleDollarSign size={12} /> {place.price}</span> : null}{place.admission ? <span><Ticket size={12} /> {place.admission}</span> : null}</span> : null}{place.notes ? <span className="place-note">{place.notes}</span> : null}{!coordinates(place) ? <span className="location-warning"><Info size={13} /> 지도 위치 확인 필요</span> : null}<span className="place-actions"><a href={place.googleMapsUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}><MapIcon size={14} /> 지도</a>{place.directionsUrl ? <a href={place.directionsUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}><Navigation size={14} /> 길찾기</a> : null}</span></span><PlacePreview place={place} /></button><div className="place-card-controls"><button type="button" className={`favorite-button ${favorite ? "is-active" : ""}`} onClick={onToggleFavorite} aria-label={favorite ? `${place.name} 즐겨찾기 해제` : `${place.name} 즐겨찾기`} aria-pressed={favorite}><Heart size={17} fill={favorite ? "currentColor" : "none"} /></button><button type="button" className={`complete-button ${completed ? "is-active" : ""}`} onClick={onToggleComplete} aria-label={completed ? `${place.name} 완료 해제` : `${place.name} 방문 완료`} aria-pressed={completed}>{completed ? <Check size={16} /> : <span /> }<span>{completed ? "완료" : "체크"}</span></button></div>{place.reservationStatus && place.reservationStatus !== "not_required" ? <ReservationBadge status={place.reservationStatus} /> : null}</article>;
 }
 
 function CategoryLegend() {
