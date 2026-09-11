@@ -16,7 +16,7 @@
 }
 
 .trip-app {
-  --trip-header-height: 104px;
+  --trip-header-height: 110px;
   --day-tabs-sticky-height: 80px;
   position: absolute;
   inset: 0;
@@ -49,7 +49,7 @@
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr) 44px;
   align-items: end;
-  min-height: 104px;
+  min-height: var(--trip-header-height);
   padding: 52px 14px 13px;
   border-bottom: 1px solid rgba(230, 235, 242, 0.92);
   background: rgba(255, 255, 255, 0.93);
@@ -57,7 +57,7 @@
 }
 
 .full-screen-screen .trip-header {
-  min-height: 64px;
+  min-height: var(--trip-header-height);
   padding-top: max(env(safe-area-inset-top, 0px), 12px);
 }
 
@@ -681,7 +681,7 @@
 }
 
 .full-screen-screen .trip-app {
-  --trip-header-height: 64px;
+  --trip-header-height: 70px;
 }
 
 .alternatives-section {
