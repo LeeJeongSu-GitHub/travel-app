@@ -70,6 +70,10 @@ Accept plans in natural language, Markdown, screenshots, PDFs, or links. The use
 
 Return a short summary of created/updated destination folders, researched fields, unresolved confirmations, validation results, and (only if deployed) the public URL.
 
+## Documentation maintenance
+
+When a user-visible feature, data field, asset rule, or workflow changes, update `README.md` in the same change. Keep the README's current-work summary, short input prompt, detailed prompt, generated-results list, and unresolved-confirmation guidance consistent with the implementation. Update [references/trip-data-contract.md](references/trip-data-contract.md) when the JSON contract changes. Do not turn a one-off trip fact into a reusable rule; record trip-specific facts in that destination's `trip.json`.
+
 ## Minimal input example
 
 ```text
