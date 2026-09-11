@@ -388,7 +388,7 @@
 
 .number-marker.is-optional {
   opacity: 0.72;
-  background: #69768a;
+  background: var(--marker-color);
 }
 
 .leaflet-tooltip.map-tooltip {
@@ -549,7 +549,7 @@
   flex: 0 0 22px;
   place-items: center;
   border-radius: 50%;
-  background: var(--purple);
+  background: var(--number-color, var(--purple));
   color: white;
   font-size: 0.65rem;
   font-weight: 900;
