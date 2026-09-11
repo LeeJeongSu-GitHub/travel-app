@@ -23,7 +23,7 @@ Read `README.md`, the nearest `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `src/Prototyp
 8. Add nearby restaurant alternatives with `optional: true`, `alternativeFor`, and `nearbyWalk`. Keep alternatives linked to the same day/primary place and show them as candidates, not confirmed replacements.
 9. Preserve the live travel record: visit checks, favorites, notes, reservation state, manual additions, edits, deletions/hiding, actual-only filtering, and reload persistence must remain destination-scoped in local storage. A manual place without a map link gets generated Google Maps search/directions links; without coordinates it remains list-only and visibly says the pin needs confirmation.
 
-For the exact JSON fields, allowed values, uncertainty rules, and menu example, read [references/trip-data-contract.md](references/trip-data-contract.md). For the copyable user input/prompt format, use the `README.md` section “여행 계획 입력 포맷”.
+For the exact JSON fields, allowed values, uncertainty rules, and menu example, read [references/trip-data-contract.md](references/trip-data-contract.md). For the copyable short input and prompt, use the `README.md` section “가장 쉬운 입력 방법 (권장)”.
 
 ## UI and asset rules
 
@@ -58,7 +58,7 @@ Keep this workflow provider-neutral: do not depend on Codex-only tool syntax, hi
 
 ## Input and handoff
 
-Accept plans in natural language, Markdown, screenshots, PDFs, or links. A minimal request can be:
+Accept plans in natural language, Markdown, screenshots, PDFs, or links. The user only needs to provide the destination, dates or trip length, known lodging, and desired places/activities; fill the rest through research and mark unresolved facts. A minimal request can be:
 
 ```text
 여행지: 교토·고베
