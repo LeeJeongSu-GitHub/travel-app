@@ -29,9 +29,9 @@
 - [GitHub Pages 배포](#배포)
 - [새 여행 추가 흐름](#새-여행-추가-흐름)
 - [현재 구현·작업 내역](#현재-작업-완료-내역)
-- [디자인 고정 규칙](#디자인-고정-규칙)
 - [공통 UI 컴포넌트 계약](#공통-ui-컴포넌트-계약)
 - [공통 UI 스킬](#공통-ui-스킬)
+- [디자인 고정 규칙](#디자인-고정-규칙)
 - [새 여행 입력 방법](#가장-쉬운-입력-방법-권장)
 - [조사자료 받기용 프롬프트](#조사자료-받기용-프롬프트)
 - [자동 조사·이미지 출처 규칙](#자동-조사-시-출처이미지-처리-규칙)
@@ -255,7 +255,7 @@ MobileScroll > TravelHeader > 화면 콘텐츠 > TripMap > TravelCategoryLegend 
 BottomSheet: 장소 상세 / 장소 편집 / TravelDataTransferSheet
 ```
 
-여행별로 허용되는 것은 `trip.json`과 이미지 데이터, 그리고 대표 이미지 선택 같은 얇은 데이터 어댑터뿐입니다. 장소 카드·헤더·하단 메뉴·데이터 시트의 전체 JSX를 복사하거나 여행별 dashboard/독립 CSS를 만들지 않습니다. 새로운 UI 원시 요소가 필요하면 `components.tsx`, `types.ts`, `prototype.css`, `component-contract.md`를 함께 업데이트하고 기존 여행에서 실제로 사용합니다.
+여행별로 허용되는 것은 `trip.json`과 이미지 데이터, 그리고 대표 이미지 선택 같은 얇은 데이터 어댑터뿐입니다. 장소 카드·헤더·하단 메뉴·데이터 시트의 전체 JSX를 복사하거나 여행별 dashboard/독립 CSS를 만들지 않습니다. 새로운 UI 원시 요소가 필요하면 `components.tsx`, `types.ts`, `category.ts`, `index.ts`, `prototype.css`, `design-system.md`, `component-contract.md`를 함께 업데이트하고 기존 여행에서 실제로 사용합니다.
 
 ## 공통 UI 스킬
 
@@ -311,7 +311,7 @@ import type { Place, Trip, View } from "./travel-ui";
 
 상세한 시각 규칙은 [design-system.md](./.agents/skills/travel-map-builder/references/design-system.md), 컴포넌트 입력·책임은 [component-contract.md](./.agents/skills/travel-map-builder/references/component-contract.md), 실행 절차는 [`.agents/skills/travel-ui/SKILL.md`](./.agents/skills/travel-ui/SKILL.md)에 있습니다.
 
-### 디자인 고정 규칙
+## 디자인 고정 규칙
 
 새 여행을 만들 때 바뀌는 것은 여행 데이터이고, 화면 디자인은 현재 교토·고베 앱을 공통 템플릿으로 유지합니다. 따라서 다른 AI가 새 여행을 생성하더라도 다음 구조가 그대로 보여야 합니다.
 
