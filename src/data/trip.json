@@ -216,10 +216,10 @@
           "price": "약 ¥950–¥1,250",
           "admission": "해당 없음",
           "menu": [
-            { "name": "土ごぼう天ざるうどん", "price": "약 ¥1,000~" },
-            { "name": "土ごぼう天うどん", "price": "약 ¥1,200" },
-            { "name": "鶏ささみ天うどん", "price": "약 ¥1,250" },
-            { "name": "京カレーのつけ麺", "price": "약 ¥950" }
+            { "name": "土ごぼう天ざるうどん", "nameKo": "우엉튀김 자루우동", "price": "약 ¥1,000~" },
+            { "name": "土ごぼう天うどん", "nameKo": "우엉튀김 우동", "price": "약 ¥1,200" },
+            { "name": "鶏ささみ天うどん", "nameKo": "닭 안심 튀김 우동", "price": "약 ¥1,250" },
+            { "name": "京カレーのつけ麺", "nameKo": "교토식 카레 츠케멘", "price": "약 ¥950" }
           ],
           "operatingNote": "목요일·부정기 휴무, 면 소진 시 조기 종료. 예약 후에도 현장 대기가 생길 수 있습니다.",
           "infoSourceUrl": "https://yamamotomenzou.com/about.html",
@@ -372,10 +372,10 @@
           "price": "¥1,000–¥2,400",
           "admission": "해당 없음",
           "menu": [
-            { "name": "ざるそば·うどん", "price": "¥1,000" },
-            { "name": "天ざるそば·うどん", "price": "¥1,800" },
-            { "name": "親子丼", "price": "¥1,500" },
-            { "name": "天ざる御膳", "price": "¥2,400" }
+            { "name": "ざるそば·うどん", "nameKo": "자루소바·우동", "price": "¥1,000" },
+            { "name": "天ざるそば·うどん", "nameKo": "튀김 자루소바·우동", "price": "¥1,800" },
+            { "name": "親子丼", "nameKo": "오야코동(닭고기·계란 덮밥)", "price": "¥1,500" },
+            { "name": "天ざる御膳", "nameKo": "튀김 자루 정식", "price": "¥2,400" }
           ],
           "alternativeFor": "yamamoto-menzo",
           "nearbyWalk": "야마모토 멘조우에서 도보 약 2분",
@@ -398,10 +398,10 @@
           "price": "약 ¥2,000–¥3,000",
           "admission": "해당 없음",
           "menu": [
-            { "name": "トロ鉄火巻", "price": "¥1,078" },
-            { "name": "エビ7-SEVEN-", "price": "¥1,078" },
-            { "name": "うなカツサンド", "price": "¥1,078" },
-            { "name": "ポテサラ", "price": "¥440" }
+            { "name": "トロ鉄火巻", "nameKo": "참치 뱃살 철화말이", "price": "¥1,078" },
+            { "name": "エビ7-SEVEN-", "nameKo": "새우 7-SEVEN-", "price": "¥1,078" },
+            { "name": "うなカツサンド", "nameKo": "장어 커틀릿 샌드", "price": "¥1,078" },
+            { "name": "ポテサラ", "nameKo": "감자 샐러드", "price": "¥440" }
           ],
           "alternativeFor": "kichi-kichi",
           "nearbyWalk": "키치키치에서 도보 약 2분 · 가와라마치권",
