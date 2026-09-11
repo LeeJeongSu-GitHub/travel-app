@@ -1,6 +1,6 @@
 ---
 name: travel-map-builder
-description: Turn a travel plan, PRD, notes, screenshots, PDFs, or links into a destination-scoped mobile itinerary map app with structured place research, Korean category UI, translated menus, photos, closure days, alternatives, live trip records, and optional GitHub Pages deployment. Use when adding or enriching a trip in this repository.
+description: Turn a travel plan, PRD, notes, screenshots, PDFs, or links into a destination-scoped, visually consistent mobile itinerary map app with structured place research, Korean category UI, translated menus, photos, closure days, alternatives, live trip records, and optional GitHub Pages deployment. Use when adding or enriching a trip in this repository.
 ---
 
 # Travel Map Builder
@@ -9,12 +9,12 @@ Use this repository as a reusable travel-app template. Convert the user's curren
 
 ## Inspect first
 
-Read `README.md`, the nearest `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `src/Prototype.tsx`, `src/prototype.css`, and [references/trip-data-contract.md](references/trip-data-contract.md) before editing. Inspect existing destination folders and the root travel hub first. When deployment is requested, also inspect `.github/workflows/deploy-pages.yml` and `vite.config.ts`. Do not overwrite another destination when the user gives a new trip. Keep `.agents/skills/travel-map-builder/` canonical; `.claude/skills/travel-map-builder/` and `.gemini/skills/travel-map-builder/` are lightweight pointers to it.
+Read `README.md`, the nearest `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `src/Prototype.tsx`, `src/prototype.css`, [references/trip-data-contract.md](references/trip-data-contract.md), and [references/design-system.md](references/design-system.md) before editing. Inspect existing destination folders and the root travel hub first. When deployment is requested, also inspect `.github/workflows/deploy-pages.yml` and `vite.config.ts`. Do not overwrite another destination when the user gives a new trip. Keep `.agents/skills/travel-map-builder/` canonical; `.claude/skills/travel-map-builder/` and `.gemini/skills/travel-map-builder/` are lightweight pointers to it.
 
 ## Build the destination
 
 1. Normalize the plan into `<destination-slug>/trip.json`. Preserve dates, city order, lodging, planned order, and the user's priorities. Use stable kebab-case place IDs and numeric day/place order.
-2. Add `<destination-slug>/index.html` from the existing destination entry and add one card to the root travel hub. Keep shared UI and runtime in `src/`; put destination facts in the destination JSON.
+2. Add `<destination-slug>/index.html` from the existing destination entry and add one card to the root travel hub. Keep shared UI and runtime in `src/`; put destination facts in the destination JSON. Do not create a destination-specific dashboard or alternate CSS when the shared template already exists.
 3. Give every place exactly one existing category: `photo`, `restaurant`, `cafe`, `hotel`, `station`, `airport`, or `logistics`. Reuse the category icon, accent, tint, and legend so lodging, photo spots, food, transit, and luggage are distinguishable at a glance.
 4. Resolve place links in this order: user-provided Google Maps URL, exact official place result, then an exact Google Maps search link. Extract coordinates only from an exact pin. If a lodging link is described as “같아”, “추정”, or similar, keep `check_required` and say so in the address/notes.
 5. Research and store, when available: address, hours/last order, closed days, price, admission, reservation status, menu, representative image, and `infoSourceUrl`. If the user names a site, inspect that site and preserve its page URL as the source. Use official pages, exact Google Maps listings, official tourism/reservation pages, and reliable local sources for operational facts; use Namu Wiki or similar encyclopedic pages as supplementary context and cross-check hours, prices, closures, and booking facts elsewhere. Keep hours and closed days as separate fields. For every restaurant/cafe, provide `closedDays`; use visible `확인 필요` when no reliable source confirms it. Never turn an approximate fact into a confirmed one.
@@ -25,7 +25,11 @@ Read `README.md`, the nearest `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `src/Prototyp
 
 For the exact JSON fields, allowed values, uncertainty rules, and menu example, read [references/trip-data-contract.md](references/trip-data-contract.md). For the copyable short input and prompt, use the `README.md` section “가장 쉬운 입력 방법 (권장)”.
 
+For the required visual hierarchy, tokens, responsive behavior, and prohibited design drift, read [references/design-system.md](references/design-system.md). A new destination should look like the current Kyoto/Kobe app with different content, not like a new generic travel dashboard.
+
 ## UI and asset rules
+
+Read [references/design-system.md](references/design-system.md) before creating or changing app-owned UI. It is the visual source of truth for every destination. If a user supplies a screenshot of a generated app with a different green dashboard design, treat it as a regression example to fix, not as the template to copy.
 
 Keep the existing mobile runtime intact. Build app-owned UI only in `src/Prototype.tsx` and `src/prototype.css`; do not edit `src/mobile/`, device assets, or other protected runtime files unless the user explicitly asks for a runtime change. Use `MobileScroll` for moving content and `BottomSheet` for phone-scoped detail sheets.
 
@@ -36,6 +40,8 @@ Keep the existing mobile runtime intact. Build app-owned UI only in `src/Prototy
 - Detail sheets must have their own scroll container and remain scrollable when menus, photos, alternatives, or notes make the content tall. Check both the first and last scroll positions.
 - Show closure days as a dedicated, visually distinct field in cards and detail sheets. `확인 필요` must look like an uncertainty state, not like a confirmed weekly closure.
 - Resolve local image paths through `import.meta.env.BASE_URL` so development and GitHub Pages use the same asset path. Remote image failures must fall back without broken-image placeholders.
+
+The visual parity gate is mandatory: preserve the Pretendard-first type scale, pale background, white bordered cards, category accent colors/icons, header + DAY tabs, sticky route map, four-item bottom navigation, and phone-scoped detail sheet.
 
 For local images, store files under `public/assets/` and resolve paths through `import.meta.env.BASE_URL` so both local development and GitHub Pages work. Never use a guessed remote image URL just to fill a blank space. Make card/detail image loading resilient and keep Japanese and Korean menu lines readable without clipping.
 
@@ -49,7 +55,7 @@ Run these checks after data or UI changes:
 - `npm run test:sites`
 - `git diff --check`
 
-Open the local app in a mobile frame and inspect every day, at least one lodging detail, one restaurant menu with Japanese/Korean lines and food thumbnails, one alternative restaurant, map/directions links, representative-image fallback behavior, closure-day display, the first/last scroll positions, manual edit/add/delete behavior, and actual-only filtering. Ensure no header, card content, image, or bottom navigation is clipped at narrow widths.
+Open the local app in a mobile frame and inspect every day, at least one lodging detail, one restaurant menu with Japanese/Korean lines and food thumbnails, one alternative restaurant, map/directions links, representative-image fallback behavior, closure-day display, the first/last scroll positions, manual edit/add/delete behavior, and actual-only filtering. Verify the visual contract: a marker focuses the card without opening the sheet, a card opens the sheet, the route map stays sticky below header/tabs, category colors/icons are consistent, and no header, card content, image, or bottom navigation is clipped at narrow widths. Refresh `public/assets/readme/` snapshots with `scripts/capture-readme-screenshots.mjs` after substantial UI changes.
 
 Only commit and push when the user asks to publish/deploy (or has already explicitly requested deployment for the current trip). GitHub Pages is a static site: preserve `.github/workflows/deploy-pages.yml` and the `dist/client` artifact. The Vite build base must derive from `GITHUB_REPOSITORY` or an explicit `VITE_BASE_PATH`: ordinary repositories use `/<repository-name>/`, while `<username>.github.io` repositories use `/`. Never hardcode the owner's GitHub username or the current repository name into the app. Destination URLs are `/<repository-name>/<destination-slug>/` for project repositories and `/<destination-slug>/` for user-page repositories. When publishing, monitor the GitHub Pages workflow to completion, open the public URL with a cache-busting query, and report unresolved `확인 필요` items. Do not claim deployment from a local build alone.
 

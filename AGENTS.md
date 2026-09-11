@@ -76,3 +76,7 @@ When any text-entry control loses focus, dismiss the simulated keyboard. If the 
 ## Cross-model travel workflow
 
 When a user supplies a travel plan, PRD, notes, screenshots, or place research and asks to create or update a trip, read and follow `.agents/skills/travel-map-builder/SKILL.md` and its linked data contract. This repository also exposes the same workflow through `.claude/skills/travel-map-builder/` and `.gemini/skills/travel-map-builder/` for Claude Code and Gemini CLI. Treat the user's current request as authoritative, keep uncertain research marked for confirmation, and publish only when the user explicitly requests it.
+
+## Travel app visual contract
+
+The current Kyoto/Kobe app is the reusable visual baseline for every destination. Before creating a new trip, read `.agents/skills/travel-map-builder/references/design-system.md`. Keep the shared header, DAY tabs, sticky route map, category-colored itinerary cards, phone-scoped detail sheet, bottom navigation, Pretendard-first typography, spacing, and responsive behavior. A destination folder owns data and its entry point; it must not introduce a separate generic dashboard theme or independent CSS when the shared app engine is available.
