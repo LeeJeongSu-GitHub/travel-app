@@ -311,13 +311,34 @@ function distanceLabel(current: Place, next?: Place) {
   return `직선 약 ${distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`}`;
 }
 
-function createNumberIcon(label: string, selected: boolean, optional: boolean, color: string) {
+function createNumberIcon(label: string, selected: boolean, optional: boolean, color: string, offsetX = 0) {
   return L.divIcon({
     className: "number-marker-icon",
     html: `<span class="number-marker ${selected ? "is-selected" : ""} ${optional ? "is-optional" : ""}" style="--marker-color:${color}">${label}</span>`,
     iconSize: [36, 36],
-    iconAnchor: [18, 18],
+    iconAnchor: [18 - offsetX, 18],
   });
+}
+
+function duplicateMarkerOffsets(places: MapPlace[]) {
+  const groups = new Map<string, MapPlace[]>();
+  places.forEach((place) => {
+    const point = coordinates(place);
+    if (!point) return;
+    const key = point.map((value) => value.toFixed(5)).join(",");
+    const group = groups.get(key) ?? [];
+    group.push(place);
+    groups.set(key, group);
+  });
+  const offsets = new Map<string, number>();
+  groups.forEach((group) => {
+    if (group.length < 2) return;
+    const center = (group.length - 1) / 2;
+    group.slice().sort((left, right) => left.order - right.order).forEach((place, index) => {
+      offsets.set(place.id, Math.round((index - center) * 40));
+    });
+  });
+  return offsets;
 }
 
 const currentLocationIcon = L.divIcon({ className: "current-location-icon", html: '<span class="current-location-dot" aria-hidden="true"></span>', iconSize: [24, 24], iconAnchor: [12, 12] });
@@ -395,6 +416,7 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, userLocation, o
   const [mapError, setMapError] = useState(false);
   const [isOnline, setIsOnline] = useState(() => navigator.onLine);
   const mapPlaces = places.filter((place) => coordinates(place));
+  const markerOffsets = duplicateMarkerOffsets(mapPlaces);
   const routePoints = routePlaces.map(coordinates).filter((point): point is Coordinate => Boolean(point));
   const center = routePoints[0] ?? [34.9858, 135.7588];
   const handleMapReady = useCallback(() => setMapError(false), []);
@@ -423,7 +445,7 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, userLocation, o
         <ZoomControl position="bottomright" />
         <MapButtons routePlaces={routePlaces} onLocate={requestLocation} />
         {routePoints.length > 1 ? <Polyline positions={routePoints} pathOptions={{ color: "#1457d9", weight: 3, opacity: 0.8, dashArray: "6 8" }} /> : null}
-        {mapPlaces.map((place) => { const point = coordinates(place); if (!point) return null; const color = DAY_COLORS[(place.dayNumber - 1) % DAY_COLORS.length]; const label = mode === "all" ? `${place.dayNumber}·${place.order}` : String(place.order); const Icon = categoryIcons[place.category]; return <Marker key={`${place.id}-${place.order}`} position={point} icon={createNumberIcon(label, selectedPlace?.id === place.id, Boolean(place.optional), color)} eventHandlers={{ click: () => onSelect(place) }} alt={`DAY ${place.dayNumber} ${place.order}번 ${place.name}`}><Tooltip direction="top" offset={[0, -14]} opacity={0.96}><span className="map-tooltip"><Icon size={12} /> {place.name}<small>{categoryLabels[place.category]}</small></span></Tooltip></Marker>; })}
+        {mapPlaces.map((place) => { const point = coordinates(place); if (!point) return null; const color = DAY_COLORS[(place.dayNumber - 1) % DAY_COLORS.length]; const label = mode === "all" ? `${place.dayNumber}·${place.order}` : String(place.order); const Icon = categoryIcons[place.category]; return <Marker key={`${place.id}-${place.order}`} position={point} icon={createNumberIcon(label, selectedPlace?.id === place.id, Boolean(place.optional), color, markerOffsets.get(place.id) ?? 0)} eventHandlers={{ click: () => onSelect(place) }} alt={`DAY ${place.dayNumber} ${place.order}번 ${place.name}`}><Tooltip direction="top" offset={[0, -14]} opacity={0.96}><span className="map-tooltip"><Icon size={12} /> {place.name}<small>{categoryLabels[place.category]}</small></span></Tooltip></Marker>; })}
       </MapContainer>}
       {mapUnavailable ? <button type="button" className="map-retry" onClick={() => { setMapError(false); setIsOnline(navigator.onLine); }}><MapIcon size={15} /> 지도 다시 불러오기</button> : null}
     </div>

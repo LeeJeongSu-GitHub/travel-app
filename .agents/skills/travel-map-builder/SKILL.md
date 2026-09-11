@@ -32,6 +32,7 @@ Keep the existing mobile runtime intact. Build app-owned UI only in `src/Prototy
 - Use shared Pretendard-first typography, consistent heading/button sizing, clear section borders, and category-specific card tints/accent colors.
 - Use container-query and viewport responsive rules. Test real narrow mobile widths as well as the wide simulated phone preview; never rely only on the desktop preview.
 - Reserve space for right-side place previews and controls. Titles, metadata, closure labels, notes, and actions must not slide underneath thumbnails or controls; use min-width constraints and ellipsis/line clamping where needed.
+- If multiple itinerary stops share one coordinate, visually separate their map markers so every stop number remains readable and clickable without changing the stored coordinate or route.
 - Detail sheets must have their own scroll container and remain scrollable when menus, photos, alternatives, or notes make the content tall. Check both the first and last scroll positions.
 - Show closure days as a dedicated, visually distinct field in cards and detail sheets. `확인 필요` must look like an uncertainty state, not like a confirmed weekly closure.
 - Resolve local image paths through `import.meta.env.BASE_URL` so development and GitHub Pages use the same asset path. Remote image failures must fall back without broken-image placeholders.
