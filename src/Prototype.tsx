@@ -1,7 +1,11 @@
-import { useEffect, useMemo, useState, type CSSProperties, type Dispatch, type ReactNode, type SetStateAction } from "react";
-import { MapContainer, Marker, Polyline, TileLayer, Tooltip, ZoomControl, useMap } from "react-leaflet";
+import { useCallback, useEffect, useMemo, useState, type CSSProperties, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import { maplibreGL } from "@maplibre/maplibre-gl-leaflet";
+import { setWorkerUrl } from "maplibre-gl";
+import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+import { MapContainer, Marker, Polyline, Tooltip, ZoomControl, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 import {
   ArrowLeft,
   Bookmark,
@@ -32,6 +36,8 @@ import {
 } from "lucide-react";
 import { BottomSheet, KeyboardTextarea, MobileScroll, useKeyboard } from "./mobile";
 import tripData from "./data/trip.json";
+
+setWorkerUrl(maplibreWorkerUrl);
 
 type Category = "photo" | "restaurant" | "cafe" | "hotel" | "station" | "airport" | "logistics";
 type ReservationStatus = "required" | "recommended" | "not_required" | "check_required" | "completed";
@@ -102,6 +108,18 @@ const reservationLabels: Record<ReservationStatus, string> = {
   check_required: "확인 필요",
   completed: "예약 완료",
 };
+
+const KOREAN_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
+const KOREAN_LABEL_EXPRESSION = [
+  "coalesce",
+  ["get", "name:ko"],
+  ["get", "name:ko-Latn"],
+  ["get", "name:en"],
+  ["get", "name_en"],
+  ["get", "name:latin"],
+  ["get", "name:nonlatin"],
+  ["get", "name"],
+] as const;
 
 function readLocalState(): LocalTripState | null {
   try {
@@ -187,6 +205,38 @@ function MapViewport({ routePlaces, selectedPlace, userLocation }: { routePlaces
   return userLocation ? <Marker position={userLocation} icon={currentLocationIcon} /> : null;
 }
 
+function KoreanMapLayer({ onReady, onError }: { onReady: () => void; onError: () => void }) {
+  const map = useMap();
+
+  useEffect(() => {
+    let active = true;
+    const layer = maplibreGL({ style: KOREAN_MAP_STYLE_URL }).addTo(map);
+    const glMap = layer.getMaplibreMap();
+    const handleLoad = () => {
+      if (!active) return;
+      for (const styleLayer of glMap.getStyle().layers) {
+        if (styleLayer.type !== "symbol" || !styleLayer.layout?.["text-field"]) continue;
+        glMap.setLayoutProperty(styleLayer.id, "text-field", KOREAN_LABEL_EXPRESSION as never);
+      }
+      onReady();
+    };
+    const handleError = (event: { error?: unknown }) => {
+      if (event.error) onError();
+    };
+
+    glMap.on("load", handleLoad);
+    glMap.on("error", handleError);
+    return () => {
+      active = false;
+      glMap.off("load", handleLoad);
+      glMap.off("error", handleError);
+      map.removeLayer(layer);
+    };
+  }, [map, onError, onReady]);
+
+  return null;
+}
+
 function MapButtons({ routePlaces, onLocate }: { routePlaces: MapPlace[]; onLocate: () => void }) {
   const map = useMap();
   const fitRoute = () => {
@@ -206,6 +256,8 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, userLocation, o
   const mapPlaces = places.filter((place) => coordinates(place));
   const routePoints = routePlaces.map(coordinates).filter((point): point is Coordinate => Boolean(point));
   const center = routePoints[0] ?? [34.9858, 135.7588];
+  const handleMapReady = useCallback(() => setMapError(false), []);
+  const handleMapError = useCallback(() => setMapError(true), []);
 
   useEffect(() => {
     const online = () => setIsOnline(true);
@@ -224,8 +276,8 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, userLocation, o
   return <section className={`trip-map ${mode === "all" ? "is-all-map" : ""}`} aria-label={mode === "all" ? "전체 여행 지도" : "오늘 일정 지도"}>
     <div className="map-label-row"><div><span className="eyebrow">ROUTE PREVIEW</span><strong>{mode === "all" ? "전체 경로" : "방문 순서"}</strong></div><span className="map-count">{mapPlaces.length}곳 표시</span></div>
     <div className="map-frame" data-scroll-drag="ignore">
-      {mapUnavailable ? <OfflineMapFallback places={places} onSelect={onSelect} /> : <MapContainer center={center} zoom={13} zoomControl={false} scrollWheelZoom doubleClickZoom className="leaflet-map" aria-label="OpenStreetMap 여행 지도">
-        <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" eventHandlers={{ tileerror: () => setMapError(true), load: () => setMapError(false) }} />
+      {mapUnavailable ? <OfflineMapFallback places={places} onSelect={onSelect} /> : <MapContainer center={center} zoom={13} minZoom={1} zoomControl={false} scrollWheelZoom doubleClickZoom className="leaflet-map" aria-label="한글 여행 지도">
+        <KoreanMapLayer onReady={handleMapReady} onError={handleMapError} />
         <MapViewport routePlaces={routePlaces} selectedPlace={selectedPlace} userLocation={userLocation} />
         <ZoomControl position="bottomright" />
         <MapButtons routePlaces={routePlaces} onLocate={requestLocation} />
