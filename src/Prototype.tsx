@@ -48,7 +48,8 @@ type Coordinate = [number, number];
 type View = "schedule" | "map" | "reservations" | "saved";
 type DayFilter = number | "all";
 type CategoryFilter = Category | "all";
-type MenuItem = { name: string; nameJa?: string; nameKo?: string; price: string; note?: string };
+type MenuImageKey = "ramen" | "gyoza" | "rice" | "udon" | "tempura" | "curry" | "omurice" | "croquette" | "stew" | "soba" | "oyakodon" | "sushi" | "unagi" | "potato-salad" | "steak" | "karaage" | "sausage" | "pilaf" | "beer" | "coffee" | "pudding" | "pancake" | "katsu";
+type MenuItem = { name: string; nameJa?: string; nameKo?: string; price: string; note?: string; imageKey?: MenuImageKey; imageUrl?: string };
 
 type Place = {
   id: string;
@@ -104,6 +105,31 @@ const CATEGORY_COLORS: Record<Category, string> = {
 const CATEGORY_IMAGE_URLS: Partial<Record<Category, string>> = {
   restaurant: "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Shoyu_Ramen%EF%BC%88Tokyo_Ramen%EF%BC%89_-_01.jpg/330px-Shoyu_Ramen%EF%BC%88Tokyo_Ramen%EF%BC%89_-_01.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
   cafe: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Latte_and_dark_coffee.jpg/330px-Latte_and_dark_coffee.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+};
+const MENU_IMAGE_URLS: Record<MenuImageKey, string> = {
+  ramen: "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Shoyu_Ramen%EF%BC%88Tokyo_Ramen%EF%BC%89_-_01.jpg/330px-Shoyu_Ramen%EF%BC%88Tokyo_Ramen%EF%BC%89_-_01.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  gyoza: "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/%E5%8F%B0%E7%81%A3%E5%8D%97%E6%8A%95%E8%8D%89%E5%B1%AF%E6%B0%B4%E9%A4%83Nantou%2C_Taiwan_Caotun_dumplings.jpg/330px-%E5%8F%B0%E7%81%A3%E5%8D%97%E6%8A%95%E8%8D%89%E5%B1%AF%E6%B0%B4%E9%A4%83Nantou%2C_Taiwan_Caotun_dumplings.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  rice: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0a/20201102.Hengnan.Hybrid_rice_Sanyou-1.6.jpg/330px-20201102.Hengnan.Hybrid_rice_Sanyou-1.6.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  udon: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/94/%E9%B6%8F%E5%A4%A9%E3%81%AE%E3%81%86%E3%81%A9%E3%82%93.jpg/330px-%E9%B6%8F%E5%A4%A9%E3%81%AE%E3%81%86%E3%81%A9%E3%82%93.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  tempura: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Tempura_01.jpg/330px-Tempura_01.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  curry: "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/Taj_Mahal_-_Lamb_Curry_Madras.jpg/330px-Taj_Mahal_-_Lamb_Curry_Madras.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  omurice: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0d/Omurice_by_Taimeiken.jpg/330px-Omurice_by_Taimeiken.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  croquette: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Potato_croquettes_001.jpg/330px-Potato_croquettes_001.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  stew: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Lamb-stew.jpg/330px-Lamb-stew.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  soba: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Dried_soba_noodles_by_FotoosVanRobin.jpg/330px-Dried_soba_noodles_by_FotoosVanRobin.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  oyakodon: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/Oyakodon_003.jpg/330px-Oyakodon_003.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  sushi: "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Sushi_platter.jpg/330px-Sushi_platter.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  unagi: "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/%E5%B0%8F%E5%B7%9D%E8%8F%8A%E9%B0%BB%E9%AD%9A_%2849287165332%29.jpg/330px-%E5%B0%8F%E5%B7%9D%E8%8F%8A%E9%B0%BB%E9%AD%9A_%2849287165332%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  "potato-salad": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Potato_salad_%281%29.jpg/330px-Potato_salad_%281%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  steak: "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Steak_with_shitaki_mushrooms.jpg/330px-Steak_with_shitaki_mushrooms.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  karaage: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Chicken_karaage_003.jpg/330px-Chicken_karaage_003.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  sausage: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/Wurstplatte.jpg/330px-Wurstplatte.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  pilaf: "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Afghan_Palo.jpg/330px-Afghan_Palo.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  beer: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Jeju_beer_09_%28cropped%29.jpg/330px-Jeju_beer_09_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  coffee: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Latte_and_dark_coffee.jpg/330px-Latte_and_dark_coffee.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  pudding: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/Flan_2.jpg/330px-Flan_2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  pancake: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Foodiesfeed.com_pouring-honey-on-pancakes-with-walnuts.jpg/330px-Foodiesfeed.com_pouring-honey-on-pancakes-with-walnuts.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+  katsu: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Matsunoya_W_Mega_Chicken_Katsu_Set_20200923-04.jpg/330px-Matsunoya_W_Mega_Chicken_Katsu_Set_20200923-04.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
 };
 const categoryLabels: Record<Category, string> = {
   photo: "사진 명소",
@@ -218,6 +244,29 @@ function mapTileUrl(point: Coordinate, zoom = 15) {
   const latitude = (point[0] * Math.PI) / 180;
   const y = Math.floor(((1 - Math.asinh(Math.tan(latitude)) / Math.PI) / 2) * scale);
   return `https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`;
+}
+
+function menuImageUrl(item: MenuItem) {
+  return item.imageUrl ?? (item.imageKey ? MENU_IMAGE_URLS[item.imageKey] : undefined);
+}
+
+function useMenuImagePreviews(items: MenuItem[], open: boolean) {
+  useEffect(() => {
+    if (!open || !items.length) return;
+    const lists = Array.from(document.querySelectorAll<HTMLElement>(".detail-sheet-content .menu-list"));
+    const list = lists.at(-1);
+    if (!list) return;
+    const rows = Array.from(list.children).filter((row): row is HTMLElement => row instanceof HTMLElement);
+    rows.forEach((row, index) => {
+      const imageUrl = menuImageUrl(items[index]);
+      row.classList.toggle("has-menu-image", Boolean(imageUrl));
+      if (imageUrl) row.style.setProperty("--menu-image", 'url("' + imageUrl + '")');
+    });
+    return () => rows.forEach((row) => {
+      row.classList.remove("has-menu-image");
+      row.style.removeProperty("--menu-image");
+    });
+  }, [items, open]);
 }
 
 function PlacePreview({ place }: { place: Place }) {
@@ -438,6 +487,7 @@ function EditablePlaceDetailSheet({ place, day, open, onClose, note, onNoteChang
 }
 
 function PlaceDetailSheet({ place, day, open, onClose, note, onNoteChange, completed, favorite, onToggleComplete, onToggleFavorite, onEdit, onDelete }: { place: Place | null; day: TripDay | undefined; open: boolean; onClose: () => void; note: string; onNoteChange: (note: string) => void; completed: boolean; favorite: boolean; onToggleComplete: () => void; onToggleFavorite: () => void; onEdit: () => void; onDelete: () => void }) {
+  useMenuImagePreviews(place?.menu ?? [], open);
   return <EditablePlaceDetailSheet place={place} day={day} open={open} onClose={onClose} note={note} onNoteChange={onNoteChange} completed={completed} favorite={favorite} onToggleComplete={onToggleComplete} onToggleFavorite={onToggleFavorite} onEdit={onEdit} onDelete={onDelete} />;
 }
 

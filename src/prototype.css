@@ -1782,7 +1782,25 @@
 .menu-list > div {
   align-items: flex-start;
   min-height: 52px;
+  position: relative;
   background: #fcfdff;
+}
+
+.menu-list > div.has-menu-image {
+  padding-left: 72px;
+}
+
+.menu-list > div.has-menu-image::before {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 9px;
+  background: var(--menu-image) center / cover no-repeat, linear-gradient(145deg, #edf3f7, #dbe6ef);
+  box-shadow: 0 2px 6px rgba(31, 54, 83, 0.12);
+  content: "";
 }
 
 .menu-list > div > span {
