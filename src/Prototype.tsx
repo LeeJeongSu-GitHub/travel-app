@@ -411,7 +411,7 @@ function OfflineMapFallback({ places, onSelect }: { places: MapPlace[]; onSelect
   return <div className="offline-map" role="status"><div className="offline-map-icon"><MapIcon size={20} /></div><strong>지도를 불러올 수 없습니다</strong><p>저장된 일정과 주소는 계속 확인할 수 있어요.</p><div className="offline-place-list">{places.filter((place) => !place.optional).slice(0, 5).map((place) => <button type="button" key={place.id} onClick={() => onSelect(place)}><span className="offline-place-number" style={{ "--number-color": CATEGORY_COLORS[place.category] } as CSSProperties}>{place.order}</span><span>{place.name}</span><ChevronRight size={15} /></button>)}</div></div>;
 }
 
-function TripMap({ places, routePlaces, selectedPlace, onSelect, userLocation, onUserLocation, mode = "day" }: { places: MapPlace[]; routePlaces: MapPlace[]; selectedPlace: Place | null; onSelect: (place: MapPlace) => void; userLocation: Coordinate | null; onUserLocation: (location: Coordinate) => void; mode?: "day" | "all" }) {
+function TripMap({ places, routePlaces, selectedPlace, onSelect, onMarkerSelect, userLocation, onUserLocation, mode = "day" }: { places: MapPlace[]; routePlaces: MapPlace[]; selectedPlace: Place | null; onSelect: (place: MapPlace) => void; onMarkerSelect?: (place: MapPlace) => void; userLocation: Coordinate | null; onUserLocation: (location: Coordinate) => void; mode?: "day" | "all" }) {
   const [mapError, setMapError] = useState(false);
   const [isOnline, setIsOnline] = useState(() => navigator.onLine);
   const mapPlaces = places.filter((place) => coordinates(place));
@@ -435,7 +435,7 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, userLocation, o
   };
   const mapUnavailable = !isOnline || mapError;
 
-  return <section className={`trip-map ${mode === "all" ? "is-all-map" : ""}`} aria-label={mode === "all" ? "전체 여행 지도" : "오늘 일정 지도"}>
+  return <section className={`trip-map ${mode === "all" ? "is-all-map" : "is-schedule-map"}`} aria-label={mode === "all" ? "전체 여행 지도" : "오늘 일정 지도"}>
     <div className="map-label-row"><div><span className="eyebrow">ROUTE PREVIEW</span><strong>{mode === "all" ? "전체 경로" : "방문 순서"}</strong></div><span className="map-count">{mapPlaces.length}곳 표시</span></div>
     <div className="map-frame" data-scroll-drag="ignore">
       {mapUnavailable ? <OfflineMapFallback places={places} onSelect={onSelect} /> : <MapContainer center={center} zoom={13} minZoom={1} zoomControl={false} scrollWheelZoom doubleClickZoom className="leaflet-map" aria-label="한글 여행 지도">
@@ -444,7 +444,7 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, userLocation, o
         <ZoomControl position="bottomright" />
         <MapButtons routePlaces={routePlaces} onLocate={requestLocation} />
         {routePoints.length > 1 ? <Polyline positions={routePoints} pathOptions={{ color: "#1457d9", weight: 3, opacity: 0.8, dashArray: "6 8" }} /> : null}
-        {mapPlaces.map((place) => { const point = coordinates(place); if (!point) return null; const color = CATEGORY_COLORS[place.category]; const label = mode === "all" ? `${place.dayNumber}·${place.order}` : String(place.order); const Icon = categoryIcons[place.category]; return <Marker key={`${place.id}-${place.order}`} position={point} icon={createNumberIcon(label, selectedPlace?.id === place.id, Boolean(place.optional), color, markerOffsets.get(place.id) ?? 0)} eventHandlers={{ click: () => onSelect(place) }} alt={`DAY ${place.dayNumber} ${place.order}번 ${place.name}`}><Tooltip direction="top" offset={[0, -14]} opacity={0.96}><span className="map-tooltip"><Icon size={12} /> {place.name}<small>{categoryLabels[place.category]}</small></span></Tooltip></Marker>; })}
+        {mapPlaces.map((place) => { const point = coordinates(place); if (!point) return null; const color = CATEGORY_COLORS[place.category]; const label = mode === "all" ? `${place.dayNumber}·${place.order}` : String(place.order); const Icon = categoryIcons[place.category]; return <Marker key={`${place.id}-${place.order}`} position={point} icon={createNumberIcon(label, selectedPlace?.id === place.id, Boolean(place.optional), color, markerOffsets.get(place.id) ?? 0)} eventHandlers={{ click: () => (onMarkerSelect ?? onSelect)(place) }} alt={`DAY ${place.dayNumber} ${place.order}번 ${place.name}`}><Tooltip direction="top" offset={[0, -14]} opacity={0.96}><span className="map-tooltip"><Icon size={12} /> {place.name}<small>{categoryLabels[place.category]}</small></span></Tooltip></Marker>; })}
       </MapContainer>}
       {mapUnavailable ? <button type="button" className="map-retry" onClick={() => { setMapError(false); setIsOnline(navigator.onLine); }}><MapIcon size={15} /> 지도 다시 불러오기</button> : null}
     </div>
@@ -547,7 +547,7 @@ function PlaceDetailSheet({ place, day, open, onClose, note, onNoteChange, compl
   return <EditablePlaceDetailSheet place={place} day={day} open={open} onClose={onClose} note={note} onNoteChange={onNoteChange} completed={completed} favorite={favorite} onToggleComplete={onToggleComplete} onToggleFavorite={onToggleFavorite} onEdit={onEdit} onDelete={onDelete} />;
 }
 
-function ScheduleView({ activeDay, selectedPlace, selectedPlaceId, showAlternatives, setShowAlternatives, actualOnly, onToggleActualOnly, onAddPlace, onSelectPlace, onToggleComplete, onToggleFavorite, completedIds, favoriteIds, userLocation, onUserLocation, onDayChange }: { activeDay: TripDay; selectedPlace: Place | null; selectedPlaceId: string | null; showAlternatives: boolean; setShowAlternatives: (show: boolean) => void; actualOnly: boolean; onToggleActualOnly: () => void; onAddPlace: () => void; onSelectPlace: (place: MapPlace) => void; onToggleComplete: (id: string) => void; onToggleFavorite: (id: string) => void; completedIds: string[]; favoriteIds: string[]; userLocation: Coordinate | null; onUserLocation: (location: Coordinate) => void; onDayChange: (day: number) => void }) {
+function ScheduleView({ activeDay, selectedPlace, selectedPlaceId, showAlternatives, setShowAlternatives, actualOnly, onToggleActualOnly, onAddPlace, onSelectPlace, onFocusPlace, onToggleComplete, onToggleFavorite, completedIds, favoriteIds, userLocation, onUserLocation, onDayChange }: { activeDay: TripDay; selectedPlace: Place | null; selectedPlaceId: string | null; showAlternatives: boolean; setShowAlternatives: (show: boolean) => void; actualOnly: boolean; onToggleActualOnly: () => void; onAddPlace: () => void; onSelectPlace: (place: MapPlace) => void; onFocusPlace: (place: MapPlace) => void; onToggleComplete: (id: string) => void; onToggleFavorite: (id: string) => void; completedIds: string[]; favoriteIds: string[]; userLocation: Coordinate | null; onUserLocation: (location: Coordinate) => void; onDayChange: (day: number) => void }) {
   const primaryPlaces = activeDay.places.filter((place) => !place.optional);
   const restaurantAlternatives = activeDay.places.filter((place) => place.optional && place.category === "restaurant");
   const otherAlternatives = activeDay.places.filter((place) => place.optional && place.category !== "restaurant");
@@ -569,7 +569,7 @@ function ScheduleView({ activeDay, selectedPlace, selectedPlaceId, showAlternati
           <label className="alternative-toggle"><input type="checkbox" checked={showAlternatives} onChange={(event) => setShowAlternatives(event.target.checked)} /><span className="toggle-track" /><span>대체 후보</span></label>
         </div>
       </section>
-      <TripMap places={primaryPlaces.map(withDay)} routePlaces={primaryPlaces.map(withDay)} selectedPlace={selectedPlace} onSelect={onSelectPlace} userLocation={userLocation} onUserLocation={onUserLocation} />
+      <TripMap places={primaryPlaces.map(withDay)} routePlaces={primaryPlaces.map(withDay)} selectedPlace={selectedPlace} onSelect={onSelectPlace} onMarkerSelect={onFocusPlace} userLocation={userLocation} onUserLocation={onUserLocation} />
       <section className="itinerary-section" aria-label={`${activeDay.dayOfMonth}일 일정 목록`}>
         <div className="section-heading"><div><span className="eyebrow">{primaryPlaces.length} STOPS</span><h2>{actualOnly ? "실제 방문 기록" : "오늘의 동선"}</h2></div><span className="section-hint">체크=실제 방문</span></div>
         <CategoryLegend />
@@ -642,6 +642,21 @@ export default function Prototype() {
   useEffect(() => { if ("serviceWorker" in navigator) navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => undefined); }, []);
 
   const selectDay = (dayOfMonth: number) => { const nextDay = visibleDays.find((day) => day.dayOfMonth === dayOfMonth); if (!nextDay) return; setSelectedDay(dayOfMonth); setSelectedPlaceId(nextDay.places[0]?.id ?? null); setView("schedule"); setSheetOpen(false); };
+  const focusPlace = (place: MapPlace) => {
+    setSelectedDay(place.dayOfMonth);
+    setSelectedPlaceId(place.id);
+    setView("schedule");
+    setSheetOpen(false);
+    window.setTimeout(() => {
+      const card = document.getElementById(`place-${place.id}`);
+      const map = document.querySelector<HTMLElement>(".trip-map.is-schedule-map");
+      const scroll = document.querySelector<HTMLElement>('[data-testid="mobile-scroll"]');
+      if (!card || !map || !scroll) return;
+      const targetTop = map.getBoundingClientRect().bottom + 12;
+      const nextScrollTop = scroll.scrollTop + card.getBoundingClientRect().top - targetTop;
+      scroll.scrollTo(0, Math.max(0, nextScrollTop));
+    }, 120);
+  };
   const selectPlace = (place: MapPlace) => { setSelectedDay(place.dayOfMonth); setSelectedPlaceId(place.id); setSheetOpen(true); window.setTimeout(() => document.getElementById(`place-${place.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 50); };
   const toggleId = (setIds: Dispatch<SetStateAction<string[]>>, id: string) => { setIds((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]); };
   const openEditor = (place: MapPlace | null = null) => { setSheetOpen(false); window.setTimeout(() => { setEditorPlace(place); setEditorOpen(true); }, 180); };
@@ -673,7 +688,7 @@ export default function Prototype() {
     setSelectedPlaceId(null);
     setSheetOpen(false);
   };
-  const appContent: ReactNode = view === "schedule" ? <ScheduleView activeDay={activeDay} selectedPlace={selectedPlace} selectedPlaceId={selectedPlaceId} showAlternatives={showAlternatives} setShowAlternatives={setShowAlternatives} actualOnly={actualOnly} onToggleActualOnly={() => { setActualOnly((current) => !current); setSheetOpen(false); }} onAddPlace={() => openEditor()} onSelectPlace={selectPlace} onToggleComplete={(id) => toggleId(setCompletedIds, id)} onToggleFavorite={(id) => toggleId(setFavoriteIds, id)} completedIds={completedIds} favoriteIds={favoriteIds} userLocation={userLocation} onUserLocation={setUserLocation} onDayChange={selectDay} /> : view === "map" ? <AllMapView allPlaces={allPlaces} selectedPlace={selectedPlace} onSelectPlace={selectPlace} onUserLocation={setUserLocation} userLocation={userLocation} /> : view === "reservations" ? <ReservationsView places={allPlaces} reservationDoneIds={reservationDoneIds} onToggleReservation={(id) => toggleId(setReservationDoneIds, id)} onSelectPlace={selectPlace} /> : <SavedView places={allPlaces} favoriteIds={favoriteIds} notes={notes} onSelectPlace={selectPlace} />;
+  const appContent: ReactNode = view === "schedule" ? <ScheduleView activeDay={activeDay} selectedPlace={selectedPlace} selectedPlaceId={selectedPlaceId} showAlternatives={showAlternatives} setShowAlternatives={setShowAlternatives} actualOnly={actualOnly} onToggleActualOnly={() => { setActualOnly((current) => !current); setSheetOpen(false); }} onAddPlace={() => openEditor()} onSelectPlace={selectPlace} onFocusPlace={focusPlace} onToggleComplete={(id) => toggleId(setCompletedIds, id)} onToggleFavorite={(id) => toggleId(setFavoriteIds, id)} completedIds={completedIds} favoriteIds={favoriteIds} userLocation={userLocation} onUserLocation={setUserLocation} onDayChange={selectDay} /> : view === "map" ? <AllMapView allPlaces={allPlaces} selectedPlace={selectedPlace} onSelectPlace={selectPlace} onUserLocation={setUserLocation} userLocation={userLocation} /> : view === "reservations" ? <ReservationsView places={allPlaces} reservationDoneIds={reservationDoneIds} onToggleReservation={(id) => toggleId(setReservationDoneIds, id)} onSelectPlace={selectPlace} /> : <SavedView places={allPlaces} favoriteIds={favoriteIds} notes={notes} onSelectPlace={selectPlace} />;
 
   return <div className="trip-app"><MobileScroll className="trip-scroll"><div className="trip-scroll-content"><AppHeader view={view} menuOpen={menuOpen} setMenuOpen={setMenuOpen} setView={setView} />{appContent}</div></MobileScroll><BottomNav view={view} setView={(nextView) => { setView(nextView); setMenuOpen(false); }} /><PlaceDetailSheet place={selectedPlace} day={selectedPlaceDay} open={sheetOpen} onClose={() => setSheetOpen(false)} note={selectedPlace ? notes[selectedPlace.id] ?? "" : ""} onNoteChange={(note) => { if (selectedPlace) setNotes((current) => ({ ...current, [selectedPlace.id]: note })); }} completed={selectedPlace ? completedIds.includes(selectedPlace.id) : false} favorite={selectedPlace ? favoriteIds.includes(selectedPlace.id) : false} onToggleComplete={() => { if (selectedPlace) toggleId(setCompletedIds, selectedPlace.id); }} onToggleFavorite={() => { if (selectedPlace) toggleId(setFavoriteIds, selectedPlace.id); }} onEdit={() => { if (selectedPlace) openEditor(selectedPlace); }} onDelete={deleteSelectedPlace} /><PlaceEditorSheet place={editorPlace} open={editorOpen} completed={editorPlace ? completedIds.includes(editorPlace.id) : false} onClose={() => { setEditorOpen(false); setEditorPlace(null); }} onSave={savePlaceDraft} /></div>;
 }

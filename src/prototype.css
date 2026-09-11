@@ -16,6 +16,8 @@
 }
 
 .trip-app {
+  --trip-header-height: 104px;
+  --day-tabs-sticky-height: 80px;
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -290,6 +292,14 @@
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.72);
   box-shadow: 0 5px 16px rgba(28, 53, 87, 0.045);
+}
+
+.trip-map.is-schedule-map {
+  position: sticky;
+  top: calc(var(--trip-header-height) + var(--day-tabs-sticky-height));
+  z-index: 8;
+  background: var(--paper);
+  box-shadow: 0 10px 22px rgba(28, 53, 87, 0.1);
 }
 
 .map-label-row {
@@ -588,7 +598,7 @@
 
 .day-tabs {
   position: sticky;
-  top: 104px;
+  top: var(--trip-header-height);
   z-index: 9;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -667,7 +677,11 @@
 }
 
 .full-screen-screen .day-tabs {
-  top: 64px;
+  top: var(--trip-header-height);
+}
+
+.full-screen-screen .trip-app {
+  --trip-header-height: 64px;
 }
 
 .alternatives-section {
