@@ -72,3 +72,7 @@ When any text-entry control loses focus, dismiss the simulated keyboard. If the 
 - Fixed phone chrome should not animate with pushed screens. Screen content can animate; the status bar, camera cutout, and preview chrome should stay put.
 - Keep the keyboard below the home indicator/safe area layer in z-index, and above ordinary app UI while visible.
 - Keep the home indicator as the topmost safe-area layer in the z-index above everything else in the prototype.
+
+## Cross-model travel workflow
+
+When a user supplies a travel plan, PRD, notes, screenshots, or place research and asks to create or update a trip, read and follow `.agents/skills/travel-map-builder/SKILL.md` and its linked data contract. This repository also exposes the same workflow through `.claude/skills/travel-map-builder/` and `.gemini/skills/travel-map-builder/` for Claude Code and Gemini CLI. Treat the user's current request as authoritative, keep uncertain research marked for confirmation, and publish only when the user explicitly requests it.
