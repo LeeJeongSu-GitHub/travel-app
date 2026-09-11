@@ -110,6 +110,7 @@ prompts/
 - 사용자 페이지 저장소의 여행 앱: `https://<github-id>.github.io/<destination-slug>/`
 - Actions workflow: [`.github/workflows/deploy-pages.yml`](./.github/workflows/deploy-pages.yml)
 - 빌드 결과: `dist/client`
+- 여러 여행 폴더를 Pages에 포함하기 위해 workflow가 `vite.pages.config.ts`로 `index.html`·`trip.json`이 함께 있는 목적지 폴더를 자동 발견합니다.
 
 복사한 저장소에서 최초 1회만 `Settings → Pages → Build and deployment → Source`를 `GitHub Actions`로 설정하세요. 이후 각자의 `main`에 push하거나 Actions의 `Deploy to GitHub Pages`를 수동 실행하면 본인 GitHub Pages에 빌드·배포됩니다.
 
