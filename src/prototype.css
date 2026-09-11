@@ -17,7 +17,8 @@
 
 .trip-app {
   --trip-header-height: 110px;
-  --day-tabs-sticky-height: 80px;
+  --day-tabs-header-gap: 10px;
+  --day-tabs-sticky-height: 90px;
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -598,12 +599,12 @@
 
 .day-tabs {
   position: sticky;
-  top: var(--trip-header-height);
+  top: calc(var(--trip-header-height) + var(--day-tabs-header-gap));
   z-index: 9;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 5px;
-  margin: 0 14px 16px;
+  margin: var(--day-tabs-header-gap) 14px 16px;
   padding: 6px 8px;
   border: 1px solid #dfe6f0;
   border-radius: 16px;
@@ -677,7 +678,7 @@
 }
 
 .full-screen-screen .day-tabs {
-  top: var(--trip-header-height);
+  top: calc(var(--trip-header-height) + var(--day-tabs-header-gap));
 }
 
 .full-screen-screen .trip-app {
