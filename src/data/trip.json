@@ -52,6 +52,17 @@
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Honke+Daiichi+Asahi+Kyoto",
           "reservationStatus": "not_required",
           "menuPoint": "교토역 라멘",
+          "hours": "06:00–익일 01:00 · 목요일 휴무",
+          "price": "¥780–¥1,230",
+          "admission": "해당 없음",
+          "menu": [
+            { "name": "라멘", "price": "¥980" },
+            { "name": "특제 라멘", "price": "¥1,230" },
+            { "name": "교자 6개", "price": "¥350" },
+            { "name": "라이스(소)", "price": "¥200" }
+          ],
+          "operatingNote": "JR 교토역에서 도보 약 4분. 대기가 생길 수 있습니다.",
+          "infoSourceUrl": "https://www.honke-daiichiasahi.com/shop.html",
           "notes": "1순위 저녁 · 대기가 길면 교토역 라멘코지로 변경"
         },
         {
@@ -102,6 +113,11 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Kiyomizu-dera+Kyoto",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Kiyomizu-dera+Kyoto",
           "reservationStatus": "not_required",
+          "hours": "06:00 개문 · 폐문 시간은 계절·행사별 변동",
+          "price": "¥500 전후",
+          "admission": "성인 ¥500 전후 · 초중학생 ¥200 전후",
+          "operatingNote": "특별 야간관람 기간에는 시간과 요금이 달라질 수 있습니다.",
+          "infoSourceUrl": "https://www.kiyomizudera.or.jp/en/location/",
           "photoPoint": "목조 무대 · 이른 아침 인파 없는 전경",
           "notes": "대표 사찰 전경을 가장 먼저 촬영"
         },
@@ -118,6 +134,9 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Sannenzaka+Kyoto",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Sannenzaka+Kyoto",
           "reservationStatus": "not_required",
+          "hours": "야외 거리 상시 관람",
+          "price": "무료",
+          "admission": "무료 야외 관람",
           "photoPoint": "골목 원근감 · 전통가옥",
           "notes": "청수사에서 걸어서 이어지는 골목"
         },
@@ -134,6 +153,9 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Yasaka+Pagoda+Kyoto",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Yasaka+Pagoda+Kyoto",
           "reservationStatus": "not_required",
+          "hours": "야외 관람 · 탑 내부 공개는 별도 확인",
+          "price": "무료",
+          "admission": "무료 야외 관람",
           "photoPoint": "탑과 골목이 만나는 구도",
           "notes": "산넨자카에서 자연스럽게 연결"
         },
@@ -150,6 +172,9 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Gion+Shirakawa+Kyoto",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Gion+Shirakawa+Kyoto",
           "reservationStatus": "not_required",
+          "hours": "야외 거리 상시 관람",
+          "price": "무료",
+          "admission": "무료 야외 관람",
           "photoPoint": "수변 · 다리 · 전통 건축",
           "notes": "아침빛이 남아 있을 때 수변 장면 촬영"
         },
@@ -166,6 +191,9 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Nanzenji+Suirokaku+Kyoto",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Nanzenji+Suirokaku+Kyoto",
           "reservationStatus": "not_required",
+          "hours": "야외 관람 · 주변 사찰 운영 변동",
+          "price": "무료 구간 있음",
+          "admission": "수로각 주변 무료 · 사찰 유료 구역 별도",
           "photoPoint": "붉은 벽돌 아치 · 반복 프레임",
           "notes": "기온에서 이동 후 반복되는 아치 프레임"
         },
@@ -184,6 +212,17 @@
           "reservationStatus": "required",
           "reservationUrl": "https://www.google.com/maps/search/?api=1&query=Yamamoto+Menzo+Kyoto",
           "menuPoint": "우동",
+          "hours": "월·화·금 10:00–16:00 · 수 10:00–15:30 · 토·일·공휴일 10:00–17:00",
+          "price": "약 ¥950–¥1,250",
+          "admission": "해당 없음",
+          "menu": [
+            { "name": "土ごぼう天ざるうどん", "price": "약 ¥1,000~" },
+            { "name": "土ごぼう天うどん", "price": "약 ¥1,200" },
+            { "name": "鶏ささみ天うどん", "price": "약 ¥1,250" },
+            { "name": "京カレーのつけ麺", "price": "약 ¥950" }
+          ],
+          "operatingNote": "목요일·부정기 휴무, 면 소진 시 조기 종료. 예약 후에도 현장 대기가 생길 수 있습니다.",
+          "infoSourceUrl": "https://yamamotomenzou.com/about.html",
           "notes": "1순위 점심 · 대체는 곤타로 오카자키점"
         },
         {
@@ -199,6 +238,9 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Pontocho+Kyoto",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Pontocho+Kyoto",
           "reservationStatus": "not_required",
+          "hours": "야외 골목 상시 관람 · 점포별 상이",
+          "price": "무료",
+          "admission": "무료 야외 관람",
           "photoPoint": "좁은 골목과 저녁 전 빛",
           "notes": "저녁 식사 전 산책·스냅"
         },
@@ -217,6 +259,17 @@
           "reservationStatus": "required",
           "reservationUrl": "https://www.google.com/maps/search/?api=1&query=Kichi+Kichi+Kyoto",
           "menuPoint": "오므라이스",
+          "hours": "평일 17:00–21:00 · 토·일·공휴일 12:00–14:00 / 17:00–21:00",
+          "price": "¥2,000–¥4,000",
+          "admission": "해당 없음",
+          "menu": [
+            { "name": "키치키치 오므라이스(스몰)", "price": "¥2,000" },
+            { "name": "키치키치 오므라이스", "price": "¥3,000" },
+            { "name": "오늘의 크림 고로케", "price": "¥2,000" },
+            { "name": "비프 스튜", "price": "¥4,000" }
+          ],
+          "operatingNote": "예약제·부정기 휴무. 방문 전 예약 가능 여부를 확인하세요.",
+          "infoSourceUrl": "https://kichikichi.com/en/menu/",
           "notes": "1순위 저녁 · 대체는 사시스 교토 가와라마치"
         },
         {
@@ -243,6 +296,10 @@
           "address": "Sagaogurayama Tabuchiyamacho, Ukyo Ward, Kyoto",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Arashiyama+Bamboo+Forest+Kyoto",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Arashiyama+Bamboo+Forest+Kyoto",
+          "hours": "야외 산책로 상시 관람",
+          "price": "무료",
+          "admission": "무료 야외 관람 · 주변 시설 별도",
+          "operatingNote": "이른 아침에도 이동 가능하지만 현지 통행·매너를 지켜주세요.",
           "optional": true,
           "notes": "대체 코스 · 기본 Route에는 포함하지 않음"
         },
@@ -257,6 +314,11 @@
           "address": "1 Kinkakujicho, Kita Ward, Kyoto",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Kinkakuji+Kyoto",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Kinkakuji+Kyoto",
+          "hours": "09:00–17:00 · 연중무휴",
+          "price": "성인 ¥500 · 초중학생 ¥300",
+          "admission": "성인 ¥500 · 초중학생 ¥300",
+          "operatingNote": "특별 전시 시 시간·요금이 달라질 수 있습니다.",
+          "infoSourceUrl": "https://www.shokoku-ji.jp/en/kinkakuji/access/",
           "optional": true,
           "notes": "대체 코스 · 기본 Route에는 포함하지 않음"
         },
@@ -271,6 +333,10 @@
           "address": "56 Matsuojingatanicho, Nishikyo Ward, Kyoto",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Saihoji+Kyoto",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Saihoji+Kyoto",
+          "hours": "사전 예약·지정 시간제",
+          "price": "예약·공개 시기별 상이",
+          "admission": "예약·공개 시기별 상이",
+          "operatingNote": "苔寺는 사전 신청과 운영일 확인이 필요합니다.",
           "optional": true,
           "notes": "대체 코스 · 사전 확인 필요"
         },
@@ -285,6 +351,10 @@
           "address": "55 Kamitakano Higashiyama, Sakyo Ward, Kyoto",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Ruriko-in+Kyoto",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Ruriko-in+Kyoto",
+          "hours": "공개 기간·요일별 상이",
+          "price": "시즌별 상이",
+          "admission": "시즌별 상이",
+          "operatingNote": "특별 공개 기간에만 입장 가능한 경우가 있어 방문일 운영 여부를 확인하세요.",
           "optional": true,
           "notes": "대체 코스 · 운영일 확인 필요"
         },
@@ -298,6 +368,19 @@
           "address": "Okazaki, Sakyo Ward, Kyoto",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Gontaro+Okazaki+Kyoto",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Gontaro+Okazaki+Kyoto",
+          "hours": "11:00–21:30 · 수요일 휴무",
+          "price": "¥1,000–¥2,400",
+          "admission": "해당 없음",
+          "menu": [
+            { "name": "ざるそば·うどん", "price": "¥1,000" },
+            { "name": "天ざるそば·うどん", "price": "¥1,800" },
+            { "name": "親子丼", "price": "¥1,500" },
+            { "name": "天ざる御膳", "price": "¥2,400" }
+          ],
+          "alternativeFor": "yamamoto-menzo",
+          "nearbyWalk": "야마모토 멘조우에서 도보 약 2분",
+          "operatingNote": "라스트오더 21:00. 수요일 휴무.",
+          "infoSourceUrl": "https://gontaro.co.jp/kyoto/okazaki.php",
           "optional": true,
           "notes": "점심 대체 식당"
         },
@@ -311,6 +394,19 @@
           "address": "Kawaramachi, Nakagyo Ward, Kyoto",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Sashisu+Kyoto+Kawaramachi",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Sashisu+Kyoto+Kawaramachi",
+          "hours": "11:00–23:00 · L.O. 22:30 · 부정기 휴무",
+          "price": "약 ¥2,000–¥3,000",
+          "admission": "해당 없음",
+          "menu": [
+            { "name": "トロ鉄火巻", "price": "¥1,078" },
+            { "name": "エビ7-SEVEN-", "price": "¥1,078" },
+            { "name": "うなカツサンド", "price": "¥1,078" },
+            { "name": "ポテサラ", "price": "¥440" }
+          ],
+          "alternativeFor": "kichi-kichi",
+          "nearbyWalk": "키치키치에서 도보 약 2분 · 가와라마치권",
+          "operatingNote": "메뉴·가격은 변경될 수 있으며, 예약 불가·대기 가능성이 있습니다.",
+          "infoSourceUrl": "https://www.yodobashi-kyoto.com/restaurant2/restaurant_sasi.html",
           "optional": true,
           "notes": "저녁 대체 식당"
         }
@@ -397,6 +493,15 @@
           "reservationStatus": "recommended",
           "reservationUrl": "https://www.google.com/maps/search/?api=1&query=Steak+Ishida+Kobe",
           "menuPoint": "고베규",
+          "hours": "11:30–15:00 (L.O. 14:00) / 17:00–21:30 (L.O. 20:30)",
+          "price": "런치·코스별 상이",
+          "admission": "해당 없음",
+          "menu": [
+            { "name": "고베규 스테이크 런치", "price": "가격 확인 필요" },
+            { "name": "고베규 스테이크 코스", "price": "가격 확인 필요" }
+          ],
+          "operatingNote": "화요일·부정기 휴무. 지점별 영업시간과 메뉴가 다를 수 있습니다.",
+          "infoSourceUrl": "https://kobe-ishidaya.com/feature/steak/",
           "notes": "1순위 점심 · 대체는 스테이크랜드 고베"
         },
         {
@@ -412,6 +517,9 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Kobe+Former+Foreign+Settlement",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Kobe+Former+Foreign+Settlement",
           "reservationStatus": "not_required",
+          "hours": "야외 거리 상시 관람 · 건물별 공개시간 상이",
+          "price": "무료 구간 있음",
+          "admission": "거리 무료 · 개별 이진칸은 유료",
           "photoPoint": "석조 건축 · 스트리트 스냅",
           "notes": "점심 후 남쪽 항구 방향으로 이동"
         },
@@ -428,6 +536,9 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Meriken+Park+Kobe",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Meriken+Park+Kobe",
           "reservationStatus": "not_required",
+          "hours": "야외 공원 상시 관람",
+          "price": "무료",
+          "admission": "무료",
           "photoPoint": "항구 · 포트타워 · 광장",
           "notes": "항구의 넓은 장면과 포트타워"
         },
@@ -446,6 +557,11 @@
           "reservationStatus": "recommended",
           "reservationUrl": "https://www.google.com/maps/search/?api=1&query=Kobe+Port+Tower",
           "photoPoint": "항구 실루엣 · 해질녘",
+          "hours": "09:00–23:00 · 최종 입장 22:30",
+          "price": "전망대 ¥1,000 / 전망대+옥상 ¥1,200",
+          "admission": "성인 ¥1,000–¥1,200 · 초중학생 ¥400–¥500",
+          "operatingNote": "전망대·옥상은 지정 시간 티켓 필요. 저층부는 무료입니다.",
+          "infoSourceUrl": "https://www.kobe-port-tower.com/en/",
           "notes": "운영시간과 입장 가능 여부 확인"
         },
         {
@@ -461,6 +577,9 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Kobe+Harborland+Mosaic",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Kobe+Harborland+Mosaic",
           "reservationStatus": "not_required",
+          "hours": "야외 관람 상시 · 시설·점포별 상이",
+          "price": "무료",
+          "admission": "무료 야외 관람",
           "photoPoint": "일몰 · 블루아워 · 포트타워 맞은편 야경",
           "notes": "오늘의 핵심 야경 포인트"
         },
@@ -478,6 +597,17 @@
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=New+Munchen+Hafenburg+Kobe",
           "reservationStatus": "not_required",
           "menuPoint": "맥주와 저녁",
+          "hours": "11:00–22:00 · L.O. 21:30",
+          "price": "런치 약 ¥1,650~ · 디너 약 ¥2,500~",
+          "admission": "해당 없음",
+          "menu": [
+            { "name": "명물 단바 토종닭 튀김", "price": "¥800–¥1,200" },
+            { "name": "프랑크푸르트 소시지", "price": "약 ¥980" },
+            { "name": "비프 필라프", "price": "약 ¥1,480" },
+            { "name": "생맥주", "price": "가격 확인 필요" }
+          ],
+          "operatingNote": "하버랜드 umie MOSAIC 3F. 최신 메뉴·가격은 매장 확인.",
+          "infoSourceUrl": "https://umie.jp/shops/detail/112",
           "notes": "항구 동선을 벗어나지 않는 저녁"
         },
         {
@@ -502,6 +632,19 @@
           "address": "Sannomiyacho, Chuo Ward, Kobe",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Steakland+Kobe",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Steakland+Kobe",
+          "hours": "평일 11:00–22:00 · 토·일·공휴일 11:00–22:00",
+          "price": "런치 ¥1,080~ · 코스 ¥2,880~",
+          "admission": "해당 없음",
+          "menu": [
+            { "name": "스테이크 S 런치(100g)", "price": "¥1,080" },
+            { "name": "고베규 스테이크 런치(150g)", "price": "¥3,180" },
+            { "name": "스테이크 세트(180g)", "price": "¥2,880" },
+            { "name": "고베규 스테이크 세트(180g)", "price": "¥4,880" }
+          ],
+          "alternativeFor": "steak-ishida",
+          "nearbyWalk": "스테이크 이시다에서 도보 약 3분 · 산노미야역권",
+          "operatingNote": "점포별 영업시간과 메뉴가 다를 수 있습니다. 예약은 전화 또는 EPARK.",
+          "infoSourceUrl": "https://steakland-kobe.jp/",
           "optional": true,
           "notes": "점심 대체 식당"
         }
@@ -555,6 +698,17 @@
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Nishimura+Coffee+Nakayamatedori+Kobe",
           "reservationStatus": "not_required",
           "menuPoint": "아침 커피",
+          "hours": "08:30–22:00 · 매월 마지막 월요일 휴무(예외 있음)",
+          "price": "커피 약 ¥700~ · 디저트 약 ¥900~",
+          "admission": "해당 없음",
+          "menu": [
+            { "name": "니시무라 오리지널 블렌드", "price": "¥700" },
+            { "name": "오리지널 아이스커피", "price": "¥700" },
+            { "name": "수제 푸딩", "price": "¥900" },
+            { "name": "핫케이크 세트", "price": "¥1,600" }
+          ],
+          "operatingNote": "2026년 6월 1일부터 본점 영업시간은 08:30–22:00입니다.",
+          "infoSourceUrl": "https://kobe-nishimura.jp/shop/nakayamate.html",
           "notes": "기타노 촬영 전 아침"
         },
         {
@@ -570,6 +724,9 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Kitano+Ijinkan+Kobe",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Kitano+Ijinkan+Kobe",
           "reservationStatus": "not_required",
+          "hours": "야외 거리 상시 관람 · 개별 건물별 상이",
+          "price": "무료 구간 있음",
+          "admission": "거리 무료 · 개별 이진칸은 유료",
           "photoPoint": "서양식 건축 · 언덕길 스트리트 스냅",
           "notes": "누노비키 허브원과 둘 중 하나 선택"
         },
@@ -588,6 +745,16 @@
           "reservationStatus": "recommended",
           "reservationUrl": "https://www.google.com/maps/search/?api=1&query=Grill+Ippei+Sannomiya+Kobe",
           "menuPoint": "양식 런치",
+          "hours": "11:00–15:00 (L.O. 14:30) / 17:00–20:30 (L.O. 20:00) · 수요일 휴무",
+          "price": "약 ¥1,000–¥3,000",
+          "admission": "해당 없음",
+          "menu": [
+            { "name": "헤레 비프 카츠레츠", "price": "가격 확인 필요" },
+            { "name": "오므라이스", "price": "가격 확인 필요" },
+            { "name": "양식 런치", "price": "가격 확인 필요" }
+          ],
+          "operatingNote": "예약 불가. 입구 발권기에서 정리권을 받고 대기하는 방식입니다.",
+          "infoSourceUrl": "https://grill-ippei.co.jp/shop/sannomiya/",
           "notes": "점심 후 산노미야에서 짐 회수"
         },
         {
@@ -618,6 +785,9 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Kansai+International+Airport",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Kansai+International+Airport",
           "reservationStatus": "check_required",
+          "hours": "공항·시설별 상이",
+          "price": "시설별",
+          "admission": "터미널 무료",
           "notes": "13:00 전후 고베 출발 · 18:00 항공편 기준"
         },
         {
@@ -631,6 +801,11 @@
           "address": "1-4-3 Kitanocho, Chuo Ward, Kobe",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Nunobiki+Herb+Gardens+Kobe",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Nunobiki+Herb+Gardens+Kobe",
+          "hours": "평일 로프웨이 09:30–16:45 · 허브원 10:00–17:00",
+          "price": "왕복 성인 ¥2,500 · 편도 ¥1,900",
+          "admission": "로프웨이+허브원 포함 · 야간 왕복 ¥2,000",
+          "operatingNote": "최종 입장 16:30. 주말·공휴일 야간 영업 여부와 강풍 운휴를 확인하세요.",
+          "infoSourceUrl": "https://www.kobeherb.com/en/hours-of-operation-and-fares/",
           "optional": true,
           "notes": "기타노 대체 코스 · 기본 Route에는 포함하지 않음"
         }

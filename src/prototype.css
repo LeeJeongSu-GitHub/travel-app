@@ -326,6 +326,30 @@
   background: #69768a;
 }
 
+.leaflet-tooltip.map-tooltip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border: 1px solid rgba(216, 226, 238, 0.9);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--ink);
+  font-size: 0.68rem;
+  font-weight: 850;
+  box-shadow: 0 5px 14px rgba(24, 49, 82, 0.15);
+}
+
+.map-tooltip svg {
+  color: var(--blue);
+}
+
+.map-tooltip small {
+  color: var(--muted);
+  font-size: 0.58rem;
+  font-weight: 700;
+}
+
 .current-location-icon {
   border: 0 !important;
   background: transparent !important;
@@ -694,6 +718,75 @@
   font-weight: 720;
 }
 
+.category-icon {
+  display: inline-grid;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  place-items: center;
+  border-radius: 7px;
+  background: #edf3ff;
+  color: var(--blue);
+}
+
+.category-photo {
+  background: #f0ecff;
+  color: var(--purple);
+}
+
+.category-restaurant {
+  background: #fff0f2;
+  color: var(--coral);
+}
+
+.category-cafe {
+  background: #fff7e5;
+  color: #b77817;
+}
+
+.category-hotel {
+  background: #edf8f6;
+  color: var(--mint);
+}
+
+.category-station,
+.category-airport,
+.category-logistics {
+  background: #edf3ff;
+  color: var(--blue);
+}
+
+.place-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  color: #65758b;
+  font-size: 0.64rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.place-facts span,
+.nearby-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.place-facts svg {
+  color: var(--blue);
+}
+
+.nearby-label {
+  color: #597493;
+  font-size: 0.67rem;
+  font-weight: 800;
+}
+
+.nearby-label svg {
+  color: var(--mint);
+}
+
 .place-note {
   display: -webkit-box;
   overflow: hidden;
@@ -842,6 +935,26 @@
   grid-template-columns: 31px minmax(0, 1fr);
   align-items: center;
   gap: 11px;
+}
+
+.alternatives-section {
+  padding: 21px 14px 0;
+}
+
+.alternatives-section .section-heading {
+  padding-bottom: 7px;
+}
+
+.section-description {
+  margin: 0 4px 11px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.other-alternatives {
+  padding-top: 18px;
 }
 
 .route-line {
@@ -1270,11 +1383,148 @@
   color: var(--blue);
 }
 
+.detail-icon.category-photo {
+  color: var(--purple);
+}
+
+.detail-icon.category-restaurant {
+  color: var(--coral);
+}
+
+.detail-icon.category-cafe {
+  color: #b77817;
+}
+
+.detail-icon.category-hotel {
+  color: var(--mint);
+}
+
 .detail-ja {
   margin: -8px 0 0 41px;
   color: #8997a8;
   font-size: 0.76rem;
   font-weight: 650;
+}
+
+.detail-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.detail-facts > div {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 9px 8px;
+  border: 1px solid #e2e9f2;
+  border-radius: 11px;
+  background: #fbfcfe;
+  color: var(--blue);
+}
+
+.detail-facts > div > span {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.detail-facts small {
+  color: #8a98aa;
+  font-size: 0.59rem;
+  font-weight: 820;
+}
+
+.detail-facts strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 0.65rem;
+  font-weight: 820;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+}
+
+.nearby-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 11px 12px;
+  border: 1px solid #d9eee9;
+  border-radius: 12px;
+  background: #effaf7;
+  color: #257d6e;
+  font-size: 0.73rem;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.nearby-callout svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.detail-alternative-list,
+.menu-list {
+  display: grid;
+  gap: 6px;
+}
+
+.detail-alternative-list button,
+.menu-list > div {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #e4eaf2;
+  border-radius: 11px;
+  background: #fbfcfe;
+  color: var(--ink);
+  text-align: left;
+}
+
+.detail-alternative-list button:hover,
+.detail-alternative-list button:focus-visible {
+  border-color: #b8c9e6;
+  background: #f4f8ff;
+}
+
+.detail-alternative-list button > span,
+.menu-list > div > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.detail-alternative-list strong,
+.menu-list strong {
+  overflow: hidden;
+  font-size: 0.77rem;
+  font-weight: 830;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-alternative-list small,
+.menu-list small {
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 650;
+}
+
+.detail-alternative-list button svg {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: #9aabc1;
+}
+
+.menu-list > div > b {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--blue);
+  font-size: 0.73rem;
+  font-weight: 900;
 }
 
 .detail-address,
@@ -1370,6 +1620,11 @@
 .reservation-link {
   background: #fff5df;
   color: #9f6813;
+}
+
+.info-source-link {
+  background: #edf8f6;
+  color: #187b6e;
 }
 
 .detail-actions {
