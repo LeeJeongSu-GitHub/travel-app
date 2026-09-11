@@ -16,7 +16,7 @@
   "src/mobile/MobileScroll.tsx": "ea3e3691f587ea13753162b9e64c1981263e5b9beddebea21a6a1551dce76430",
   "src/mobile/PhoneFrame.tsx": "73015590b468acbb4b58e3f6fe5eef99c5f68f67722caffd8f00d271ba00a91d",
   "src/mobile/assets.ts": "6c41aa098b426633a3c7bd085005a0f612e6ad6a039e18ead1c69a3cc49c033c",
-  "src/mobile/components.tsx": "6f933120711cdca7a1403663fe98b701c63f7a3a9dc7c9f3271f8b54a02d06ca",
+  "src/mobile/components.tsx": "d05af903045d5fd3d36ffda38e5856653ce3ec4edbb9a1a9adb802278e3d6f94",
   "src/mobile/geometry.ts": "f1382e5d6cc9adfd7ac142304f2f9a5a2330db1d74b3f0848adbaf311676bf16",
   "src/mobile/index.ts": "ee69d9341571db5dee84dd2d7452a62eef09085a84a85f198a3edc48047e0412",
   "public/assets/iphone/Bezel.png": "ee2514d74d2f75f3541405fa2f20811f159879a66586778cfd8c9c84c44959df",
