@@ -293,6 +293,15 @@
   box-shadow: 0 5px 16px rgba(28, 53, 87, 0.045);
 }
 
+.trip-map-slot {
+  height: calc(clamp(220px, 65vw, 290px) + 110px);
+  margin: 0 14px 14px;
+}
+
+.trip-map-slot .trip-map {
+  margin: 0;
+}
+
 .trip-map.is-schedule-map {
   position: sticky;
   top: calc(var(--trip-header-height) + 10px);
@@ -349,8 +358,8 @@
   display: inline-flex;
   min-height: 34px;
   align-items: center;
-  gap: 2px;
-  padding: 3px;
+  gap: 4px;
+  padding: 4px;
   border: 1px solid rgba(220, 229, 240, 0.96);
   border-radius: 11px;
   background: rgba(255, 255, 255, 0.95);
@@ -397,7 +406,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
+  margin: 0;
   padding: 8px 10px;
   overflow: visible;
 }
@@ -466,6 +475,25 @@
 
 .trip-map.is-schedule-map.is-condensed .map-caption {
   display: none;
+}
+
+@media (min-width: 700px) {
+  .map-day-nav {
+    top: 14px;
+    right: 14px;
+    gap: 6px;
+    padding: 5px;
+  }
+
+  .map-day-nav strong {
+    min-width: 90px;
+    font-size: 0.7rem;
+  }
+
+  .map-day-nav button {
+    width: 30px;
+    height: 30px;
+  }
 }
 
 .leaflet-map {

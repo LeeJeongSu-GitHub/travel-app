@@ -412,6 +412,7 @@ function MapButtons({ routePlaces, onLocate }: { routePlaces: MapPlace[]; onLoca
 function MapResizeWatcher({ condensed }: { condensed: boolean }) {
   const map = useMap();
   useEffect(() => {
+    if (condensed) return;
     const frame = window.requestAnimationFrame(() => map.invalidateSize());
     return () => window.cancelAnimationFrame(frame);
   }, [condensed, map]);
@@ -457,7 +458,7 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, onMarkerSelect,
   };
   const mapUnavailable = !isOnline || mapError;
 
-  return <section className={`trip-map ${mode === "all" ? "is-all-map" : "is-schedule-map"}${mapCondensed && mode === "day" ? " is-condensed" : ""}`} aria-label={mode === "all" ? "전체 여행 지도" : "오늘 일정 지도"}>
+  const tripMap = <section className={`trip-map ${mode === "all" ? "is-all-map" : "is-schedule-map"}${mapCondensed && mode === "day" ? " is-condensed" : ""}`} aria-label={mode === "all" ? "전체 여행 지도" : "오늘 일정 지도"}>
     <div className="map-label-row"><div><span className="eyebrow">ROUTE PREVIEW</span><strong>{mode === "all" ? "전체 경로" : "방문 순서"}</strong></div><span className="map-count">{mapPlaces.length}곳 표시</span></div>
     <div className="map-frame" data-scroll-drag="ignore">
       {dayLabel ? <div className="map-day-nav" aria-label="여행 날짜 이동"><button type="button" onClick={onPreviousDay} disabled={!onPreviousDay} aria-label="이전 날짜"><ChevronLeft size={16} /></button><strong>{dayLabel}</strong><button type="button" onClick={onNextDay} disabled={!onNextDay} aria-label="다음 날짜"><ChevronRight size={16} /></button></div> : null}
@@ -474,6 +475,7 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, onMarkerSelect,
     </div>
     <p className="map-caption"><span className="route-dash" /> 선은 실제 도로가 아닌 방문 순서입니다.</p>
   </section>;
+  return mode === "day" ? <div className="trip-map-slot">{tripMap}</div> : tripMap;
 }
 
 function AppHeader({ view, menuOpen, setMenuOpen, setView }: { view: View; menuOpen: boolean; setMenuOpen: (open: boolean) => void; setView: (view: View) => void }) {

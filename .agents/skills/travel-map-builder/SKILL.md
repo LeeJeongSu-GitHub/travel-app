@@ -34,7 +34,7 @@ Read [references/design-system.md](references/design-system.md) before creating 
 Keep the existing mobile runtime intact. Build app-owned UI only in `src/Prototype.tsx` and `src/prototype.css`; do not edit `src/mobile/`, device assets, or other protected runtime files unless the user explicitly asks for a runtime change. Use `MobileScroll` for moving content and `BottomSheet` for phone-scoped detail sheets.
 
 - Use shared Pretendard-first typography, consistent heading/button sizing, clear section borders, and category-specific card tints/accent colors.
-- Keep the schedule route map compact on mobile, show the active `DAY · date` and previous/next controls inside the map, and collapse the sticky map to that navigation bar while the itinerary scrolls so cards are never covered.
+- Keep the schedule route map compact on mobile, show the active `DAY · date` and previous/next controls inside the map, and collapse the sticky map to that navigation bar while the itinerary scrolls so cards are never covered. Reserve the expanded map slot while collapsing so changing map height never reflows the scroll document or causes a bounce.
 - Use container-query and viewport responsive rules. Test real narrow mobile widths as well as the wide simulated phone preview; never rely only on the desktop preview.
 - Reserve space for right-side place previews and controls. Titles, metadata, closure labels, notes, and actions must not slide underneath thumbnails or controls; use min-width constraints and ellipsis/line clamping where needed.
 - If multiple itinerary stops share one coordinate, visually separate their map markers so every stop number remains readable and clickable without changing the stored coordinate or route.
