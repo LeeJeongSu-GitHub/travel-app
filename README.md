@@ -2,18 +2,18 @@
 
 여행지별 폴더를 하나의 모바일 우선 정적 웹앱 허브에서 관리합니다. 현재는 `kyoto-kobe-trip/`에 19일부터 22일까지의 교토·고베 일정이 들어 있습니다.
 
-[![Live on GitHub Pages](https://img.shields.io/badge/Live-GitHub%20Pages-2ea44f?logo=github)](https://sgustjd2.github.io/travel/)
-[![Mobile first](https://img.shields.io/badge/UI-mobile--first-2563eb)](https://github.com/sgustjd2/travel)
-[![Trip data](https://img.shields.io/badge/Data-trip.json-f59e0b)](https://github.com/sgustjd2/travel/tree/main/kyoto-kobe-trip)
-[![Deploy](https://img.shields.io/badge/Deploy-GitHub%20Actions-6f42c1?logo=githubactions)](https://github.com/sgustjd2/travel/actions/workflows/deploy-pages.yml)
+[![Live on GitHub Pages](https://img.shields.io/badge/Live-GitHub%20Pages-2ea44f?logo=github)](#배포)
+[![Mobile first](https://img.shields.io/badge/UI-mobile--first-2563eb)](#현재-작업-완료-내역)
+[![Trip data](https://img.shields.io/badge/Data-trip.json-f59e0b)](./kyoto-kobe-trip/trip.json)
+[![Deploy](https://img.shields.io/badge/Deploy-GitHub%20Actions-6f42c1?logo=githubactions)](./.github/workflows/deploy-pages.yml)
 
 > [!TIP]
 > 여행지·기간·숙소·가고 싶은 곳만 간단히 적어도 됩니다. AI가 부족한 주소·Google Maps 링크·영업시간·휴무일·가격·메뉴·대표 이미지를 조사하고, 확인하지 못한 값은 `확인 필요`로 남깁니다.
 
 | 상태 | 현재 값 |
 | --- | --- |
-| **공개 허브** | [sgustjd2.github.io/travel](https://sgustjd2.github.io/travel/) |
-| **현재 여행** | [교토·고베 19일~22일](https://sgustjd2.github.io/travel/kyoto-kobe-trip/) |
+| **공개 URL 규칙** | `https://<github-id>.github.io/<repository-name>/` |
+| **현재 여행** | `kyoto-kobe-trip/` · 교토·고베 19일~22일 |
 | **구성** | 여행지별 `index.html` + `trip.json` |
 | **배포** | `main` push → GitHub Actions → GitHub Pages |
 
@@ -21,8 +21,8 @@
 
 ## 빠른 이동
 
-- [공개 여행지 허브](https://sgustjd2.github.io/travel/)
-- [교토·고베 앱](https://sgustjd2.github.io/travel/kyoto-kobe-trip/)
+- [공개 여행지 허브 주소 규칙](#배포)
+- [교토·고베 데이터](./kyoto-kobe-trip/trip.json)
 - [복붙용 기본 프롬프트](#복붙용-기본-프롬프트)
 - [로컬 실행](#30초-만에-실행)
 - [GitHub Pages 배포](#배포)
@@ -50,8 +50,8 @@ npm run dev
 ```text
 로컬 허브       http://localhost:5173/
 로컬 교토·고베  http://localhost:5173/kyoto-kobe-trip/
-공개 허브       https://sgustjd2.github.io/travel/
-공개 교토·고베  https://sgustjd2.github.io/travel/kyoto-kobe-trip/
+공개 허브       https://<github-id>.github.io/<repository-name>/
+공개 교토·고베  https://<github-id>.github.io/<repository-name>/kyoto-kobe-trip/
 ```
 
 ---
@@ -79,30 +79,48 @@ public/                    # 공통 디바이스·지도 자산
 4. `npm run validate:trip`, `npm run check:runtime`, `npm run build`, `npm run test:sites`로 생성 결과를 확인합니다.
 5. 변경을 `main`에 push하면 GitHub Actions가 `dist/client`를 GitHub Pages에 배포합니다. 완료 후 허브에서 새 여행 카드를 열어 모바일 화면을 확인합니다.
 
-여행별 URL은 항상 `https://sgustjd2.github.io/travel/<destination-slug>/` 형태입니다. 일정이 여러 개이면 각 여행 폴더의 `trip.json`만 별도로 관리하므로 한 여행의 장소 추가·삭제·실제 방문 체크가 다른 여행에 섞이지 않습니다.
+여행별 URL은 일반 프로젝트 저장소 기준 `https://<github-id>.github.io/<repository-name>/<destination-slug>/` 형태입니다. 일정이 여러 개이면 각 여행 폴더의 `trip.json`만 별도로 관리하므로 한 여행의 장소 추가·삭제·실제 방문 체크가 다른 여행에 섞이지 않습니다.
 
 ---
 
 ## 배포
 
-이 저장소는 별도 서버 없이 GitHub Pages의 정적 배포로 운영합니다.
+이 저장소는 특정 GitHub 계정에 종속되지 않는 GitHub Pages 정적 배포 템플릿입니다. 저장소를 fork하거나 `Use this template`으로 가져가면 각자의 계정과 저장소 이름에 맞춰 Pages 경로를 자동 계산합니다.
 
-- 저장소: `https://github.com/sgustjd2/travel`
-- 허브: `https://sgustjd2.github.io/travel/`
-- 여행 앱: `https://sgustjd2.github.io/travel/<destination-slug>/`
-- Actions workflow: [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml)
+- 저장소: `https://github.com/<github-id>/<repository-name>`
+- 일반 프로젝트 저장소 허브: `https://<github-id>.github.io/<repository-name>/`
+- 사용자 페이지 저장소(`<github-id>.github.io`) 허브: `https://<github-id>.github.io/`
+- 여행 앱: `https://<github-id>.github.io/<repository-name>/<destination-slug>/`
+- 사용자 페이지 저장소의 여행 앱: `https://<github-id>.github.io/<destination-slug>/`
+- Actions workflow: [`.github/workflows/deploy-pages.yml`](./.github/workflows/deploy-pages.yml)
 - 빌드 결과: `dist/client`
 
-최초 1회만 GitHub 저장소의 `Settings → Pages → Build and deployment → Source`를 `GitHub Actions`로 설정하세요. 이후 `main`에 push하거나 Actions의 `Deploy to GitHub Pages`를 수동 실행하면 빌드·배포됩니다.
+복사한 저장소에서 최초 1회만 `Settings → Pages → Build and deployment → Source`를 `GitHub Actions`로 설정하세요. 이후 각자의 `main`에 push하거나 Actions의 `Deploy to GitHub Pages`를 수동 실행하면 본인 GitHub Pages에 빌드·배포됩니다.
+
+### 저장소를 가져간 사람의 배포 순서
+
+1. 이 저장소를 fork하거나 `Use this template`으로 본인 GitHub 계정에 복사합니다.
+2. 복사한 저장소의 `Settings → Pages → Source`를 `GitHub Actions`로 설정합니다.
+3. 여행 데이터를 바꾸고 `main`에 push합니다. 별도의 사용자명 수정이나 Vite 설정 수정은 필요하지 않습니다.
+4. Actions가 끝나면 `https://<github-id>.github.io/<repository-name>/`에서 허브를 엽니다.
+
+fork 저장소는 GitHub Actions가 기본적으로 꺼져 있을 수 있으므로 `Actions` 탭에서 workflow를 활성화한 뒤 실행하세요.
 
 배포 전 확인:
 
 1. 새 여행 폴더에 `<destination-slug>/index.html`과 `trip.json`이 있는지 확인합니다.
 2. 루트 `index.html`에 새 여행 카드가 연결되어 있는지 확인합니다.
 3. `npm run build`가 `dist/client`를 만드는지 확인합니다.
-4. Actions의 `build`와 `deploy`가 모두 성공한 뒤 `https://sgustjd2.github.io/travel/<destination-slug>/`를 엽니다.
+4. Actions의 `build`와 `deploy`가 모두 성공한 뒤 프로젝트 저장소는 `https://<github-id>.github.io/<repository-name>/<destination-slug>/`, 사용자 페이지 저장소는 `https://<github-id>.github.io/<destination-slug>/`를 엽니다.
 
-GitHub Pages 경로(`/travel/`)는 `vite.config.ts`의 build base와 자산 경로에 반영되어 있습니다. 로컬에서는 `/`, 배포에서는 `/travel/`을 사용하므로 이미지·manifest·스크립트에 루트 절대경로를 하드코딩하지 않습니다.
+`vite.config.ts`가 배포 환경의 `GITHUB_REPOSITORY`를 읽어 build base를 자동으로 정합니다.
+
+- 일반 저장소: `/<repository-name>/`
+- 사용자 페이지 저장소: `/`
+- 로컬 개발: `/`
+- 로컬에서 특정 프로젝트 경로를 미리 테스트할 때: `VITE_BASE_PATH=/my-repo/ npm run build` (PowerShell: `$env:VITE_BASE_PATH="/my-repo/"; npm run build`)
+
+이미지·manifest·스크립트는 `import.meta.env.BASE_URL` 또는 상대 경로를 사용하므로 계정명과 저장소명이 달라도 깨지지 않습니다.
 
 > [!IMPORTANT]
 > GitHub 저장소의 `Settings → Pages → Source`는 최초 1회 `GitHub Actions`로 설정해야 합니다. `main` push 후 Actions의 `build`와 `deploy`가 모두 성공하기 전에는 공개 URL을 확정하지 마세요.
@@ -122,8 +140,8 @@ Notion 토큰은 프론트 코드에 포함하지 않습니다. 여행 데이터
 
 현재 기준 여행은 19일~22일 교토·고베 일정이며, 총 4일·39개 장소가 `kyoto-kobe-trip/`에 들어 있습니다.
 
-- [여행지 허브](https://sgustjd2.github.io/travel/)에서 여행지별 앱으로 이동합니다.
-- [교토·고베 앱](https://sgustjd2.github.io/travel/kyoto-kobe-trip/)은 GitHub Pages에서 바로 열 수 있습니다.
+- 루트 여행 허브에서 여행지별 앱으로 이동합니다. 공개 주소는 저장소를 가져간 계정의 Pages 주소를 사용합니다.
+- 교토·고베 앱은 `kyoto-kobe-trip/`에 독립적으로 보관되며, GitHub Pages에서는 `<destination-slug>` 경로로 열립니다.
 - Leaflet + OpenFreeMap/OpenStreetMap 기반 한글 지도, 날짜별 경로 미리보기, 장소별 Google Maps 장소 보기·길찾기를 제공합니다.
 - 숙소·사진 명소·맛집·카페·역·공항·짐 보관/이동을 아이콘·색상·범례로 구분합니다.
 - 카드와 상세 화면에 주소, 영업시간, 휴무일, 가격, 입장료, 예약 상태, 운영 메모를 표시합니다. 식당·카페의 휴무일은 별도 표시하며 확인하지 못한 값은 `확인 필요`로 표시합니다.

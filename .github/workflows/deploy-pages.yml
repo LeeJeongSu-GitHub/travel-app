@@ -27,6 +27,17 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Configure portable Pages base path
+        shell: bash
+        run: |
+          repository="${GITHUB_REPOSITORY#*/}"
+          if [[ "$repository" == *.github.io ]]; then
+            pages_base="/"
+          else
+            pages_base="/$repository/"
+          fi
+          echo "VITE_BASE_PATH=$pages_base" >> "$GITHUB_ENV"
+          echo "GitHub Pages base: $pages_base"
       - name: Build
         run: npm run build
       - name: Upload Pages artifact

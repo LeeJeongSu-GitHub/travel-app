@@ -51,7 +51,7 @@ Run these checks after data or UI changes:
 
 Open the local app in a mobile frame and inspect every day, at least one lodging detail, one restaurant menu with Japanese/Korean lines and food thumbnails, one alternative restaurant, map/directions links, representative-image fallback behavior, closure-day display, the first/last scroll positions, manual edit/add/delete behavior, and actual-only filtering. Ensure no header, card content, image, or bottom navigation is clipped at narrow widths.
 
-Only commit and push when the user asks to publish/deploy (or has already explicitly requested deployment for the current trip). GitHub Pages is a static site: preserve `.github/workflows/deploy-pages.yml`, the Vite build base `/travel/`, the `dist/client` artifact, and destination URLs under `/travel/<destination-slug>/`. When publishing, monitor the GitHub Pages workflow to completion, open the public URL with a cache-busting query, and report unresolved `확인 필요` items. Do not claim deployment from a local build alone.
+Only commit and push when the user asks to publish/deploy (or has already explicitly requested deployment for the current trip). GitHub Pages is a static site: preserve `.github/workflows/deploy-pages.yml` and the `dist/client` artifact. The Vite build base must derive from `GITHUB_REPOSITORY` or an explicit `VITE_BASE_PATH`: ordinary repositories use `/<repository-name>/`, while `<username>.github.io` repositories use `/`. Never hardcode the owner's GitHub username or the current repository name into the app. Destination URLs are `/<repository-name>/<destination-slug>/` for project repositories and `/<destination-slug>/` for user-page repositories. When publishing, monitor the GitHub Pages workflow to completion, open the public URL with a cache-busting query, and report unresolved `확인 필요` items. Do not claim deployment from a local build alone.
 
 ## Cross-model handoff
 
@@ -73,7 +73,7 @@ Return a short summary of created/updated destination folders, researched fields
 
 ## Documentation maintenance
 
-When a user-visible feature, data field, asset rule, or workflow changes, update `README.md` in the same change. Keep the README easy to scan: maintain quick links near the top, put the current-work summary and short input first, and keep long forms/prompts inside collapsible `<details>` sections. Keep deployment URLs/settings, generated-results list, and unresolved-confirmation guidance consistent with the implementation. Update [references/trip-data-contract.md](references/trip-data-contract.md) when the JSON contract changes. Do not turn a one-off trip fact into a reusable rule; record trip-specific facts in that destination's `trip.json`.
+When a user-visible feature, data field, asset rule, or workflow changes, update `README.md` in the same change. Keep the README easy to scan: maintain quick links near the top, put the current-work summary and short input first, and keep long forms/prompts inside collapsible `<details>` sections. Keep deployment URLs/settings, generated-results list, and unresolved-confirmation guidance consistent with the implementation. Document the portable Pages URL pattern using `<github-id>` and `<repository-name>` placeholders; do not make the reusable instructions depend on the maintainer's account. Update [references/trip-data-contract.md](references/trip-data-contract.md) when the JSON contract changes. Do not turn a one-off trip fact into a reusable rule; record trip-specific facts in that destination's `trip.json`.
 
 ## Minimal input example
 
