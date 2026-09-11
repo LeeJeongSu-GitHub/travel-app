@@ -554,7 +554,31 @@ function ScheduleView({ activeDay, selectedPlace, selectedPlaceId, showAlternati
   const withDay = (place: Place): MapPlace => ({ ...place, dayNumber: activeDay.dayNumber, dayOfMonth: activeDay.dayOfMonth, dayTitle: activeDay.title });
   const visitedCount = activeDay.places.filter((place) => completedIds.includes(place.id)).length;
   const renderCard = (place: Place) => <PlaceCard place={place} day={activeDay} selected={selectedPlaceId === place.id} completed={completedIds.includes(place.id)} favorite={favoriteIds.includes(place.id)} onSelect={() => onSelectPlace(withDay(place))} onToggleComplete={() => onToggleComplete(place.id)} onToggleFavorite={() => onToggleFavorite(place.id)} />;
-  return <main className="schedule-view"><section className="day-intro"><div className="day-intro-copy"><span className="eyebrow">DAY {activeDay.dayNumber} · {activeDay.dayOfMonth}일</span><h1>{activeDay.title}</h1><p>{activeDay.city}</p></div><div className="day-intro-tools"><button type="button" className={`record-view-button ${actualOnly ? "is-active" : ""}`} aria-pressed={actualOnly} onClick={onToggleActualOnly}><Check size={14} /> {actualOnly ? "전체 일정" : `실제 방문 ${visitedCount}곳`}</button><button type="button" className="record-add-button" onClick={onAddPlace}><Plus size={15} /> 장소 추가</button><label className="alternative-toggle"><input type="checkbox" checked={showAlternatives} onChange={(event) => setShowAlternatives(event.target.checked)} /><span className="toggle-track" /><span>대체 후보</span></label></div></section><TripMap places={primaryPlaces.map(withDay)} routePlaces={primaryPlaces.map(withDay)} selectedPlace={selectedPlace} onSelect={onSelectPlace} userLocation={userLocation} onUserLocation={onUserLocation} /><DayTabs days={trip.days} selectedDay={activeDay.dayOfMonth} onChange={onDayChange} /><section className="itinerary-section" aria-label={`${activeDay.dayOfMonth}일 일정 목록`}><div className="section-heading"><div><span className="eyebrow">{primaryPlaces.length} STOPS</span><h2>{actualOnly ? "실제 방문 기록" : "오늘의 동선"}</h2></div><span className="section-hint">체크=실제 방문</span></div><CategoryLegend /><div className="itinerary-list">{primaryPlaces.map((place, index) => <div key={`${place.id}-item`}>{renderCard(place)}<RouteConnector current={place} next={primaryPlaces[index + 1]} /></div>)}</div></section>{showAlternatives && restaurantAlternatives.length ? <section className="alternatives-section" aria-label="근처 대체 식당"><div className="section-heading"><div><span className="eyebrow">NEARBY RESTAURANTS</span><h2>근처 대체 식당</h2></div><span className="section-hint">기본 동선은 유지</span></div><p className="section-description">예약이 어렵거나 대기가 길 때, 해당 식당 주변에서 바로 바꿔 갈 수 있는 후보입니다.</p><div className="itinerary-list">{restaurantAlternatives.map((place) => <div key={`${place.id}-alternative`}>{renderCard(place)}</div>)}</div></section> : null}{showAlternatives && otherAlternatives.length ? <section className="alternatives-section other-alternatives" aria-label="대체 코스"><div className="section-heading"><div><span className="eyebrow">OPTIONAL ROUTES</span><h2>대체 촬영 코스</h2></div></div><p className="section-description">시간과 운영일을 확인한 뒤 기본 동선 대신 선택하세요.</p><div className="itinerary-list">{otherAlternatives.map((place) => <div key={`${place.id}-alternative`}>{renderCard(place)}</div>)}</div></section> : null}</main>;
+  return (
+    <main className="schedule-view">
+      <DayTabs days={trip.days} selectedDay={activeDay.dayOfMonth} onChange={onDayChange} />
+      <section className="day-intro">
+        <div className="day-intro-copy">
+          <span className="eyebrow">DAY {activeDay.dayNumber} · {activeDay.dayOfMonth}일</span>
+          <h1>{activeDay.title}</h1>
+          <p>{activeDay.city}</p>
+        </div>
+        <div className="day-intro-tools">
+          <button type="button" className={`record-view-button ${actualOnly ? "is-active" : ""}`} aria-pressed={actualOnly} onClick={onToggleActualOnly}><Check size={14} /> {actualOnly ? "전체 일정" : `실제 방문 ${visitedCount}곳`}</button>
+          <button type="button" className="record-add-button" onClick={onAddPlace}><Plus size={15} /> 장소 추가</button>
+          <label className="alternative-toggle"><input type="checkbox" checked={showAlternatives} onChange={(event) => setShowAlternatives(event.target.checked)} /><span className="toggle-track" /><span>대체 후보</span></label>
+        </div>
+      </section>
+      <TripMap places={primaryPlaces.map(withDay)} routePlaces={primaryPlaces.map(withDay)} selectedPlace={selectedPlace} onSelect={onSelectPlace} userLocation={userLocation} onUserLocation={onUserLocation} />
+      <section className="itinerary-section" aria-label={`${activeDay.dayOfMonth}일 일정 목록`}>
+        <div className="section-heading"><div><span className="eyebrow">{primaryPlaces.length} STOPS</span><h2>{actualOnly ? "실제 방문 기록" : "오늘의 동선"}</h2></div><span className="section-hint">체크=실제 방문</span></div>
+        <CategoryLegend />
+        <div className="itinerary-list">{primaryPlaces.map((place, index) => <div key={`${place.id}-item`}>{renderCard(place)}<RouteConnector current={place} next={primaryPlaces[index + 1]} /></div>)}</div>
+      </section>
+      {showAlternatives && restaurantAlternatives.length ? <section className="alternatives-section" aria-label="근처 대체 식당"><div className="section-heading"><div><span className="eyebrow">NEARBY RESTAURANTS</span><h2>근처 대체 식당</h2></div><span className="section-hint">기본 동선은 유지</span></div><p className="section-description">예약이 어렵거나 대기가 길 때, 해당 식당 주변에서 바로 바꿔 갈 수 있는 후보입니다.</p><div className="itinerary-list">{restaurantAlternatives.map((place) => <div key={`${place.id}-alternative`}>{renderCard(place)}</div>)}</div></section> : null}
+      {showAlternatives && otherAlternatives.length ? <section className="alternatives-section other-alternatives" aria-label="대체 코스"><div className="section-heading"><div><span className="eyebrow">OPTIONAL ROUTES</span><h2>대체 촬영 코스</h2></div></div><p className="section-description">시간과 운영일을 확인한 뒤 기본 동선 대신 선택하세요.</p><div className="itinerary-list">{otherAlternatives.map((place) => <div key={`${place.id}-alternative`}>{renderCard(place)}</div>)}</div></section> : null}
+    </main>
+  );
 }
 
 function AllMapView({ allPlaces, selectedPlace, onSelectPlace, onUserLocation, userLocation }: { allPlaces: MapPlace[]; selectedPlace: Place | null; onSelectPlace: (place: MapPlace) => void; onUserLocation: (location: Coordinate) => void; userLocation: Coordinate | null }) {
