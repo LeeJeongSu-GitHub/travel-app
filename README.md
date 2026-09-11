@@ -2,11 +2,29 @@
 
 여행지별 폴더를 하나의 모바일 우선 정적 웹앱 허브에서 관리합니다. 현재는 `kyoto-kobe-trip/`에 19일부터 22일까지의 교토·고베 일정이 들어 있습니다.
 
+[![Live on GitHub Pages](https://img.shields.io/badge/Live-GitHub%20Pages-2ea44f?logo=github)](https://sgustjd2.github.io/travel/)
+[![Mobile first](https://img.shields.io/badge/UI-mobile--first-2563eb)](https://github.com/sgustjd2/travel)
+[![Trip data](https://img.shields.io/badge/Data-trip.json-f59e0b)](https://github.com/sgustjd2/travel/tree/main/kyoto-kobe-trip)
+[![Deploy](https://img.shields.io/badge/Deploy-GitHub%20Actions-6f42c1?logo=githubactions)](https://github.com/sgustjd2/travel/actions/workflows/deploy-pages.yml)
+
+> [!TIP]
+> 여행지·기간·숙소·가고 싶은 곳만 간단히 적어도 됩니다. AI가 부족한 주소·Google Maps 링크·영업시간·휴무일·가격·메뉴·대표 이미지를 조사하고, 확인하지 못한 값은 `확인 필요`로 남깁니다.
+
+| 상태 | 현재 값 |
+| --- | --- |
+| **공개 허브** | [sgustjd2.github.io/travel](https://sgustjd2.github.io/travel/) |
+| **현재 여행** | [교토·고베 19일~22일](https://sgustjd2.github.io/travel/kyoto-kobe-trip/) |
+| **구성** | 여행지별 `index.html` + `trip.json` |
+| **배포** | `main` push → GitHub Actions → GitHub Pages |
+
+---
+
 ## 빠른 이동
 
 - [공개 여행지 허브](https://sgustjd2.github.io/travel/)
 - [교토·고베 앱](https://sgustjd2.github.io/travel/kyoto-kobe-trip/)
-- [로컬 실행](#실행)
+- [복붙용 기본 프롬프트](#복붙용-기본-프롬프트)
+- [로컬 실행](#30초-만에-실행)
 - [GitHub Pages 배포](#배포)
 - [새 여행 추가 흐름](#새-여행-추가-흐름)
 - [현재 구현·작업 내역](#현재-작업-완료-내역)
@@ -14,12 +32,29 @@
 - [자동 조사·이미지 출처 규칙](#자동-조사-시-출처이미지-처리-규칙)
 - [스킬·데이터 계약](#스킬과-문서)
 
-## 실행
+---
+
+## 30초 만에 실행
+
+### 로컬에서 열기
 
 ```bash
 npm install
 npm run dev
 ```
+
+브라우저에서 `http://localhost:5173/`을 열면 여행 허브가 표시됩니다. 포트가 다르면 터미널에 표시된 주소를 사용하세요.
+
+### 배포된 앱 바로 열기
+
+```text
+로컬 허브       http://localhost:5173/
+로컬 교토·고베  http://localhost:5173/kyoto-kobe-trip/
+공개 허브       https://sgustjd2.github.io/travel/
+공개 교토·고베  https://sgustjd2.github.io/travel/kyoto-kobe-trip/
+```
+
+---
 
 ## 폴더 구조
 
@@ -46,6 +81,8 @@ public/                    # 공통 디바이스·지도 자산
 
 여행별 URL은 항상 `https://sgustjd2.github.io/travel/<destination-slug>/` 형태입니다. 일정이 여러 개이면 각 여행 폴더의 `trip.json`만 별도로 관리하므로 한 여행의 장소 추가·삭제·실제 방문 체크가 다른 여행에 섞이지 않습니다.
 
+---
+
 ## 배포
 
 이 저장소는 별도 서버 없이 GitHub Pages의 정적 배포로 운영합니다.
@@ -67,6 +104,9 @@ public/                    # 공통 디바이스·지도 자산
 
 GitHub Pages 경로(`/travel/`)는 `vite.config.ts`의 build base와 자산 경로에 반영되어 있습니다. 로컬에서는 `/`, 배포에서는 `/travel/`을 사용하므로 이미지·manifest·스크립트에 루트 절대경로를 하드코딩하지 않습니다.
 
+> [!IMPORTANT]
+> GitHub 저장소의 `Settings → Pages → Source`는 최초 1회 `GitHub Actions`로 설정해야 합니다. `main` push 후 Actions의 `build`와 `deploy`가 모두 성공하기 전에는 공개 URL을 확정하지 마세요.
+
 기본 기능:
 
 - 지도: Leaflet + OpenFreeMap/OpenStreetMap
@@ -75,6 +115,8 @@ GitHub Pages 경로(`/travel/`)는 `vite.config.ts`의 build base와 자산 경�
 - 오프라인: 서비스 워커가 앱 셸과 접속한 리소스를 캐시
 
 Notion 토큰은 프론트 코드에 포함하지 않습니다. 여행 데이터는 각 여행지 폴더의 `trip.json` 정적 스냅샷으로 관리합니다.
+
+---
 
 ## 현재 작업 완료 내역
 
@@ -109,9 +151,50 @@ Notion 토큰은 프론트 코드에 포함하지 않습니다. 여행 데이터
 - 짧은 여행 입력부터 상세 조사자료까지 지원하며, 사용자는 여행지·기간·숙소·가고 싶은 곳 정도만 입력해도 됩니다.
 - 새 기능이나 데이터 필드가 추가되면 이 README의 작업 완료 내역, 입력 포맷, 생성 결과 목록도 함께 갱신합니다.
 
+### 앱 색상·아이콘 구분
+
+일정 카드와 지도 마커는 아래 범례를 공통으로 사용합니다. 색상만 보지 않고 아이콘과 글자를 함께 표시해 모바일에서도 장소 종류를 빠르게 구분합니다.
+
+| 표시 | 장소 종류 | 예시 |
+| --- | --- | --- |
+| 🟢 | 숙소 | 교토 숙소, 고베 숙소 |
+| 🟣 | 사진 명소 | 청수사, 산넨자카 |
+| 🔴 | 맛집 | 식당, 디저트 가게 |
+| 🟠 | 카페 | 카페, 휴식 장소 |
+| 🔵 | 역 | 교토역, 산조역 |
+| 🔷 | 공항 | 간사이국제공항 |
+| ⚫ | 짐 보관·이동 | 수하물 보관, 이동 구간 |
+
+---
+
 ## AI로 새 여행 자동 만들기
 
 이 저장소는 여행 계획을 입력받아 여행지별 폴더와 모바일 일정 앱을 만드는 템플릿입니다. 여행 계획을 아래 포맷으로 전달하면 AI가 장소 조사, 지도 연결, 일정 JSON 작성, 대표 이미지, 메뉴 번역, 대체 식당, 실제 방문 기록 기능까지 기존 앱 구조에 맞춰 구성합니다.
+
+### 복붙용 기본 프롬프트
+
+아래 코드블록을 그대로 복사한 뒤, 알고 있는 값만 채워 Claude Code·Gemini CLI·Codex에 전달하세요.
+
+```text
+이 저장소의 travel-map-builder 스킬을 사용해 새 여행 앱을 만들어줘.
+
+여행지: [도시 또는 국가]
+기간: [YYYY-MM-DD ~ YYYY-MM-DD 또는 3박 4일]
+숙소: [이름·주소·Google Maps 링크. 모르면 예정/미정]
+가고 싶은 곳: [장소·맛집·카페·활동]
+여행 스타일/예산: [예: 맛집 중심, 하루 3~4곳, 1인 하루 10,000엔]
+참고 자료: [링크·문서·이미지·메모]
+원하는 작업: [앱 생성만 / GitHub Pages 배포까지]
+
+부족한 주소·Google Maps 링크·좌표·영업시간·휴무일·가격·메뉴·대표 이미지는 조사해서 채워줘.
+확인할 수 없는 내용은 추측하지 말고 화면에 `확인 필요`로 표시해줘.
+기존 여행은 수정하지 말고 새 destination-slug 폴더와 루트 허브 카드를 만들어줘.
+일본어 메뉴는 원문 아래에 한국어 번역과 가격을 표시하고, 식당별 휴무일·대체 식당·출처 링크도 포함해줘.
+모바일 화면에서 잘리지 않는지 검사하고, 배포를 요청한 경우에만 GitHub Pages까지 배포해줘.
+```
+
+> [!NOTE]
+> 장소명만 적어도 됩니다. Google Maps 링크가 없으면 AI가 공식 장소 정보와 정확한 지역을 대조해 검색 링크를 만들고, 정확한 핀을 확인하지 못한 경우 좌표를 임의로 만들지 않습니다.
 
 ### 여행별로 분리되는 방식
 
