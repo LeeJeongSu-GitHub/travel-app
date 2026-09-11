@@ -9,7 +9,7 @@ Use this repository as a reusable travel-app template. Convert the user's curren
 
 ## Inspect first
 
-Read `README.md`, the nearest `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `src/Prototype.tsx`, `src/travel-ui/components.tsx`, `src/travel-ui/types.ts`, `src/travel-ui/category.ts`, `src/prototype.css`, [references/trip-data-contract.md](references/trip-data-contract.md), [references/design-system.md](references/design-system.md), [references/component-contract.md](references/component-contract.md), and [references/research-packet.md](references/research-packet.md) when research output is supplied or requested. Inspect existing destination folders and the root travel hub first. When deployment is requested, also inspect `.github/workflows/deploy-pages.yml` and `vite.config.ts`. Do not overwrite another destination when the user gives a new trip. Keep `.agents/skills/travel-map-builder/` canonical; `.claude/skills/travel-map-builder/` and `.gemini/skills/travel-map-builder/` are lightweight pointers to it.
+Read `README.md`, the nearest `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `src/Prototype.tsx`, `src/travel-ui/components.tsx`, `src/travel-ui/types.ts`, `src/travel-ui/category.ts`, `src/travel-ui/index.ts`, `src/prototype.css`, [references/trip-data-contract.md](references/trip-data-contract.md), [references/design-system.md](references/design-system.md), [references/component-contract.md](references/component-contract.md), and [references/research-packet.md](references/research-packet.md) when research output is supplied or requested. Inspect existing destination folders and the root travel hub first. When deployment is requested, also inspect `.github/workflows/deploy-pages.yml` and `vite.config.ts`. Do not overwrite another destination when the user gives a new trip. Keep `.agents/skills/travel-map-builder/` canonical; `.claude/skills/travel-map-builder/` and `.gemini/skills/travel-map-builder/` are lightweight pointers to it.
 
 ## Build the destination
 
@@ -28,6 +28,8 @@ For the exact JSON fields, allowed values, uncertainty rules, and menu example, 
 For the required visual hierarchy, tokens, responsive behavior, prohibited design drift, and exact component APIs, read [references/design-system.md](references/design-system.md) and [references/component-contract.md](references/component-contract.md). A new destination should look like the current Kyoto/Kobe app with different content, not like a new generic travel dashboard.
 
 ## UI and asset rules
+
+For a UI-only request, use the dedicated [travel-ui skill](../travel-ui/SKILL.md) and keep this skill focused on destination data, research, and app workflow. `travel-map-builder` still owns the end-to-end path when a UI change is part of creating or enriching a trip.
 
 Read [references/design-system.md](references/design-system.md) and [references/component-contract.md](references/component-contract.md) before creating or changing app-owned UI. They are the visual and structural source of truth for every destination. If a user supplies a screenshot of a generated app with a different green dashboard design, treat it as a regression example to fix, not as the template to copy.
 

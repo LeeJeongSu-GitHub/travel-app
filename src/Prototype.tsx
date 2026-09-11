@@ -30,9 +30,8 @@ import {
   X,
 } from "lucide-react";
 import { BottomSheet, KeyboardInput, KeyboardTextarea, MobileScroll, useKeyboard } from "./mobile";
-import { TravelBottomNav, TravelCategoryLegend, TravelDataTransferSheet, TravelHeader, TravelPlaceCard, type CategoryConfig } from "./travel-ui/components";
-import { CATEGORY_COLORS, CATEGORY_CONFIGS, categoryIcons, categoryLabels } from "./travel-ui/category";
-import type { Category, CategoryFilter, Coordinate, DayFilter, LocalTripState, MapPlace, MenuImageKey, MenuItem, Place, PlaceDraft, ReservationStatus, TransferMode, TransferPayload, TransferStatus, Trip, TripDay, View } from "./travel-ui/types";
+import { CATEGORY_COLORS, CATEGORY_CONFIGS, TravelBottomNav, TravelCategoryLegend, TravelDataTransferSheet, TravelHeader, TravelPlaceCard, categoryIcons, categoryLabels, type CategoryConfig } from "./travel-ui";
+import type { Category, CategoryFilter, Coordinate, DayFilter, LocalTripState, MapPlace, MenuImageKey, MenuItem, Place, PlaceDraft, ReservationStatus, TransferMode, TransferPayload, TransferStatus, Trip, TripDay, View } from "./travel-ui";
 const tripDataFiles = import.meta.glob("../*/trip.json", { eager: true, import: "default" }) as Record<string, Trip>;
 
 setWorkerUrl(maplibreWorkerUrl);

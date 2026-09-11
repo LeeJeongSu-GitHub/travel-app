@@ -31,6 +31,7 @@
 - [현재 구현·작업 내역](#현재-작업-완료-내역)
 - [디자인 고정 규칙](#디자인-고정-규칙)
 - [공통 UI 컴포넌트 계약](#공통-ui-컴포넌트-계약)
+- [공통 UI 스킬](#공통-ui-스킬)
 - [새 여행 입력 방법](#가장-쉬운-입력-방법-권장)
 - [조사자료 받기용 프롬프트](#조사자료-받기용-프롬프트)
 - [자동 조사·이미지 출처 규칙](#자동-조사-시-출처이미지-처리-규칙)
@@ -73,6 +74,7 @@ src/                       # 공통 모바일 앱 엔진
     components.tsx         # 모든 여행이 공유하는 헤더·카드·범례·시트·하단 메뉴
     types.ts               # Trip/Place/로컬 기록 공통 타입
     category.ts            # 카테고리 색상·한글 라벨·아이콘 공통 매핑
+    index.ts               # 공통 UI·타입·카테고리의 단일 import 진입점
 public/                    # 공통 디바이스·지도 자산
 ```
 
@@ -167,9 +169,10 @@ npm run dev
 
 | 도구 | 자동으로 읽는 파일 | 역할 |
 | --- | --- | --- |
-| Codex | `AGENTS.md` → `.agents/skills/travel-map-builder/SKILL.md` | 공통 UI를 사용해 여행 앱 생성·수정 |
-| Claude Code | `CLAUDE.md` → `.claude/skills/travel-map-builder/SKILL.md` | canonical 스킬을 참조하는 동일 작업 |
-| Gemini CLI | `GEMINI.md` → `.gemini/skills/travel-map-builder/SKILL.md` | canonical 스킬을 참조하는 동일 작업 |
+| Codex | `AGENTS.md` → `.agents/skills/travel-map-builder/SKILL.md` | 조사·데이터·새 여행까지 포함한 전체 작업 |
+| Codex UI-only | `AGENTS.md` → `.agents/skills/travel-ui/SKILL.md` | 공통 UI·반응형·시각 회귀 수정 |
+| Claude Code | `CLAUDE.md` → `.claude/skills/travel-map-builder/` 또는 `.claude/skills/travel-ui/` | canonical 스킬을 참조하는 동일 작업 |
+| Gemini CLI | `GEMINI.md` → `.gemini/skills/travel-map-builder/` 또는 `.gemini/skills/travel-ui/` | canonical 스킬을 참조하는 동일 작업 |
 
 세 환경 모두 `.agents/skills/travel-map-builder/`를 기준으로 하며, 다음 계약을 공유합니다.
 
@@ -177,6 +180,7 @@ npm run dev
 - 디자인: [`design-system.md`](./.agents/skills/travel-map-builder/references/design-system.md)
 - 앱 데이터: [`trip-data-contract.md`](./.agents/skills/travel-map-builder/references/trip-data-contract.md)
 - 조사자료 전달: [`research-packet.md`](./.agents/skills/travel-map-builder/references/research-packet.md)
+- UI-only 스킬: [`.agents/skills/travel-ui/SKILL.md`](./.agents/skills/travel-ui/SKILL.md)
 
 새 여행을 만들 때는 기존 여행을 덮어쓰지 않고 새 `<destination-slug>/`와 `trip.json`을 만들며, `src/travel-ui/`의 공통 컴포넌트를 그대로 사용합니다. 여행 폴더에 별도 dashboard, 헤더, 카드 JSX, 하단 메뉴, CSS를 만들지 않습니다.
 
@@ -217,8 +221,8 @@ npm run dev
 - 공통 디자인 계약: `.agents/skills/travel-map-builder/references/design-system.md`
 - 공통 UI 컴포넌트 계약: `.agents/skills/travel-map-builder/references/component-contract.md`
 - 조사자료 전달 계약: `.agents/skills/travel-map-builder/references/research-packet.md`
-- 공통 UI 구현: `src/travel-ui/components.tsx`, 공통 타입: `src/travel-ui/types.ts`, 공통 카테고리: `src/travel-ui/category.ts`
-- clone/fork용 에이전트 진입점: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/skills/travel-map-builder/agents/openai.yaml`
+- 공통 UI 구현: `src/travel-ui/components.tsx`, 공통 타입: `src/travel-ui/types.ts`, 공통 카테고리: `src/travel-ui/category.ts`, 단일 진입점: `src/travel-ui/index.ts`
+- clone/fork용 에이전트 진입점: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/skills/travel-map-builder/agents/openai.yaml`, `.agents/skills/travel-ui/agents/openai.yaml`
 - 짧은 여행 입력부터 상세 조사자료까지 지원하며, 사용자는 여행지·기간·숙소·가고 싶은 곳 정도만 입력해도 됩니다.
 - 새 기능이나 데이터 필드가 추가되면 이 README의 작업 완료 내역, 입력 포맷, 생성 결과 목록도 함께 갱신합니다. 공통 UI를 바꿀 때는 컴포넌트 계약과 실제 교토·고베 화면도 함께 갱신합니다.
 
@@ -233,8 +237,8 @@ import {
   TravelDataTransferSheet,
   TravelHeader,
   TravelPlaceCard,
-} from "./travel-ui/components";
-import type { Place, Trip, View } from "./travel-ui/types";
+} from "./travel-ui";
+import type { Place, Trip, View } from "./travel-ui";
 ```
 
 | 공통 컴포넌트 | 책임 |
@@ -252,6 +256,60 @@ BottomSheet: 장소 상세 / 장소 편집 / TravelDataTransferSheet
 ```
 
 여행별로 허용되는 것은 `trip.json`과 이미지 데이터, 그리고 대표 이미지 선택 같은 얇은 데이터 어댑터뿐입니다. 장소 카드·헤더·하단 메뉴·데이터 시트의 전체 JSX를 복사하거나 여행별 dashboard/독립 CSS를 만들지 않습니다. 새로운 UI 원시 요소가 필요하면 `components.tsx`, `types.ts`, `prototype.css`, `component-contract.md`를 함께 업데이트하고 기존 여행에서 실제로 사용합니다.
+
+## 공통 UI 스킬
+
+여행 데이터는 그대로 두고 헤더·지도·카드·상세 시트·반응형 레이아웃만 수정할 때는 `travel-map-builder` 대신 UI 전용 스킬을 호출합니다. 이 스킬은 현재 교토·고베 화면을 기준으로 `src/travel-ui/`의 공통 컴포넌트를 사용하게 하고, 다른 여행 폴더에 별도 dashboard나 다른 디자인이 생기는 것을 막습니다.
+
+| 환경 | 호출/진입점 |
+| --- | --- |
+| Codex | `$travel-ui` 또는 `.agents/skills/travel-ui/SKILL.md` |
+| Claude Code | `.claude/skills/travel-ui/SKILL.md` → `.agents/skills/travel-ui/SKILL.md` |
+| Gemini CLI | `.gemini/skills/travel-ui/SKILL.md` → `.agents/skills/travel-ui/SKILL.md` |
+
+새 UI 작업은 아래처럼 요청하면 됩니다.
+
+```text
+이 저장소의 $travel-ui 스킬을 사용해 UI만 수정해줘.
+
+문제/요구사항: [예: Pixel 10에서 헤더가 잘리고 카드 썸네일이 본문을 가림]
+기준 화면: 현재 교토·고베 앱의 모바일 디자인
+범위: [헤더 / 지도 / 장소 카드 / 상세 시트 / 하단 메뉴 / 반응형 중 선택]
+
+반드시 지켜줘:
+- `.agents/skills/travel-map-builder/references/design-system.md`와
+  `.agents/skills/travel-map-builder/references/component-contract.md`를 먼저 읽어줘.
+- `TravelHeader`, `TravelBottomNav`, `TravelCategoryLegend`, `TravelPlaceCard`,
+  `TravelDataTransferSheet`와 `src/prototype.css`를 재사용해줘.
+- 공통 UI는 `src/travel-ui/`에서 수정하고 `Prototype.tsx`는 상태·데이터 조합만 담당하게 해줘.
+- Pretendard-first 폰트, 카테고리별 색상/아이콘, 헤더 안 DAY/date, compact sticky 지도,
+  스크롤 가능한 상세 시트, 360/393/430px 무 overflow를 유지해줘.
+- 마커 클릭은 카드 포커스만, 카드 본문 클릭은 상세 시트 열기로 유지해줘.
+- 기존 여행의 데이터를 바꾸거나 destination별 dashboard/CSS를 새로 만들지 마.
+
+검수:
+- `npm run validate:trip`
+- `npm run check:runtime`
+- `npm run build`
+- `npm run test:sites`
+- 360/393/430px와 넓은 기기 미리보기에서 제목·DAY·버튼·썸네일·메뉴가 겹치거나 잘리지 않는지 확인해줘.
+- 계약이 바뀌면 design-system.md, component-contract.md, README도 함께 업데이트해줘.
+```
+
+공통 컴포넌트는 새 화면에서 다음 단일 진입점으로 가져올 수 있습니다.
+
+```tsx
+import {
+  TravelBottomNav,
+  TravelCategoryLegend,
+  TravelDataTransferSheet,
+  TravelHeader,
+  TravelPlaceCard,
+} from "./travel-ui";
+import type { Place, Trip, View } from "./travel-ui";
+```
+
+상세한 시각 규칙은 [design-system.md](./.agents/skills/travel-map-builder/references/design-system.md), 컴포넌트 입력·책임은 [component-contract.md](./.agents/skills/travel-map-builder/references/component-contract.md), 실행 절차는 [`.agents/skills/travel-ui/SKILL.md`](./.agents/skills/travel-ui/SKILL.md)에 있습니다.
 
 ### 디자인 고정 규칙
 

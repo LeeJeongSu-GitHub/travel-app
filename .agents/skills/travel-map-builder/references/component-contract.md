@@ -1,10 +1,11 @@
 # 공통 여행 UI 컴포넌트 계약
 
-이 저장소의 모든 여행지는 교토·고베 화면과 같은 UI를 사용합니다. 구현 기준은 다음 세 파일입니다.
+이 저장소의 모든 여행지는 교토·고베 화면과 같은 UI를 사용합니다. UI-only 작업은 [travel-ui 스킬](../../travel-ui/SKILL.md)을 먼저 읽고, 구현 기준은 다음 파일입니다.
 
 - `src/travel-ui/components.tsx`: 재사용 가능한 화면 컴포넌트
 - `src/travel-ui/types.ts`: 여행 데이터·로컬 기록 타입
 - `src/travel-ui/category.ts`: 카테고리 색상·한글 라벨·아이콘 공통 매핑
+- `src/travel-ui/index.ts`: 새 화면에서 사용하는 공통 UI 진입점(barrel export)
 - `src/prototype.css`: 공통 토큰과 반응형 레이아웃
 
 `src/Prototype.tsx`는 여행 데이터 로딩, 지도 효과, 로컬 상태, 화면 조합만 담당합니다. `<destination-slug>/` 폴더는 진입점과 `trip.json`만 소유합니다.
@@ -47,11 +48,11 @@ import {
   TravelDataTransferSheet,
   TravelHeader,
   TravelPlaceCard,
-} from "./travel-ui/components";
-import type { Place, Trip, View } from "./travel-ui/types";
+} from "./travel-ui";
+import type { Place, Trip, View } from "./travel-ui";
 ```
 
-장소별 이미지를 만들기 위해 `PlacePreview` 같은 얇은 데이터 어댑터를 둘 수는 있지만, 카드의 전체 JSX·헤더·하단 메뉴·데이터 시트를 목적지 폴더에 복사하면 안 됩니다. 새 공통 UI가 필요하면 `components.tsx`와 이 계약을 함께 수정한 뒤 기존 교토·고베 화면에서도 실제로 사용합니다.
+장소별 이미지를 만들기 위해 `PlacePreview` 같은 얇은 데이터 어댑터를 둘 수는 있지만, 카드의 전체 JSX·헤더·하단 메뉴·데이터 시트를 목적지 폴더에 복사하면 안 됩니다. 새 공통 UI가 필요하면 `components.tsx`, `index.ts`, 이 계약을 함께 수정한 뒤 기존 교토·고베 화면에서도 실제로 사용합니다.
 
 ## 데이터와 스타일 경계
 

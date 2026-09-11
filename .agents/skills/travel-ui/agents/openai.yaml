@@ -1,0 +1,4 @@
+interface:
+  display_name: "Travel UI"
+  short_description: "Build consistent travel screens with shared UI components"
+  default_prompt: "Use $travel-ui to build or refine this repository's travel UI with the shared design system and reusable components."

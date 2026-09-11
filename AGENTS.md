@@ -75,14 +75,14 @@ When any text-entry control loses focus, dismiss the simulated keyboard. If the 
 
 ## Cross-model travel workflow
 
-When a user supplies a travel plan, PRD, notes, screenshots, or place research and asks to create or update a trip, read and follow `.agents/skills/travel-map-builder/SKILL.md` and its linked data and component contracts. This repository also exposes the same workflow through `.claude/skills/travel-map-builder/` and `.gemini/skills/travel-map-builder/` for Claude Code and Gemini CLI. Treat the user's current request as authoritative, keep uncertain research marked for confirmation, and publish only when the user explicitly requests it.
+When a user supplies a travel plan, PRD, notes, screenshots, or place research and asks to create or update a trip, read and follow `.agents/skills/travel-map-builder/SKILL.md` and its linked data and component contracts. For a UI-only request, use `.agents/skills/travel-ui/SKILL.md`; it is the focused entrypoint for the shared component and visual contract. This repository also exposes both workflows through `.claude/skills/` and `.gemini/skills/` for Claude Code and Gemini CLI. Treat the user's current request as authoritative, keep uncertain research marked for confirmation, and publish only when the user explicitly requests it.
 
 ## Portable travel agent bootstrap
 
 This file is the repository-level agent guide and travels with every clone or fork. The repository must be usable without changing the original maintainer's GitHub ID, repository name, or local path.
 
 1. From the cloned repository root, run `npm ci`, `npm run validate:trip`, `npm run check:runtime`, and `npm run build`.
-2. For Codex, use `.agents/skills/travel-map-builder/SKILL.md`; for Claude Code, use `CLAUDE.md` and `.claude/skills/travel-map-builder/SKILL.md`; for Gemini CLI, use `GEMINI.md` and `.gemini/skills/travel-map-builder/SKILL.md`. These all resolve to the same canonical skill and references.
+2. For end-to-end travel work, Codex uses `.agents/skills/travel-map-builder/SKILL.md`, Claude Code uses `CLAUDE.md` and `.claude/skills/travel-map-builder/SKILL.md`, and Gemini CLI uses `GEMINI.md` and `.gemini/skills/travel-map-builder/SKILL.md`. For UI-only work, use the matching `travel-ui/SKILL.md` entrypoints. All provider pointers resolve to the same canonical contracts.
 3. If the request is research-only, return the `travel-research.v1` JSON packet described in `.agents/skills/travel-map-builder/references/research-packet.md` and do not edit the app. If app generation is requested, create a new destination folder and use the shared `src/travel-ui/` components.
 4. Run the visual and Sites checks before handoff. Only commit, push, or deploy when the user explicitly asks for that action. GitHub Pages base paths are derived from `GITHUB_REPOSITORY`.
 
