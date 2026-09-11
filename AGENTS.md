@@ -8,6 +8,8 @@ Before planning or implementing any mobile-app change, read this `AGENTS.md` in 
 
 Before making substantial visual changes, use the Product Design plugin's `get-context` skill when the visual source is unclear or no longer matches the current goal. When the user gives durable prototype-specific design feedback, preferences, or decisions, record them in `AGENTS.md`.
 
+For app-owned responsive layouts, use the phone screen container width as a breakpoint source as well as the browser viewport. Simulated device previews can keep a wide desktop viewport around a narrow phone screen, so headers and action rows must not rely only on viewport media queries or allow title/date text to clip.
+
 When implementing from a selected generated mock, treat that image as the source of truth for layout, component anatomy, density, spacing, color, typography, visible content, and hierarchy.
 
 ## Editing Boundary
