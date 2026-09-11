@@ -685,7 +685,7 @@ p {
   border-radius: 22px 22px 0 0;
   background: #fff;
   box-shadow: 0 -16px 48px rgba(0, 0, 0, 0.2);
-  touch-action: none;
+  touch-action: auto;
 }
 
 .sheet-handle-zone {
@@ -709,9 +709,12 @@ p {
 }
 
 .sheet-title {
+  overflow: hidden;
   margin: 0;
   font-size: 18px;
   font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sheet-description {
@@ -722,8 +725,13 @@ p {
 }
 
 .sheet-content {
+  min-height: 0;
+  flex: 1 1 auto;
   overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 0 18px 24px;
+  touch-action: pan-y;
 }
 
 .keyboard-dock {

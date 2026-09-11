@@ -56,10 +56,10 @@
           "price": "¥780–¥1,230",
           "admission": "해당 없음",
           "menu": [
-            { "name": "라멘", "price": "¥980" },
-            { "name": "특제 라멘", "price": "¥1,230" },
-            { "name": "교자 6개", "price": "¥350" },
-            { "name": "라이스(소)", "price": "¥200" }
+            { "name": "라멘", "nameJa": "ラーメン", "nameKo": "라멘", "price": "¥980" },
+            { "name": "특제 라멘", "nameJa": "特製ラーメン", "nameKo": "특제 라멘", "price": "¥1,230" },
+            { "name": "교자 6개", "nameJa": "餃子 6個", "nameKo": "교자 6개", "price": "¥350" },
+            { "name": "라이스(소)", "nameJa": "ライス（小）", "nameKo": "라이스(소)", "price": "¥200" }
           ],
           "operatingNote": "JR 교토역에서 도보 약 4분. 대기가 생길 수 있습니다.",
           "infoSourceUrl": "https://www.honke-daiichiasahi.com/shop.html",
@@ -220,10 +220,10 @@
           "price": "약 ¥950–¥1,250",
           "admission": "해당 없음",
           "menu": [
-            { "name": "土ごぼう天ざるうどん", "nameKo": "우엉튀김 자루우동", "price": "약 ¥1,000~" },
-            { "name": "土ごぼう天うどん", "nameKo": "우엉튀김 우동", "price": "약 ¥1,200" },
-            { "name": "鶏ささみ天うどん", "nameKo": "닭 안심 튀김 우동", "price": "약 ¥1,250" },
-            { "name": "京カレーのつけ麺", "nameKo": "교토식 카레 츠케멘", "price": "약 ¥950" }
+            { "name": "土ごぼう天ざるうどん", "nameJa": "土ごぼう天ざるうどん", "nameKo": "우엉튀김 자루우동", "price": "약 ¥1,000~" },
+            { "name": "土ごぼう天うどん", "nameJa": "土ごぼう天うどん", "nameKo": "우엉튀김 우동", "price": "약 ¥1,200" },
+            { "name": "鶏ささみ天うどん", "nameJa": "鶏ささみ天うどん", "nameKo": "닭 안심 튀김 우동", "price": "약 ¥1,250" },
+            { "name": "京カレーのつけ麺", "nameJa": "京カレーのつけ麺", "nameKo": "교토식 카레 츠케멘", "price": "약 ¥950" }
           ],
           "operatingNote": "목요일·부정기 휴무, 면 소진 시 조기 종료. 예약 후에도 현장 대기가 생길 수 있습니다.",
           "infoSourceUrl": "https://yamamotomenzou.com/about.html",
@@ -267,10 +267,10 @@
           "price": "¥2,000–¥4,000",
           "admission": "해당 없음",
           "menu": [
-            { "name": "키치키치 오므라이스(스몰)", "price": "¥2,000" },
-            { "name": "키치키치 오므라이스", "price": "¥3,000" },
-            { "name": "오늘의 크림 고로케", "price": "¥2,000" },
-            { "name": "비프 스튜", "price": "¥4,000" }
+            { "name": "키치키치 오므라이스(스몰)", "nameJa": "キチキチオムライス（スモール）", "nameKo": "키치키치 오므라이스(스몰)", "price": "¥2,000" },
+            { "name": "키치키치 오므라이스", "nameJa": "キチキチオムライス", "nameKo": "키치키치 오므라이스", "price": "¥3,000" },
+            { "name": "오늘의 크림 고로케", "nameJa": "本日のクリームコロッケ", "nameKo": "오늘의 크림 고로케", "price": "¥2,000" },
+            { "name": "비프 스튜", "nameJa": "ビーフシチュー", "nameKo": "비프 스튜", "price": "¥4,000" }
           ],
           "operatingNote": "예약제·부정기 휴무. 방문 전 예약 가능 여부를 확인하세요.",
           "infoSourceUrl": "https://kichikichi.com/en/menu/",
@@ -378,10 +378,10 @@
           "price": "¥1,000–¥2,400",
           "admission": "해당 없음",
           "menu": [
-            { "name": "ざるそば·うどん", "nameKo": "자루소바·우동", "price": "¥1,000" },
-            { "name": "天ざるそば·うどん", "nameKo": "튀김 자루소바·우동", "price": "¥1,800" },
-            { "name": "親子丼", "nameKo": "오야코동(닭고기·계란 덮밥)", "price": "¥1,500" },
-            { "name": "天ざる御膳", "nameKo": "튀김 자루 정식", "price": "¥2,400" }
+            { "name": "ざるそば·うどん", "nameJa": "ざるそば·うどん", "nameKo": "자루소바·우동", "price": "¥1,000" },
+            { "name": "天ざるそば·うどん", "nameJa": "天ざるそば·うどん", "nameKo": "튀김 자루소바·우동", "price": "¥1,800" },
+            { "name": "親子丼", "nameJa": "親子丼", "nameKo": "오야코동(닭고기·계란 덮밥)", "price": "¥1,500" },
+            { "name": "天ざる御膳", "nameJa": "天ざる御膳", "nameKo": "튀김 자루 정식", "price": "¥2,400" }
           ],
           "alternativeFor": "yamamoto-menzo",
           "nearbyWalk": "야마모토 멘조우에서 도보 약 2분",
@@ -404,10 +404,10 @@
           "price": "약 ¥2,000–¥3,000",
           "admission": "해당 없음",
           "menu": [
-            { "name": "トロ鉄火巻", "nameKo": "참치 뱃살 철화말이", "price": "¥1,078" },
-            { "name": "エビ7-SEVEN-", "nameKo": "새우 7-SEVEN-", "price": "¥1,078" },
-            { "name": "うなカツサンド", "nameKo": "장어 커틀릿 샌드", "price": "¥1,078" },
-            { "name": "ポテサラ", "nameKo": "감자 샐러드", "price": "¥440" }
+            { "name": "トロ鉄火巻", "nameJa": "トロ鉄火巻", "nameKo": "참치 뱃살 철화말이", "price": "¥1,078" },
+            { "name": "エビ7-SEVEN-", "nameJa": "エビ7-SEVEN-", "nameKo": "새우 7-SEVEN-", "price": "¥1,078" },
+            { "name": "うなカツサンド", "nameJa": "うなカツサンド", "nameKo": "장어 커틀릿 샌드", "price": "¥1,078" },
+            { "name": "ポテサラ", "nameJa": "ポテサラ", "nameKo": "감자 샐러드", "price": "¥440" }
           ],
           "alternativeFor": "kichi-kichi",
           "nearbyWalk": "키치키치에서 도보 약 2분 · 가와라마치권",
@@ -505,8 +505,8 @@
           "price": "런치·코스별 상이",
           "admission": "해당 없음",
           "menu": [
-            { "name": "고베규 스테이크 런치", "price": "가격 확인 필요" },
-            { "name": "고베규 스테이크 코스", "price": "가격 확인 필요" }
+            { "name": "고베규 스테이크 런치", "nameJa": "神戸牛ステーキランチ", "nameKo": "고베규 스테이크 런치", "price": "가격 확인 필요" },
+            { "name": "고베규 스테이크 코스", "nameJa": "神戸牛ステーキコース", "nameKo": "고베규 스테이크 코스", "price": "가격 확인 필요" }
           ],
           "operatingNote": "화요일·부정기 휴무. 지점별 영업시간과 메뉴가 다를 수 있습니다.",
           "infoSourceUrl": "https://kobe-ishidaya.com/feature/steak/",
@@ -609,10 +609,10 @@
           "price": "런치 약 ¥1,650~ · 디너 약 ¥2,500~",
           "admission": "해당 없음",
           "menu": [
-            { "name": "명물 단바 토종닭 튀김", "price": "¥800–¥1,200" },
-            { "name": "프랑크푸르트 소시지", "price": "약 ¥980" },
-            { "name": "비프 필라프", "price": "약 ¥1,480" },
-            { "name": "생맥주", "price": "가격 확인 필요" }
+            { "name": "명물 단바 토종닭 튀김", "nameJa": "名物丹波地鶏の唐揚げ", "nameKo": "명물 단바 토종닭 튀김", "price": "¥800–¥1,200" },
+            { "name": "프랑크푸르트 소시지", "nameJa": "フランクフルトソーセージ", "nameKo": "프랑크푸르트 소시지", "price": "약 ¥980" },
+            { "name": "비프 필라프", "nameJa": "ビーフピラフ", "nameKo": "비프 필라프", "price": "약 ¥1,480" },
+            { "name": "생맥주", "nameJa": "生ビール", "nameKo": "생맥주", "price": "가격 확인 필요" }
           ],
           "operatingNote": "하버랜드 umie MOSAIC 3F. 최신 메뉴·가격은 매장 확인.",
           "infoSourceUrl": "https://umie.jp/shops/detail/112",
@@ -647,10 +647,10 @@
           "price": "런치 ¥1,080~ · 코스 ¥2,880~",
           "admission": "해당 없음",
           "menu": [
-            { "name": "스테이크 S 런치(100g)", "price": "¥1,080" },
-            { "name": "고베규 스테이크 런치(150g)", "price": "¥3,180" },
-            { "name": "스테이크 세트(180g)", "price": "¥2,880" },
-            { "name": "고베규 스테이크 세트(180g)", "price": "¥4,880" }
+            { "name": "스테이크 S 런치(100g)", "nameJa": "ステーキSランチ（100g）", "nameKo": "스테이크 S 런치(100g)", "price": "¥1,080" },
+            { "name": "고베규 스테이크 런치(150g)", "nameJa": "神戸牛ステーキランチ（150g）", "nameKo": "고베규 스테이크 런치(150g)", "price": "¥3,180" },
+            { "name": "스테이크 세트(180g)", "nameJa": "ステーキセット（180g）", "nameKo": "스테이크 세트(180g)", "price": "¥2,880" },
+            { "name": "고베규 스테이크 세트(180g)", "nameJa": "神戸牛ステーキセット（180g）", "nameKo": "고베규 스테이크 세트(180g)", "price": "¥4,880" }
           ],
           "alternativeFor": "steak-ishida",
           "nearbyWalk": "스테이크 이시다에서 도보 약 3분 · 산노미야역권",
@@ -716,10 +716,10 @@
           "price": "커피 약 ¥700~ · 디저트 약 ¥900~",
           "admission": "해당 없음",
           "menu": [
-            { "name": "니시무라 오리지널 블렌드", "price": "¥700" },
-            { "name": "오리지널 아이스커피", "price": "¥700" },
-            { "name": "수제 푸딩", "price": "¥900" },
-            { "name": "핫케이크 세트", "price": "¥1,600" }
+            { "name": "니시무라 오리지널 블렌드", "nameJa": "にしむらオリジナルブレンド", "nameKo": "니시무라 오리지널 블렌드", "price": "¥700" },
+            { "name": "오리지널 아이스커피", "nameJa": "オリジナルアイスコーヒー", "nameKo": "오리지널 아이스커피", "price": "¥700" },
+            { "name": "수제 푸딩", "nameJa": "手作りプリン", "nameKo": "수제 푸딩", "price": "¥900" },
+            { "name": "핫케이크 세트", "nameJa": "ホットケーキセット", "nameKo": "핫케이크 세트", "price": "¥1,600" }
           ],
           "operatingNote": "2026년 6월 1일부터 본점 영업시간은 08:30–22:00입니다.",
           "infoSourceUrl": "https://kobe-nishimura.jp/shop/nakayamate.html",
@@ -763,9 +763,9 @@
           "price": "약 ¥1,000–¥3,000",
           "admission": "해당 없음",
           "menu": [
-            { "name": "헤레 비프 카츠레츠", "price": "가격 확인 필요" },
-            { "name": "오므라이스", "price": "가격 확인 필요" },
-            { "name": "양식 런치", "price": "가격 확인 필요" }
+            { "name": "헤레 비프 카츠레츠", "nameJa": "ヘレビーフカツレツ", "nameKo": "헤레 비프 카츠레츠", "price": "가격 확인 필요" },
+            { "name": "오므라이스", "nameJa": "オムライス", "nameKo": "오므라이스", "price": "가격 확인 필요" },
+            { "name": "양식 런치", "nameJa": "洋食ランチ", "nameKo": "양식 런치", "price": "가격 확인 필요" }
           ],
           "operatingNote": "예약 불가. 입구 발권기에서 정리권을 받고 대기하는 방식입니다.",
           "infoSourceUrl": "https://grill-ippei.co.jp/shop/sannomiya/",
