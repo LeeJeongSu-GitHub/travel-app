@@ -1,7 +1,7 @@
 {
-  "name": "교토·고베 여행 지도",
-  "short_name": "교토·고베 여행",
-  "description": "19일부터 22일까지의 교토·고베 여행 일정 지도",
+  "name": "Travel · 여행지 모음",
+  "short_name": "Travel",
+  "description": "여행지별 모바일 여행 일정 지도",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f6f8fb",

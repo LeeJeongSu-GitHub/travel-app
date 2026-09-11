@@ -35,7 +35,7 @@ import {
   X,
 } from "lucide-react";
 import { BottomSheet, KeyboardTextarea, MobileScroll, useKeyboard } from "./mobile";
-import tripData from "./data/trip.json";
+const tripDataFiles = import.meta.glob("../*/trip.json", { eager: true, import: "default" }) as Record<string, Trip>;
 
 setWorkerUrl(maplibreWorkerUrl);
 
@@ -81,7 +81,11 @@ type Trip = { title: string; days: TripDay[] };
 type MapPlace = Place & { dayNumber: number; dayOfMonth: number; dayTitle: string };
 type LocalTripState = { selectedDay: number; completedPlaceIds: string[]; favoritePlaceIds: string[]; notes: Record<string, string>; reservationDoneIds: string[] };
 
-const trip = tripData as Trip;
+const tripSlug = window.location.pathname.split("/").filter(Boolean).at(-1) ?? "kyoto-kobe-trip";
+const trip = tripDataFiles[`../${tripSlug}/trip.json`] ?? tripDataFiles["../kyoto-kobe-trip/trip.json"] ?? { title: "여행 지도", days: [] };
+const tripStorageKey = `travel-map-state-${tripSlug}`;
+const tripDestinationLabel = trip.title.replace(/\s*여행(?:\s*지도)?$/, "").trim();
+const tripDateLabel = trip.days.length ? `${trip.days[0].dayOfMonth}일 ~ ${trip.days[trip.days.length - 1].dayOfMonth}일 · ${tripDestinationLabel || trip.days[0].city}` : "여행 일정";
 const DAY_COLORS = ["#7357db", "#1457d9", "#139d8c", "#ef5a6f"];
 const categoryLabels: Record<Category, string> = {
   photo: "사진 명소",
@@ -123,11 +127,11 @@ const KOREAN_LABEL_EXPRESSION = [
 
 function readLocalState(): LocalTripState | null {
   try {
-    const raw = window.localStorage.getItem("kyoto-kobe-trip-state");
+    const raw = window.localStorage.getItem(tripStorageKey);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<LocalTripState>;
     return {
-      selectedDay: Number(parsed.selectedDay) || 19,
+      selectedDay: Number(parsed.selectedDay) || trip.days[0]?.dayOfMonth || 1,
       completedPlaceIds: Array.isArray(parsed.completedPlaceIds) ? parsed.completedPlaceIds : [],
       favoritePlaceIds: Array.isArray(parsed.favoritePlaceIds) ? parsed.favoritePlaceIds : [],
       notes: parsed.notes && typeof parsed.notes === "object" ? parsed.notes : {},
@@ -292,7 +296,7 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, userLocation, o
 
 function AppHeader({ view, menuOpen, setMenuOpen, setView }: { view: View; menuOpen: boolean; setMenuOpen: (open: boolean) => void; setView: (view: View) => void }) {
   const title = view === "schedule" ? trip.title : view === "map" ? "전체 지도" : view === "reservations" ? "예약·운영 확인" : "저장한 장소";
-  return <header className="trip-header"><button type="button" className="icon-button header-back" aria-label={view === "schedule" ? "일정 홈" : "일정으로 돌아가기"} onClick={() => setView("schedule")}><ArrowLeft size={22} strokeWidth={1.8} /></button><div className="header-copy"><strong>{title}</strong><span>19일 ~ 22일 · 교토 / 고베</span></div><button type="button" className="icon-button header-menu-button" aria-label="빠른 메뉴" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={21} strokeWidth={1.8} /> : <Menu size={22} strokeWidth={1.8} />}</button>{menuOpen ? <div className="quick-menu" role="menu"><button type="button" role="menuitem" onClick={() => { setView("schedule"); setMenuOpen(false); }}><CalendarDays size={16} /> 오늘 일정</button><button type="button" role="menuitem" onClick={() => { setView("map"); setMenuOpen(false); }}><MapIcon size={16} /> 전체 지도</button><button type="button" role="menuitem" onClick={() => { setView("reservations"); setMenuOpen(false); }}><Bookmark size={16} /> 예약 확인</button></div> : null}</header>;
+  return <header className="trip-header"><button type="button" className="icon-button header-back" aria-label={view === "schedule" ? "일정 홈" : "일정으로 돌아가기"} onClick={() => setView("schedule")}><ArrowLeft size={22} strokeWidth={1.8} /></button><div className="header-copy"><strong>{title}</strong><span>{tripDateLabel}</span></div><button type="button" className="icon-button header-menu-button" aria-label="빠른 메뉴" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={21} strokeWidth={1.8} /> : <Menu size={22} strokeWidth={1.8} />}</button>{menuOpen ? <div className="quick-menu" role="menu"><button type="button" role="menuitem" onClick={() => { setView("schedule"); setMenuOpen(false); }}><CalendarDays size={16} /> 오늘 일정</button><button type="button" role="menuitem" onClick={() => { setView("map"); setMenuOpen(false); }}><MapIcon size={16} /> 전체 지도</button><button type="button" role="menuitem" onClick={() => { setView("reservations"); setMenuOpen(false); }}><Bookmark size={16} /> 예약 확인</button></div> : null}</header>;
 }
 
 function DayTabs({ selectedDay, onChange }: { selectedDay: number; onChange: (day: number) => void }) {
@@ -375,7 +379,7 @@ export default function Prototype() {
   const selectedPlace = allPlaces.find((place) => place.id === selectedPlaceId) ?? null;
   const selectedPlaceDay = selectedPlace ? trip.days.find((day) => day.dayNumber === selectedPlace.dayNumber) : activeDay;
 
-  useEffect(() => { window.localStorage.setItem("kyoto-kobe-trip-state", JSON.stringify({ selectedDay, completedPlaceIds: completedIds, favoritePlaceIds: favoriteIds, notes, reservationDoneIds } satisfies LocalTripState)); }, [selectedDay, completedIds, favoriteIds, notes, reservationDoneIds]);
+  useEffect(() => { window.localStorage.setItem(tripStorageKey, JSON.stringify({ selectedDay, completedPlaceIds: completedIds, favoritePlaceIds: favoriteIds, notes, reservationDoneIds } satisfies LocalTripState)); }, [selectedDay, completedIds, favoriteIds, notes, reservationDoneIds]);
   useEffect(() => { const query = new URLSearchParams(window.location.search); query.set("day", String(selectedDay)); window.history.replaceState({}, "", `${window.location.pathname}?${query.toString()}`); }, [selectedDay]);
   useEffect(() => { if ("serviceWorker" in navigator) navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => undefined); }, []);
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = "kyoto-kobe-trip-v1";
+const CACHE_NAME = "travel-map-v1";
 const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
