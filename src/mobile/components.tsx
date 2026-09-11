@@ -91,6 +91,8 @@ function formatStatusTime(date: Date) {
 }
 
 function StatusIndicators({ platform }: { platform: "ios" | "android" }) {
+  const assetBase = `${import.meta.env.BASE_URL}assets/status/`;
+
   return (
     <img
       className="status-indicator-svg"
@@ -98,8 +100,8 @@ function StatusIndicators({ platform }: { platform: "ios" | "android" }) {
       data-platform={platform}
       src={
         platform === "android"
-          ? "/assets/status/status-icons.svg"
-          : "/assets/status/ios-status-icons.svg"
+          ? `${assetBase}status-icons.svg`
+          : `${assetBase}ios-status-icons.svg`
       }
       alt=""
       aria-hidden="true"
