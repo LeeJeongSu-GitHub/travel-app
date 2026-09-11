@@ -31,6 +31,7 @@
 - [새 여행 입력 방법](#가장-쉬운-입력-방법-권장)
 - [자동 조사·이미지 출처 규칙](#자동-조사-시-출처이미지-처리-규칙)
 - [스킬·데이터 계약](#스킬과-문서)
+- [실제 화면 미리보기](#실제-화면-미리보기)
 
 ---
 
@@ -182,6 +183,69 @@ Notion 토큰은 프론트 코드에 포함하지 않습니다. 여행 데이터
 | 🔵 | 역 | 교토역, 산조역 |
 | 🔷 | 공항 | 간사이국제공항 |
 | ⚫ | 짐 보관·이동 | 수하물 보관, 이동 구간 |
+
+---
+
+## 실제 화면 미리보기
+
+아래 이미지는 목업이 아니라 현재 GitHub Pages에 배포된 교토·고베 앱을 430×932 모바일 화면에서 직접 캡처한 화면입니다. 화면이 바뀌면 저장소의 스냅샷 생성 스크립트로 다시 만들 수 있습니다.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="./public/assets/readme/hub.png" alt="여행지 허브 화면" width="220" />
+      <br /><strong>01 · 여행지 허브</strong>
+      <br />여행지별 폴더를 카드로 분리합니다. 새 여행이 추가되어도 기존 일정과 섞이지 않습니다.
+    </td>
+    <td width="50%" valign="top">
+      <img src="./public/assets/readme/itinerary-day2.png" alt="DAY 2 일정과 지도 화면" width="220" />
+      <br /><strong>02 · 날짜별 일정·지도</strong>
+      <br />DAY 1~4 탭, 한글 지도, 방문 순서 마커, 실제 방문 체크, 장소 추가를 한 화면에서 사용합니다.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="./public/assets/readme/place-detail.png" alt="키치키치 장소 상세 화면" width="220" />
+      <br /><strong>03 · 장소 상세·메뉴</strong>
+      <br />영업시간, 가격, 입장료, 휴무일, 대체 식당, 일본어 메뉴와 한국어 번역·음식 사진을 확인합니다.
+    </td>
+    <td width="50%" valign="top">
+      <img src="./public/assets/readme/saved-records.png" alt="저장한 장소와 현지 메모 화면" width="220" />
+      <br /><strong>04 · 여행 기록</strong>
+      <br />장소를 저장하고 방문 체크·현지 메모를 남깁니다. 추가·수정·삭제와 실제 방문만 보기 기능도 제공합니다.
+    </td>
+  </tr>
+</table>
+
+### 화면에서 확인할 수 있는 기능
+
+| 화면 | 주요 기능 |
+| --- | --- |
+| 허브 | 여행지별 진입점, 여행 기간·지역 요약 |
+| 일정 | 날짜 탭, 일정 제목, 실제 방문 수, 대체 후보 토글, 장소 추가 |
+| 지도 | 한글 지도, 방문 순서 마커, 겹치는 좌표 마커 분리, 내 위치·경로 맞춤 |
+| 장소 카드 | 카테고리 아이콘·색상, 대표 이미지, 영업시간, 휴무일, 가격, 체크·즐겨찾기 |
+| 상세 시트 | 주소, Google Maps·길찾기, 예약 링크, 메뉴 원문·번역, 음식 사진, 대체 식당 |
+| 저장 | 즐겨찾기 모음, 현지 메모 모음, 실제 여행 중 기록 확인 |
+
+### 스냅샷 다시 만들기
+
+스크립트는 특정 GitHub 계정의 URL을 기본값으로 사용하지 않습니다. 로컬 서버나 각자의 공개 Pages URL을 `README_CAPTURE_URL`로 넘기면 같은 4장 구성을 다시 캡처합니다.
+
+```bash
+# 로컬 서버를 먼저 실행한 뒤
+README_CAPTURE_URL=http://localhost:5173/kyoto-kobe-trip/ node scripts/capture-readme-screenshots.mjs
+
+# 공개 Pages에서 캡처할 때
+README_CAPTURE_URL=https://<github-id>.github.io/<repository-name>/kyoto-kobe-trip/ node scripts/capture-readme-screenshots.mjs
+```
+
+PowerShell에서는 다음처럼 실행합니다.
+
+```powershell
+$env:README_CAPTURE_URL = "http://localhost:5173/kyoto-kobe-trip/"
+node scripts/capture-readme-screenshots.mjs
+```
 
 ---
 
