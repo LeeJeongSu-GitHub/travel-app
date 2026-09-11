@@ -779,13 +779,14 @@
 }
 
 .place-main {
-  display: flex;
+  display: grid;
   width: 100%;
   min-width: 0;
   min-height: 132px;
   align-items: flex-start;
+  grid-template-columns: 31px minmax(0, 1fr) 74px;
   gap: 11px;
-  padding: 16px 82px 15px 14px;
+  padding: 16px 14px 15px;
   border: 0;
   background: transparent;
   color: inherit;
@@ -803,6 +804,8 @@
   height: 31px;
   flex: 0 0 31px;
   place-items: center;
+  grid-column: 1;
+  grid-row: 1;
   margin-top: 1px;
   border-radius: 50%;
   background: var(--number-color);
@@ -814,6 +817,8 @@
 
 .place-copy {
   display: grid;
+  grid-column: 2;
+  grid-row: 1;
   min-width: 0;
   align-content: start;
   gap: 6px;
@@ -1001,10 +1006,10 @@
 }
 
 .place-preview {
-  position: absolute;
+  position: relative;
   z-index: 2;
-  top: 54px;
-  right: 12px;
+  top: auto;
+  right: auto;
   display: flex;
   width: 74px;
   height: 66px;
@@ -1017,6 +1022,9 @@
   background-position: center;
   background-size: cover;
   box-shadow: 0 3px 10px rgba(31, 54, 83, 0.12);
+  grid-column: 3;
+  grid-row: 1;
+  margin-top: 38px;
   pointer-events: none;
 }
 
@@ -2198,7 +2206,8 @@ a:focus-visible {
   }
 
   .place-main {
-    padding-right: 84px;
+    grid-template-columns: 31px minmax(0, 1fr) 66px;
+    padding-right: 14px;
   }
 
   .place-card > .reservation-badge {
@@ -2207,7 +2216,6 @@ a:focus-visible {
   }
 
   .place-preview {
-    right: 10px;
     width: 66px;
     height: 60px;
   }
@@ -2336,7 +2344,8 @@ a:focus-visible {
   }
 
   .place-main {
-    padding-right: 84px;
+    grid-template-columns: 31px minmax(0, 1fr) 66px;
+    padding-right: 14px;
   }
 
   .place-card > .reservation-badge {
@@ -2345,7 +2354,6 @@ a:focus-visible {
   }
 
   .place-preview {
-    right: 10px;
     width: 66px;
     height: 60px;
   }
