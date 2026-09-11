@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="교토 고베 여행 지도">
+  <rect width="512" height="512" rx="118" fill="#1457d9"/>
+  <path d="M128 139h256v234H128z" fill="#f7fbff" opacity=".95"/>
+  <path d="M128 139l85 40 85-40 86 40v195l-86-40-85 40-85-40z" fill="none" stroke="#1457d9" stroke-width="24" stroke-linejoin="round"/>
+  <circle cx="213" cy="214" r="31" fill="#ef5a6f"/>
+  <circle cx="299" cy="277" r="31" fill="#f2b94b"/>
+</svg>
