@@ -7,110 +7,41 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
-  ArrowLeft,
   ArrowUp,
   Bookmark,
   CalendarDays,
-  Camera,
   Check,
-  ChevronLeft,
   ChevronRight,
   CircleDollarSign,
   Clock3,
   CircleHelp,
-  Copy,
-  Download,
   ExternalLink,
   Heart,
   Info,
-  Landmark,
   LocateFixed,
-  Luggage,
   Map as MapIcon,
   MapPinned,
-  Menu,
   Navigation,
-  Plane,
   Pencil,
   Plus,
-  Search,
   StickyNote,
-  Share2,
   Ticket,
-  TrainFront,
   Trash2,
-  Utensils,
-  Upload,
   X,
 } from "lucide-react";
 import { BottomSheet, KeyboardInput, KeyboardTextarea, MobileScroll, useKeyboard } from "./mobile";
+import { TravelBottomNav, TravelCategoryLegend, TravelDataTransferSheet, TravelHeader, TravelPlaceCard, type CategoryConfig } from "./travel-ui/components";
+import { CATEGORY_COLORS, CATEGORY_CONFIGS, categoryIcons, categoryLabels } from "./travel-ui/category";
+import type { Category, CategoryFilter, Coordinate, DayFilter, LocalTripState, MapPlace, MenuImageKey, MenuItem, Place, PlaceDraft, ReservationStatus, TransferMode, TransferPayload, TransferStatus, Trip, TripDay, View } from "./travel-ui/types";
 const tripDataFiles = import.meta.glob("../*/trip.json", { eager: true, import: "default" }) as Record<string, Trip>;
 
 setWorkerUrl(maplibreWorkerUrl);
-
-type Category = "photo" | "restaurant" | "cafe" | "hotel" | "station" | "airport" | "logistics";
-type ReservationStatus = "required" | "recommended" | "not_required" | "check_required" | "completed";
-type Coordinate = [number, number];
-type View = "schedule" | "map" | "reservations" | "saved";
-type DayFilter = number | "all";
-type CategoryFilter = Category | "all";
-type MenuImageKey = "ramen" | "gyoza" | "rice" | "udon" | "tempura" | "curry" | "omurice" | "croquette" | "stew" | "soba" | "oyakodon" | "sushi" | "unagi" | "potato-salad" | "steak" | "karaage" | "sausage" | "pilaf" | "beer" | "coffee" | "pudding" | "pancake" | "katsu";
-type MenuItem = { name: string; nameJa?: string; nameKo?: string; price: string; note?: string; imageKey?: MenuImageKey; imageUrl?: string };
-
-type Place = {
-  id: string;
-  order: number;
-  name: string;
-  nameJa?: string;
-  category: Category;
-  latitude?: number;
-  longitude?: number;
-  address?: string;
-  plannedTime?: string;
-  googleMapsUrl: string;
-  directionsUrl?: string;
-  reservationUrl?: string;
-  reservationStatus?: ReservationStatus;
-  imageUrl?: string;
-  photoPoint?: string;
-  menuPoint?: string;
-  menu?: MenuItem[];
-  budget?: string;
-  hours?: string;
-  closedDays?: string;
-  price?: string;
-  admission?: string;
-  operatingNote?: string;
-  infoSourceUrl?: string;
-  alternativeFor?: string;
-  nearbyWalk?: string;
-  optional?: boolean;
-  notes?: string;
-};
-
-type TripDay = { id: string; dayNumber: number; dayOfMonth: number; city: string; title: string; places: Place[] };
-type Trip = { title: string; days: TripDay[] };
-type MapPlace = Place & { dayNumber: number; dayOfMonth: number; dayTitle: string };
-type PlaceDraft = { name: string; category: Category; plannedTime: string; address: string; hours: string; closedDays: string; price: string; admission: string; latitude: string; longitude: string; googleMapsUrl: string; directionsUrl: string; notes: string; markVisited: boolean };
-type LocalTripState = { selectedDay: number; completedPlaceIds: string[]; favoritePlaceIds: string[]; notes: Record<string, string>; reservationDoneIds: string[]; placeEdits: Record<string, Partial<Place>>; hiddenPlaceIds: string[]; addedPlaces: MapPlace[]; actualOnly: boolean };
-type TransferPayload = { schemaVersion: 1; kind: "travel-map-state"; tripSlug: string; tripTitle: string; exportedAt: string; tripSnapshot: Trip; state: LocalTripState };
-type TransferMode = "export" | "import";
-type TransferStatus = { tone: "info" | "success" | "error"; message: string } | null;
 
 const tripSlug = window.location.pathname.split("/").filter(Boolean).at(-1) ?? "kyoto-kobe-trip";
 const trip = tripDataFiles[`../${tripSlug}/trip.json`] ?? tripDataFiles["../kyoto-kobe-trip/trip.json"] ?? { title: "여행 지도", days: [] };
 const tripStorageKey = `travel-map-state-${tripSlug}`;
 const tripDestinationLabel = trip.title.replace(/\s*여행(?:\s*지도)?$/, "").trim();
 const tripDateLabel = trip.days.length ? `${trip.days[0].dayOfMonth}일 ~ ${trip.days[trip.days.length - 1].dayOfMonth}일 · ${tripDestinationLabel || trip.days[0].city}` : "여행 일정";
-const CATEGORY_COLORS: Record<Category, string> = {
-  photo: "#7357db",
-  restaurant: "#ef5a6f",
-  cafe: "#c1831f",
-  hotel: "#139d8c",
-  station: "#1457d9",
-  airport: "#2d76c7",
-  logistics: "#62718a",
-};
 const CATEGORY_IMAGE_URLS: Partial<Record<Category, string>> = {
   restaurant: "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Shoyu_Ramen%EF%BC%88Tokyo_Ramen%EF%BC%89_-_01.jpg/330px-Shoyu_Ramen%EF%BC%88Tokyo_Ramen%EF%BC%89_-_01.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
   cafe: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Latte_and_dark_coffee.jpg/330px-Latte_and_dark_coffee.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
@@ -139,24 +70,6 @@ const MENU_IMAGE_URLS: Record<MenuImageKey, string> = {
   pudding: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/Flan_2.jpg/330px-Flan_2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
   pancake: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Foodiesfeed.com_pouring-honey-on-pancakes-with-walnuts.jpg/330px-Foodiesfeed.com_pouring-honey-on-pancakes-with-walnuts.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
   katsu: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Matsunoya_W_Mega_Chicken_Katsu_Set_20200923-04.jpg/330px-Matsunoya_W_Mega_Chicken_Katsu_Set_20200923-04.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-};
-const categoryLabels: Record<Category, string> = {
-  photo: "사진 명소",
-  restaurant: "맛집",
-  cafe: "카페",
-  hotel: "숙소",
-  station: "역",
-  airport: "공항",
-  logistics: "짐 보관·이동",
-};
-const categoryIcons: Record<Category, typeof Camera> = {
-  photo: Camera,
-  restaurant: Utensils,
-  cafe: Search,
-  hotel: Landmark,
-  station: TrainFront,
-  airport: Plane,
-  logistics: Luggage,
 };
 const reservationLabels: Record<ReservationStatus, string> = {
   required: "예약 필수",
@@ -512,57 +425,14 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, onMarkerSelect,
   return mode === "day" ? <div className="trip-map-slot">{tripMap}</div> : tripMap;
 }
 
-function DataTransferSheet({ open, mode, text, status, onClose, onTextChange, onImport, onCopy, onShare, onDownload, onFileSelect }: { open: boolean; mode: TransferMode; text: string; status: TransferStatus; onClose: () => void; onTextChange: (value: string) => void; onImport: () => void; onCopy: () => void; onShare: () => void; onDownload: () => void; onFileSelect: (file: File) => void }) {
-  const keyboard = useKeyboard();
-  const exporting = mode === "export";
-  return <BottomSheet open={open} onOpenChange={(nextOpen) => { if (!nextOpen) onClose(); }} title={exporting ? "여행 데이터 내보내기" : "여행 데이터 가져오기"} description={exporting ? "현지 기록을 카카오톡이나 AI에게 공유해 두세요." : "저장해 둔 여행 데이터를 이 기기에 업데이트하세요."} snap={0.9}><div className="transfer-sheet-content"><div className="transfer-help"><Info size={16} /><span>{exporting ? "아래 JSON을 복사해 카카오톡 나에게 보내기, 메모장, 또는 AI 채팅에 저장할 수 있어요. 나중에 이 앱에서 그대로 가져오면 방문 체크·메모·수정 내용을 복원합니다." : "카카오톡이나 파일에서 받은 JSON 전체를 붙여넣으세요. 같은 여행 데이터인지 확인한 뒤 현재 기기의 기록을 교체합니다."}</span></div><KeyboardTextarea className="transfer-textarea" value={text} onChange={(event) => onTextChange(event.target.value)} onBlur={() => keyboard.hide()} placeholder={exporting ? "여행 데이터가 여기에 표시됩니다." : "여기에 JSON 전체를 붙여넣으세요."} rows={exporting ? 12 : 10} readOnly={exporting} spellCheck={false} />{status ? <p className={`transfer-status is-${status.tone}`} role={status.tone === "error" ? "alert" : "status"}>{status.message}</p> : null}{exporting ? <div className="transfer-actions"><button type="button" className="transfer-primary-button" onClick={onShare}><Share2 size={16} /> 카톡·앱으로 공유</button><button type="button" className="transfer-secondary-button" onClick={onCopy}><Copy size={16} /> 텍스트 복사</button><button type="button" className="transfer-secondary-button" onClick={onDownload}><Download size={16} /> 파일로 저장</button><button type="button" className="transfer-secondary-button" onClick={onClose}>닫기</button></div> : <div className="transfer-actions"><label className="transfer-secondary-button transfer-file-button"><Upload size={16} /> 파일 선택<input type="file" accept=".json,application/json" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) onFileSelect(file); }} /></label><button type="button" className="transfer-primary-button" onClick={onImport} disabled={!text.trim()}><Upload size={16} /> 이 데이터로 업데이트</button><button type="button" className="transfer-secondary-button" onClick={onClose}>취소</button></div>}</div></BottomSheet>;
-}
-
-function AppHeader({ view, menuOpen, setMenuOpen, setView, activeDay, onDayChange, onExportData, onImportData }: { view: View; menuOpen: boolean; setMenuOpen: (open: boolean) => void; setView: (view: View) => void; activeDay: TripDay; onDayChange: (day: number) => void; onExportData: () => void; onImportData: () => void }) {
-  const title = view === "schedule" ? trip.title : view === "map" ? "전체 지도" : view === "reservations" ? "예약·운영 확인" : "저장한 장소";
-  const activeDayIndex = trip.days.findIndex((day) => day.dayOfMonth === activeDay.dayOfMonth);
-  const previousDay = activeDayIndex > 0 ? trip.days[activeDayIndex - 1] : undefined;
-  const nextDay = activeDayIndex >= 0 && activeDayIndex < trip.days.length - 1 ? trip.days[activeDayIndex + 1] : undefined;
-  const dayNavigation = view === "schedule" ? <div className="header-day-nav" role="group" aria-label={`현재 DAY ${activeDay.dayNumber} ${activeDay.dayOfMonth}일`}><button type="button" onClick={() => previousDay && onDayChange(previousDay.dayOfMonth)} disabled={!previousDay} aria-label="이전 날짜"><ChevronLeft size={14} /></button><span className="header-day-label">DAY {activeDay.dayNumber} · {activeDay.dayOfMonth}일</span><button type="button" onClick={() => nextDay && onDayChange(nextDay.dayOfMonth)} disabled={!nextDay} aria-label="다음 날짜"><ChevronRight size={14} /></button></div> : null;
-  return <header className="trip-header"><button type="button" className="icon-button header-back" aria-label={view === "schedule" ? "일정 홈" : "일정으로 돌아가기"} onClick={() => setView("schedule")}><ArrowLeft size={22} strokeWidth={1.8} /></button><div className="header-copy"><strong>{title}</strong><div className="header-meta"><span>{tripDateLabel}</span>{dayNavigation}</div></div><button type="button" className="icon-button header-menu-button" aria-label="빠른 메뉴" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={21} strokeWidth={1.8} /> : <Menu size={22} strokeWidth={1.8} />}</button>{menuOpen ? <div className="quick-menu" role="menu"><button type="button" role="menuitem" onClick={() => { setView("schedule"); setMenuOpen(false); }}><CalendarDays size={16} /> 오늘 일정</button><button type="button" role="menuitem" onClick={() => { setView("map"); setMenuOpen(false); }}><MapIcon size={16} /> 전체 지도</button><button type="button" role="menuitem" onClick={() => { setView("reservations"); setMenuOpen(false); }}><Bookmark size={16} /> 예약 확인</button><span className="quick-menu-divider" aria-hidden="true" /><button type="button" role="menuitem" onClick={onExportData}><Download size={16} /> 데이터 내보내기</button><button type="button" role="menuitem" onClick={onImportData}><Upload size={16} /> 데이터 가져오기</button></div> : null}</header>;
-}
-
 function ReservationBadge({ status, completed }: { status?: ReservationStatus; completed?: boolean }) {
   if (!status || status === "not_required") return null;
   return <span className={`reservation-badge status-${completed ? "completed" : status}`}>{completed ? reservationLabels.completed : reservationLabels[status]}</span>;
 }
 
-function PlaceCard({ place, day, selected, completed, favorite, onSelect, onToggleComplete, onToggleFavorite }: { place: Place; day: TripDay; selected: boolean; completed: boolean; favorite: boolean; onSelect: () => void; onToggleComplete: () => void; onToggleFavorite: () => void }) {
-  const Icon = categoryIcons[place.category];
-  const closedDays = closureText(place);
-  return (
-    <article id={"place-" + place.id} className={"place-card category-" + place.category + (selected ? " is-selected" : "") + (completed ? " is-completed" : "") + (place.optional ? " is-optional" : "")}>
-      <button type="button" className="place-main" onClick={onSelect} aria-label={place.order + "번 " + place.name + " 상세 보기"}>
-        <span className="place-number" style={{ "--number-color": CATEGORY_COLORS[place.category] } as CSSProperties} title={categoryLabels[place.category]}>{place.order}</span>
-        <span className="place-copy">
-          <span className="place-title-row"><strong>{place.name}</strong>{place.optional ? <span className="optional-tag">대체</span> : null}</span>
-          <span className="place-meta"><span className={"category-icon category-" + place.category}><Icon size={14} /></span><span>{categoryLabels[place.category]}</span>{place.plannedTime ? " · " + place.plannedTime : ""}</span>
-          {place.reservationStatus && place.reservationStatus !== "not_required" ? <ReservationBadge status={place.reservationStatus} completed={completed} /> : null}
-          {place.optional && place.nearbyWalk ? <span className="nearby-label"><MapPinned size={13} /> {place.nearbyWalk}</span> : null}
-          {place.hours || place.price || place.admission ? <span className="place-facts">{place.hours ? <span><Clock3 size={12} /> {place.hours}</span> : null}{place.price ? <span><CircleDollarSign size={12} /> {place.price}</span> : null}{place.admission ? <span><Ticket size={12} /> {place.admission}</span> : null}</span> : null}
-          {closedDays ? <span className={"place-closed-days" + (closedDays === "확인 필요" ? " is-warning" : "")}><CalendarDays size={12} /><span>휴무일 · {closedDays}</span></span> : null}
-          {place.notes ? <span className="place-note">{place.notes}</span> : null}
-          {!coordinates(place) ? <span className="location-warning"><Info size={13} /> 지도 위치 확인 필요</span> : null}
-          <span className="place-actions"><a href={place.googleMapsUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}><MapIcon size={14} /> 지도</a>{place.directionsUrl ? <a href={place.directionsUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}><Navigation size={14} /> 길찾기</a> : null}</span>
-        </span>
-        <PlacePreview place={place} />
-      </button>
-      <div className="place-card-controls">
-        <button type="button" className={"favorite-button" + (favorite ? " is-active" : "")} onClick={onToggleFavorite} aria-label={favorite ? place.name + " 즐겨찾기 해제" : place.name + " 즐겨찾기"} aria-pressed={favorite}><Heart size={17} fill={favorite ? "currentColor" : "none"} /></button>
-        <button type="button" className={"complete-button" + (completed ? " is-active" : "")} onClick={onToggleComplete} aria-label={completed ? place.name + " 완료 해제" : place.name + " 방문 완료"} aria-pressed={completed}>{completed ? <Check size={16} /> : <span /> }<span>{completed ? "완료" : "체크"}</span></button>
-      </div>
-    </article>
-  );
-}
-
-function CategoryLegend() {
-  const categories: Category[] = ["hotel", "photo", "restaurant", "cafe", "station", "airport", "logistics"];
-  return <div className="category-legend" aria-label="번호 원형 색상 기준">{categories.map((category) => <span key={category}><i style={{ backgroundColor: CATEGORY_COLORS[category] }} />{categoryLabels[category]}</span>)}</div>;
+function PlaceCardDataAdapter({ place, selected, completed, favorite, onSelect, onToggleComplete, onToggleFavorite }: { place: Place; selected: boolean; completed: boolean; favorite: boolean; onSelect: () => void; onToggleComplete: () => void; onToggleFavorite: () => void }) {
+  const category: CategoryConfig = { key: place.category, label: categoryLabels[place.category], color: CATEGORY_COLORS[place.category], Icon: categoryIcons[place.category] };
+  return <TravelPlaceCard place={place} selected={selected} completed={completed} favorite={favorite} category={category} closureText={closureText(place)} preview={<PlacePreview place={place} />} onSelect={onSelect} onToggleComplete={onToggleComplete} onToggleFavorite={onToggleFavorite} />;
 }
 
 function MenuSection({ items }: { items: MenuItem[] }) {
@@ -619,7 +489,7 @@ function ScheduleView({ activeDay, selectedPlace, selectedPlaceId, showAlternati
   const otherAlternatives = activeDay.places.filter((place) => place.optional && place.category !== "restaurant");
   const withDay = (place: Place): MapPlace => ({ ...place, dayNumber: activeDay.dayNumber, dayOfMonth: activeDay.dayOfMonth, dayTitle: activeDay.title });
   const visitedCount = activeDay.places.filter((place) => completedIds.includes(place.id)).length;
-  const renderCard = (place: Place) => <PlaceCard place={place} day={activeDay} selected={selectedPlaceId === place.id} completed={completedIds.includes(place.id)} favorite={favoriteIds.includes(place.id)} onSelect={() => onSelectPlace(withDay(place))} onToggleComplete={() => onToggleComplete(place.id)} onToggleFavorite={() => onToggleFavorite(place.id)} />;
+  const renderCard = (place: Place) => <PlaceCardDataAdapter place={place} selected={selectedPlaceId === place.id} completed={completedIds.includes(place.id)} favorite={favoriteIds.includes(place.id)} onSelect={() => onSelectPlace(withDay(place))} onToggleComplete={() => onToggleComplete(place.id)} onToggleFavorite={() => onToggleFavorite(place.id)} />;
   return (
     <main className="schedule-view">
       <section className="day-intro">
@@ -636,7 +506,7 @@ function ScheduleView({ activeDay, selectedPlace, selectedPlaceId, showAlternati
       <TripMap places={primaryPlaces.map(withDay)} routePlaces={primaryPlaces.map(withDay)} selectedPlace={selectedPlace} onSelect={onSelectPlace} onMarkerSelect={onFocusPlace} userLocation={userLocation} onUserLocation={onUserLocation} />
       <section className="itinerary-section" aria-label={`${activeDay.dayOfMonth}일 일정 목록`}>
         <div className="section-heading"><div><span className="eyebrow">{primaryPlaces.length} STOPS</span><h2>{actualOnly ? "실제 방문 기록" : "오늘의 동선"}</h2></div><span className="section-hint">체크=실제 방문</span></div>
-        <CategoryLegend />
+        <TravelCategoryLegend categories={CATEGORY_CONFIGS} />
         <div className="itinerary-list">{primaryPlaces.map((place, index) => <div key={`${place.id}-item`}>{renderCard(place)}<RouteConnector current={place} next={primaryPlaces[index + 1]} /></div>)}</div>
       </section>
       {showAlternatives && restaurantAlternatives.length ? <section className="alternatives-section" aria-label="근처 대체 식당"><div className="section-heading"><div><span className="eyebrow">NEARBY RESTAURANTS</span><h2>근처 대체 식당</h2></div><span className="section-hint">기본 동선은 유지</span></div><p className="section-description">예약이 어렵거나 대기가 길 때, 해당 식당 주변에서 바로 바꿔 갈 수 있는 후보입니다.</p><div className="itinerary-list">{restaurantAlternatives.map((place) => <div key={`${place.id}-alternative`}>{renderCard(place)}</div>)}</div></section> : null}
@@ -664,11 +534,6 @@ function SavedView({ places, favoriteIds, notes, onSelectPlace }: { places: MapP
   const savedPlaces = places.filter((place) => favoriteIds.includes(place.id));
   const notedPlaces = places.filter((place) => notes[place.id]?.trim());
   return <main className="simple-view saved-view"><section className="view-heading"><span className="eyebrow">SAVED</span><h1>저장한 장소</h1><p>즐겨찾기와 현지에서 적어둔 메모를 모아봤어요.</p></section><section className="saved-section"><div className="section-heading"><div><span className="eyebrow">FAVORITES</span><h2>즐겨찾기</h2></div><span className="count-chip">{savedPlaces.length}</span></div>{savedPlaces.length ? <div className="saved-list">{savedPlaces.map((place) => <button type="button" key={place.id} onClick={() => onSelectPlace(place)}><Heart size={16} fill="currentColor" /><span><strong>{place.name}</strong><small>DAY {place.dayNumber} · {categoryLabels[place.category]}</small></span><ChevronRight size={16} /></button>)}</div> : <div className="empty-card"><Heart size={22} /><strong>아직 저장한 장소가 없어요</strong><span>일정 카드의 하트 버튼으로 모아둘 수 있어요.</span></div>}</section><section className="saved-section"><div className="section-heading"><div><span className="eyebrow">FIELD NOTES</span><h2>현지 메모</h2></div><span className="count-chip">{notedPlaces.length}</span></div>{notedPlaces.length ? <div className="saved-list">{notedPlaces.map((place) => <button type="button" key={place.id} onClick={() => onSelectPlace(place)}><StickyNote size={16} /><span><strong>{place.name}</strong><small>{notes[place.id]}</small></span><ChevronRight size={16} /></button>)}</div> : <div className="empty-card"><StickyNote size={22} /><strong>메모가 비어 있어요</strong><span>장소 상세에서 현지 메모를 남겨보세요.</span></div>}</section></main>;
-}
-
-function BottomNav({ view, setView }: { view: View; setView: (view: View) => void }) {
-  const items: Array<{ key: View; label: string; icon: typeof CalendarDays }> = [{ key: "schedule", label: "일정", icon: CalendarDays }, { key: "map", label: "지도", icon: MapIcon }, { key: "reservations", label: "예약", icon: Bookmark }, { key: "saved", label: "저장", icon: Heart }];
-  return <nav className="trip-bottom-nav" aria-label="주요 메뉴">{items.map(({ key, label, icon: Icon }) => <button type="button" key={key} className={view === key ? "is-active" : ""} onClick={() => setView(key)} aria-current={view === key ? "page" : undefined}><Icon size={20} fill={key === "saved" && view === key ? "currentColor" : "none"} /><span>{label}</span></button>)}</nav>;
 }
 
 function ScrollToTopButton() {
@@ -839,5 +704,7 @@ export default function Prototype() {
   };
   const appContent: ReactNode = view === "schedule" ? <ScheduleView activeDay={activeDay} selectedPlace={selectedPlace} selectedPlaceId={selectedPlaceId} showAlternatives={showAlternatives} setShowAlternatives={setShowAlternatives} actualOnly={actualOnly} onToggleActualOnly={() => { setActualOnly((current) => !current); setSheetOpen(false); }} onAddPlace={() => openEditor()} onSelectPlace={selectPlace} onFocusPlace={focusPlace} onToggleComplete={(id) => toggleId(setCompletedIds, id)} onToggleFavorite={(id) => toggleId(setFavoriteIds, id)} completedIds={completedIds} favoriteIds={favoriteIds} userLocation={userLocation} onUserLocation={setUserLocation} /> : view === "map" ? <AllMapView allPlaces={allPlaces} selectedPlace={selectedPlace} onSelectPlace={selectPlace} onUserLocation={setUserLocation} userLocation={userLocation} /> : view === "reservations" ? <ReservationsView places={allPlaces} reservationDoneIds={reservationDoneIds} onToggleReservation={(id) => toggleId(setReservationDoneIds, id)} onSelectPlace={selectPlace} /> : <SavedView places={allPlaces} favoriteIds={favoriteIds} notes={notes} onSelectPlace={selectPlace} />;
 
-  return <div className="trip-app"><MobileScroll className="trip-scroll"><div className="trip-scroll-content"><AppHeader view={view} menuOpen={menuOpen} setMenuOpen={setMenuOpen} setView={setView} activeDay={activeDay} onDayChange={selectDay} onExportData={openExportData} onImportData={openImportData} />{appContent}</div></MobileScroll><ScrollToTopButton /><BottomNav view={view} setView={(nextView) => { setView(nextView); setMenuOpen(false); }} /><PlaceDetailSheet place={selectedPlace} day={selectedPlaceDay} open={sheetOpen} onClose={() => setSheetOpen(false)} note={selectedPlace ? notes[selectedPlace.id] ?? "" : ""} onNoteChange={(note) => { if (selectedPlace) setNotes((current) => ({ ...current, [selectedPlace.id]: note })); }} completed={selectedPlace ? completedIds.includes(selectedPlace.id) : false} favorite={selectedPlace ? favoriteIds.includes(selectedPlace.id) : false} onToggleComplete={() => { if (selectedPlace) toggleId(setCompletedIds, selectedPlace.id); }} onToggleFavorite={() => { if (selectedPlace) toggleId(setFavoriteIds, selectedPlace.id); }} onEdit={() => { if (selectedPlace) openEditor(selectedPlace); }} onDelete={deleteSelectedPlace} /><PlaceEditorSheet place={editorPlace} open={editorOpen} completed={editorPlace ? completedIds.includes(editorPlace.id) : false} onClose={() => { setEditorOpen(false); setEditorPlace(null); }} onSave={savePlaceDraft} /><DataTransferSheet open={transferOpen} mode={transferMode} text={transferText} status={transferStatus} onClose={() => setTransferOpen(false)} onTextChange={setTransferText} onImport={applyTransferData} onCopy={copyTransferData} onShare={shareTransferData} onDownload={downloadTransferData} onFileSelect={handleTransferFile} /></div>;
+  const headerTitle = view === "schedule" ? trip.title : view === "map" ? "전체 지도" : view === "reservations" ? "예약·운영 확인" : "저장한 장소";
+  const changeView = (nextView: View) => { setView(nextView); setMenuOpen(false); };
+  return <div className="trip-app"><MobileScroll className="trip-scroll"><div className="trip-scroll-content"><TravelHeader title={headerTitle} dateLabel={tripDateLabel} days={trip.days} activeDay={activeDay} view={view} menuOpen={menuOpen} onMenuToggle={setMenuOpen} onViewChange={changeView} onDayChange={selectDay} onExportData={openExportData} onImportData={openImportData} />{appContent}</div></MobileScroll><ScrollToTopButton /><TravelBottomNav view={view} onViewChange={changeView} /><PlaceDetailSheet place={selectedPlace} day={selectedPlaceDay} open={sheetOpen} onClose={() => setSheetOpen(false)} note={selectedPlace ? notes[selectedPlace.id] ?? "" : ""} onNoteChange={(note) => { if (selectedPlace) setNotes((current) => ({ ...current, [selectedPlace.id]: note })); }} completed={selectedPlace ? completedIds.includes(selectedPlace.id) : false} favorite={selectedPlace ? favoriteIds.includes(selectedPlace.id) : false} onToggleComplete={() => { if (selectedPlace) toggleId(setCompletedIds, selectedPlace.id); }} onToggleFavorite={() => { if (selectedPlace) toggleId(setFavoriteIds, selectedPlace.id); }} onEdit={() => { if (selectedPlace) openEditor(selectedPlace); }} onDelete={deleteSelectedPlace} /><PlaceEditorSheet place={editorPlace} open={editorOpen} completed={editorPlace ? completedIds.includes(editorPlace.id) : false} onClose={() => { setEditorOpen(false); setEditorPlace(null); }} onSave={savePlaceDraft} /><TravelDataTransferSheet open={transferOpen} mode={transferMode} text={transferText} status={transferStatus} onClose={() => setTransferOpen(false)} onTextChange={setTransferText} onImport={applyTransferData} onCopy={copyTransferData} onShare={shareTransferData} onDownload={downloadTransferData} onFileSelect={handleTransferFile} /></div>;
 }

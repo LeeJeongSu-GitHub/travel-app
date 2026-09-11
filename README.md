@@ -30,6 +30,7 @@
 - [새 여행 추가 흐름](#새-여행-추가-흐름)
 - [현재 구현·작업 내역](#현재-작업-완료-내역)
 - [디자인 고정 규칙](#디자인-고정-규칙)
+- [공통 UI 컴포넌트 계약](#공통-ui-컴포넌트-계약)
 - [새 여행 입력 방법](#가장-쉬운-입력-방법-권장)
 - [자동 조사·이미지 출처 규칙](#자동-조사-시-출처이미지-처리-규칙)
 - [스킬·데이터 계약](#스킬과-문서)
@@ -67,10 +68,14 @@ kyoto-kobe-trip/
   index.html               # 교토·고베 앱 진입점
   trip.json                # 여행지별 일정·장소 데이터
 src/                       # 공통 모바일 앱 엔진
+  travel-ui/
+    components.tsx         # 모든 여행이 공유하는 헤더·카드·범례·시트·하단 메뉴
+    types.ts               # Trip/Place/로컬 기록 공통 타입
+    category.ts            # 카테고리 색상·한글 라벨·아이콘 공통 매핑
 public/                    # 공통 디바이스·지도 자산
 ```
 
-새 여행은 `<destination-slug>/index.html`과 `<destination-slug>/trip.json`을 추가하고, 루트 `index.html`에 여행지 카드를 연결합니다. 공통 UI는 `src/`를 재사용하고 여행별 내용은 각 폴더의 `trip.json`으로 분리합니다.
+새 여행은 `<destination-slug>/index.html`과 `<destination-slug>/trip.json`을 추가하고, 루트 `index.html`에 여행지 카드를 연결합니다. 공통 UI는 `src/travel-ui/` 컴포넌트와 `src/prototype.css`를 재사용하고 여행별 내용은 각 폴더의 `trip.json`으로 분리합니다.
 
 ## 새 여행 추가 흐름
 
@@ -172,8 +177,41 @@ Notion 토큰은 프론트 코드에 포함하지 않습니다. 여행 데이터
 - Claude/Gemini 연결용 포인터: `.claude/skills/travel-map-builder/`, `.gemini/skills/travel-map-builder/`
 - JSON 필드 계약: `.agents/skills/travel-map-builder/references/trip-data-contract.md`
 - 공통 디자인 계약: `.agents/skills/travel-map-builder/references/design-system.md`
+- 공통 UI 컴포넌트 계약: `.agents/skills/travel-map-builder/references/component-contract.md`
+- 공통 UI 구현: `src/travel-ui/components.tsx`, 공통 타입: `src/travel-ui/types.ts`, 공통 카테고리: `src/travel-ui/category.ts`
 - 짧은 여행 입력부터 상세 조사자료까지 지원하며, 사용자는 여행지·기간·숙소·가고 싶은 곳 정도만 입력해도 됩니다.
-- 새 기능이나 데이터 필드가 추가되면 이 README의 작업 완료 내역, 입력 포맷, 생성 결과 목록도 함께 갱신합니다.
+- 새 기능이나 데이터 필드가 추가되면 이 README의 작업 완료 내역, 입력 포맷, 생성 결과 목록도 함께 갱신합니다. 공통 UI를 바꿀 때는 컴포넌트 계약과 실제 교토·고베 화면도 함께 갱신합니다.
+
+## 공통 UI 컴포넌트 계약
+
+새 여행의 화면은 여행지별로 다시 디자인하지 않고 현재 교토·고베 앱의 공통 컴포넌트를 조합합니다. `src/Prototype.tsx`는 데이터·지도·로컬 기록을 관리하고, 시각 구조는 `src/travel-ui/components.tsx`가 책임집니다.
+
+```tsx
+import {
+  TravelBottomNav,
+  TravelCategoryLegend,
+  TravelDataTransferSheet,
+  TravelHeader,
+  TravelPlaceCard,
+} from "./travel-ui/components";
+import type { Place, Trip, View } from "./travel-ui/types";
+```
+
+| 공통 컴포넌트 | 책임 |
+| --- | --- |
+| `TravelHeader` | 제목·기간·헤더 안 `DAY · 날짜` 이동·빠른 메뉴·기록 내보내기/가져오기 |
+| `TravelBottomNav` | 일정·지도·예약·저장 고정 하단 메뉴 |
+| `TravelCategoryLegend` | 숙소·사진 명소·맛집·카페·역·공항·짐 보관/이동의 색상 범례 |
+| `TravelPlaceCard` | 카테고리 번호·아이콘·운영 정보·휴무일·대표 이미지·체크·즐겨찾기 |
+| `TravelDataTransferSheet` | JSON 여행 기록의 카카오톡/클립보드/파일 내보내기와 가져오기 |
+
+```text
+MobileScroll > TravelHeader > 화면 콘텐츠 > TripMap > TravelCategoryLegend > TravelPlaceCard
+고정 sibling: ScrollToTopButton + TravelBottomNav
+BottomSheet: 장소 상세 / 장소 편집 / TravelDataTransferSheet
+```
+
+여행별로 허용되는 것은 `trip.json`과 이미지 데이터, 그리고 대표 이미지 선택 같은 얇은 데이터 어댑터뿐입니다. 장소 카드·헤더·하단 메뉴·데이터 시트의 전체 JSX를 복사하거나 여행별 dashboard/독립 CSS를 만들지 않습니다. 새로운 UI 원시 요소가 필요하면 `components.tsx`, `types.ts`, `prototype.css`, `component-contract.md`를 함께 업데이트하고 기존 여행에서 실제로 사용합니다.
 
 ### 디자인 고정 규칙
 
@@ -185,12 +223,13 @@ Notion 토큰은 프론트 코드에 포함하지 않습니다. 여행 데이터
 - 지도 마커 클릭은 카드 포커스, 카드 클릭은 상세 BottomSheet라는 분리된 동작
 - 360px 내외 모바일에서도 제목·버튼·썸네일·휴무일·메뉴가 잘리지 않는 반응형 레이아웃
 
-아래와 같은 별도 초록색 대시보드, 상단 통계 3칸, 여행마다 다른 CSS/헤더/하단 메뉴가 생성되면 디자인 계약을 지키지 않은 결과입니다. 먼저 [공통 디자인 계약](./.agents/skills/travel-map-builder/references/design-system.md)과 기존 `src/Prototype.tsx`·`src/prototype.css`를 읽고, 여행별 차이는 `trip.json`으로만 표현하도록 요청하세요.
+아래와 같은 별도 초록색 대시보드, 상단 통계 3칸, 여행마다 다른 CSS/헤더/하단 메뉴가 생성되면 디자인 계약을 지키지 않은 결과입니다. 먼저 [공통 디자인 계약](./.agents/skills/travel-map-builder/references/design-system.md)과 [공통 UI 컴포넌트 계약](./.agents/skills/travel-map-builder/references/component-contract.md)을 읽고, `src/travel-ui/` 컴포넌트를 사용하며 여행별 차이는 `trip.json`으로만 표현하도록 요청하세요.
 
 ```text
 디자인 요구사항:
 - 현재 저장소의 교토·고베 앱 화면을 공통 디자인 기준으로 재사용해줘.
-- 새 여행마다 별도의 초록색 dashboard, 통계 카드, 독립 header/navigation/CSS를 만들지 말고 기존 src/Prototype.tsx와 src/prototype.css를 사용해줘.
+- 새 여행마다 별도의 초록색 dashboard, 통계 카드, 독립 header/navigation/CSS를 만들지 말고 `src/travel-ui/components.tsx`의 공통 컴포넌트와 `src/prototype.css`를 사용해줘.
+- `TravelHeader`, `TravelBottomNav`, `TravelCategoryLegend`, `TravelPlaceCard`, `TravelDataTransferSheet`를 조합하고, 여행 폴더에 같은 JSX를 복사하지 마.
 - 헤더 안 날짜 이동(`.header-copy .header-meta`), compact sticky 한글 지도, 카테고리 색상 카드, 하단 4개 메뉴, BottomSheet 상세 화면의 구조와 타이포그래피를 유지해줘. 지도 위에 DAY 버튼을 다시 만들지 마.
 - 지도 마커는 상세 화면을 바로 열지 말고 해당 장소 카드로 이동·강조하고, 카드 본문을 눌렀을 때만 상세를 열어줘.
 - 360~430px 실제 모바일 폭과 넓은 기기 미리보기에서 가로 overflow·겹침·잘림이 없는지 스크린샷으로 검수해줘.
@@ -328,7 +367,7 @@ node scripts/capture-readme-screenshots.mjs
 참고 자료: [링크·문서·이미지·메모]
 원하는 작업: [앱 생성만 / GitHub Pages 배포까지]
 
-디자인은 현재 저장소의 공통 travel-map-builder 디자인 계약과 교토·고베 실제 화면을 그대로 유지해줘. 새 여행마다 별도 dashboard나 독립 CSS를 만들지 말고 기존 `src/Prototype.tsx`와 `src/prototype.css`를 재사용해줘.
+디자인은 현재 저장소의 공통 travel-map-builder 디자인 계약과 교토·고베 실제 화면을 그대로 유지해줘. 새 여행마다 별도 dashboard나 독립 CSS를 만들지 말고 `src/travel-ui/components.tsx`의 공통 컴포넌트와 `src/prototype.css`를 재사용해줘. 자세한 API는 `.agents/skills/travel-map-builder/references/component-contract.md`를 따라줘.
 부족한 주소·Google Maps 링크·좌표·영업시간·휴무일·가격·메뉴·대표 이미지는 조사해서 채워줘.
 확인할 수 없는 내용은 추측하지 말고 화면에 `확인 필요`로 표시해줘.
 기존 여행은 수정하지 말고 새 destination-slug 폴더와 루트 허브 카드를 만들어줘.
@@ -367,7 +406,7 @@ travel/
 ```text
 이 저장소의 travel-map-builder 스킬을 사용해 아래 여행 정보를 새 여행 앱으로 만들어줘. 내가 적지 않은 장소 정보와 지도 링크는 조사해서 채우고, 확인할 수 없는 값은 `확인 필요`로 표시해줘. 기존 여행은 수정하지 말고 새 여행 폴더로 만들어줘. 모바일 화면에서 보기 좋게 구성하고, 내가 “배포까지”라고 쓴 경우에만 GitHub Pages에 배포해줘.
 
-중요: 현재 저장소의 교토·고베 앱 디자인을 공통 기준으로 그대로 재사용해줘. 새 여행마다 별도 초록색 dashboard나 다른 헤더/카드/CSS를 만들지 말고, 기존 `src/Prototype.tsx`, `src/prototype.css`, `MobileScroll`, `BottomSheet`를 사용해줘. 헤더의 `.header-copy .header-meta` 안에 DAY/date 이동을 배치하고 지도 위에는 날짜 버튼을 만들지 마. compact sticky 지도·카테고리 색상 카드·하단 내비게이션의 구조와 반응형 규칙을 유지하고, 실제 360~430px 및 넓은 웹 스크린샷으로 제목·기간·DAY 버튼·메뉴가 겹치지 않는지 검수해줘. 여행 기록 공유/복원용 JSON 내보내기·가져오기와 slug 검증도 유지해줘.
+중요: 현재 저장소의 교토·고베 앱 디자인을 공통 기준으로 그대로 재사용해줘. 새 여행마다 별도 초록색 dashboard나 다른 헤더/카드/CSS를 만들지 말고, `src/travel-ui/components.tsx`의 `TravelHeader`, `TravelBottomNav`, `TravelCategoryLegend`, `TravelPlaceCard`, `TravelDataTransferSheet`와 `src/prototype.css`를 사용해줘. 여행별 폴더에는 데이터와 진입점만 두고 공통 JSX를 복사하지 마. 헤더의 `.header-copy .header-meta` 안에 DAY/date 이동을 배치하고 지도 위에는 날짜 버튼을 만들지 마. compact sticky 지도·카테고리 색상 카드·하단 내비게이션의 구조와 반응형 규칙을 유지하고, 실제 360~430px 및 넓은 웹 스크린샷으로 제목·기간·DAY 버튼·메뉴가 겹치지 않는지 검수해줘. 여행 기록 공유/복원용 JSON 내보내기·가져오기와 slug 검증도 유지해줘.
 ```
 
 ```text

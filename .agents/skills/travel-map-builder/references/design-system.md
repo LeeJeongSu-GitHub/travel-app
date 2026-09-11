@@ -1,6 +1,6 @@
 # Travel app visual contract
 
-이 문서는 여행 데이터가 달라져도 앱의 화면 구조와 시각 언어가 달라지지 않게 하는 공통 디자인 계약입니다. 현재 `src/Prototype.tsx`, `src/prototype.css`와 README의 실제 화면 스냅샷을 기준으로 합니다.
+이 문서는 여행 데이터가 달라져도 앱의 화면 구조와 시각 언어가 달라지지 않게 하는 공통 디자인 계약입니다. 현재 `src/travel-ui/components.tsx`, `src/travel-ui/types.ts`, `src/travel-ui/category.ts`, `src/Prototype.tsx`, `src/prototype.css`와 README의 실제 화면 스냅샷을 기준으로 합니다. `src/travel-ui/`는 공통 UI·카테고리 구현, `Prototype.tsx`는 상태·데이터·화면 조합, `prototype.css`는 공통 스타일의 source of truth입니다.
 
 ## 목표 화면
 
@@ -22,6 +22,36 @@
 - `public/assets/readme/itinerary-day2.png`: 일정·지도·카드의 전체 계층
 - `public/assets/readme/place-detail.png`: 장소 상세 BottomSheet
 - `public/assets/readme/saved-records.png`: 저장·현지 메모 화면
+
+## 컴포넌트 계층과 API
+
+새 여행은 아래 공통 트리를 그대로 사용하고 `trip.json` 데이터만 바꿉니다.
+
+```text
+Prototype
+├─ MobileScroll
+│  └─ trip-scroll-content
+│     ├─ TravelHeader
+│     │  └─ .header-copy > .header-meta > 기간 + header-day-nav
+│     └─ 화면별 콘텐츠
+│        ├─ TripMap
+│        ├─ TravelCategoryLegend
+│        └─ TravelPlaceCard
+├─ ScrollToTopButton
+├─ TravelBottomNav
+├─ PlaceDetailSheet / PlaceEditorSheet
+└─ TravelDataTransferSheet
+```
+
+| 컴포넌트 | 핵심 입력 | 화면 책임 |
+| --- | --- | --- |
+| `TravelHeader` | `title`, `dateLabel`, `days`, `activeDay`, `view`, 메뉴·날짜 콜백 | sticky 헤더, 제목/기간, compact DAY 이동, 빠른 메뉴 |
+| `TravelBottomNav` | `view`, `onViewChange` | 일정·지도·예약·저장 고정 메뉴 |
+| `TravelCategoryLegend` | `categories: CategoryConfig[]` | 공통 카테고리 색상·라벨 범례 |
+| `TravelPlaceCard` | `place`, `category`, 상태, `preview`, 액션 콜백 | 장소 카드의 번호·아이콘·정보·이미지·체크·즐겨찾기 |
+| `TravelDataTransferSheet` | transfer 상태와 복사/공유/파일 콜백 | JSON 기록 내보내기·가져오기 BottomSheet |
+
+`PlacePreview`처럼 여행 데이터에 따라 이미지를 선택하는 얇은 어댑터는 허용하지만 카드 전체 UI를 다시 만들 수 없습니다. 공통 UI를 수정할 때는 `components.tsx`와 [component-contract.md](component-contract.md)를 함께 갱신하고 기존 교토·고베 화면에서 실제 사용 여부를 확인합니다.
 
 ## 공통 토큰
 
@@ -47,11 +77,11 @@
 
 ## 컴포넌트 구현 규칙
 
-1. 여행을 추가할 때는 기존 `src/Prototype.tsx`와 `src/prototype.css`를 연결하고, `<destination-slug>/trip.json`과 루트 허브 카드만 추가합니다.
+1. 여행을 추가할 때는 `src/travel-ui/components.tsx`의 공통 컴포넌트를 `src/Prototype.tsx`에서 조합하고, `<destination-slug>/trip.json`과 루트 허브 카드만 추가합니다.
 2. 기존 템플릿이 있는 저장소에서 여행별 `index.html`, `App.tsx`, 독립 CSS, 새 라우터를 만들어 화면을 다시 그리지 않습니다. 여행 폴더는 데이터와 진입점만 소유합니다.
-3. 앱 전용 고정 영역은 `MobileScroll` 안에 중복해서 만들지 않습니다. 헤더·하단 내비·상세 시트는 현재 런타임 계약을 따르고, 스크롤 콘텐츠는 `MobileScroll` 안에 둡니다.
+3. 앱 전용 고정 영역은 `MobileScroll` 안에 중복해서 만들지 않습니다. `TravelHeader`·`TravelBottomNav`·상세 시트는 현재 런타임 계약을 따르고, 스크롤 콘텐츠는 `MobileScroll` 안에 둡니다.
 4. 헤더의 `.header-copy`는 `min-width: 0`인 단일 콘텐츠 열이어야 합니다. `.header-meta`는 기간 텍스트와 날짜 컨트롤을 한 줄 flex로 배치하고, 기간 텍스트에는 `overflow: hidden`·`text-overflow: ellipsis`·`white-space: nowrap`, 날짜 컨트롤에는 `flex: 0 0 auto`를 적용해 제목·기간·메뉴와 겹치지 않게 합니다. 360px 내외에서는 gap과 버튼 폭만 줄이고 글자를 임의로 두 줄로 만들지 않습니다.
-5. 장소 카드의 제목·메타·휴무일·메모는 오른쪽 썸네일과 체크/하트 컨트롤을 침범하지 않아야 합니다. grid의 `minmax(0, 1fr)`, ellipsis, line clamp를 사용하고 모바일에서 가로 overflow를 허용하지 않습니다.
+5. 장소 카드의 제목·메타·휴무일·메모는 `TravelPlaceCard`가 예약한 오른쪽 썸네일과 체크/하트 컨트롤을 침범하지 않아야 합니다. grid의 `minmax(0, 1fr)`, ellipsis, line clamp를 사용하고 모바일에서 가로 overflow를 허용하지 않습니다.
 6. 지도·카드·상세 화면 모두 같은 장소 ID와 카테고리를 사용합니다. 지도 마커 숫자와 카드 순번은 같은 category color를 사용하며, 같은 좌표의 순번은 offset으로 분리합니다.
 7. 메뉴는 일본어 원문과 한국어 번역을 한 항목 안에서 세로로 보여줍니다. 번역만 있는 메뉴나 일본어만 있는 메뉴를 기본 출력으로 만들지 않습니다.
 8. 이미지 로드 실패는 깨진 이미지 아이콘으로 끝내지 않습니다. 안정적인 로컬/원격 이미지를 사용하고 `onError`로 지도·카테고리 fallback을 표시합니다.
