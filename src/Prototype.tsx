@@ -250,6 +250,11 @@ function menuImageUrl(item: MenuItem) {
   return item.imageUrl ?? (item.imageKey ? MENU_IMAGE_URLS[item.imageKey] : undefined);
 }
 
+function resolveImageUrl(imageUrl: string | undefined) {
+  if (!imageUrl || imageUrl.startsWith("http") || imageUrl.startsWith("/")) return imageUrl;
+  return `${import.meta.env.BASE_URL}${imageUrl}`;
+}
+
 function useMenuImagePreviews(items: MenuItem[], open: boolean) {
   useEffect(() => {
     if (!open || !items.length) return;
@@ -271,7 +276,7 @@ function useMenuImagePreviews(items: MenuItem[], open: boolean) {
 
 function PlacePreview({ place }: { place: Place }) {
   const point = coordinates(place);
-  const imageUrl = place.imageUrl ?? CATEGORY_IMAGE_URLS[place.category];
+  const imageUrl = resolveImageUrl(place.imageUrl ?? CATEGORY_IMAGE_URLS[place.category]);
   const [imageState, setImageState] = useState<"loading" | "loaded" | "failed">(imageUrl ? "loading" : "failed");
   useEffect(() => {
     setImageState(imageUrl ? "loading" : "failed");
