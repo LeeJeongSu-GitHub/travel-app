@@ -109,4 +109,4 @@
 
 ## 앱 생성 에이전트가 해야 할 일
 
-`travel-research.v1` JSON을 받은 에이전트는 `trip-data-contract.md`와 `component-contract.md`에 맞춰 `<destination-slug>/trip.json`으로 변환합니다. 원본 계획의 장소·날짜·순서를 우선 보존하고, 조사 결과의 `needsConfirmation`은 앱의 `확인 필요` UI로 표시합니다. `alternatives`는 기본 동선에 섞지 않고 `optional: true` 후보로 변환합니다. 기존 여행 폴더와 로컬 기록은 덮어쓰지 않습니다.
+`travel-research.v1` JSON을 받은 에이전트는 `trip-data-contract.md`와 `component-contract.md`에 맞춰 `travel/<destination-slug>/trip.json`으로 변환합니다. 원본 계획의 장소·날짜·순서를 우선 보존하고, 조사 결과의 `needsConfirmation`은 앱의 `확인 필요` UI로 표시합니다. `alternatives`는 기본 동선에 섞지 않고 `optional: true` 후보로 변환합니다. 기존 여행 폴더와 로컬 기록은 덮어쓰지 않습니다.

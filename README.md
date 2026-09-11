@@ -1,10 +1,10 @@
 # Travel · 여행지 지도 모음
 
-여행지별 폴더를 하나의 모바일 우선 정적 웹앱 허브에서 관리합니다. 현재는 `kyoto-kobe-trip/`의 교토·고베 일정과 `jeju-sports-trip/`의 제주 10월 스포츠 투어 일정이 들어 있습니다.
+여행지별 데이터를 `travel/` 아래에 모아 하나의 모바일 우선 정적 웹앱 허브에서 관리합니다. 현재는 교토·고베 일정과 제주 10월 스포츠 투어 일정이 들어 있습니다.
 
 [![Live on GitHub Pages](https://img.shields.io/badge/Live-GitHub%20Pages-2ea44f?logo=github)](#배포)
 [![Mobile first](https://img.shields.io/badge/UI-mobile--first-2563eb)](#현재-작업-완료-내역)
-[![Trip data](https://img.shields.io/badge/Data-trip.json-f59e0b)](./kyoto-kobe-trip/trip.json)
+[![Trip data](https://img.shields.io/badge/Data-travel%2F*-trip.json-f59e0b)](./travel/)
 [![Deploy](https://img.shields.io/badge/Deploy-GitHub%20Actions-6f42c1?logo=githubactions)](./.github/workflows/deploy-pages.yml)
 
 > [!TIP]
@@ -13,8 +13,8 @@
 | 상태 | 현재 값 |
 | --- | --- |
 | **공개 URL 규칙** | `https://<github-id>.github.io/<repository-name>/` |
-| **현재 여행** | `kyoto-kobe-trip/` · 교토·고베 19일~22일 / `jeju-sports-trip/` · 제주 10월 1일~4일 |
-| **구성** | 여행지별 `index.html` + `trip.json` |
+| **현재 여행** | `travel/kyoto-kobe-trip/` · 교토·고베 19일~22일 / `travel/jeju-sports-trip/` · 제주 10월 1일~4일 |
+| **구성** | `travel/<destination-slug>/index.html` + `trip.json` · 기존 공개 경로는 호환 유지 |
 | **배포** | `main` push → GitHub Actions → GitHub Pages |
 
 ---
@@ -22,8 +22,8 @@
 ## 빠른 이동
 
 - [공개 여행지 허브 주소 규칙](#배포)
-- [교토·고베 데이터](./kyoto-kobe-trip/trip.json)
-- [제주 10월 스포츠 투어 데이터](./jeju-sports-trip/trip.json)
+- [교토·고베 데이터](./travel/kyoto-kobe-trip/trip.json)
+- [제주 10월 스포츠 투어 데이터](./travel/jeju-sports-trip/trip.json)
 - [복붙용 기본 프롬프트](#복붙용-기본-프롬프트)
 - [여행 기록 공유·복원](#여행-기록-공유복원)
 - [로컬 실행](#30초-만에-실행)
@@ -68,9 +68,20 @@ npm run dev
 
 ```text
 index.html                 # 여행지 목록 허브
-kyoto-kobe-trip/
-  index.html               # 교토·고베 앱 진입점
-  trip.json                # 여행지별 일정·장소 데이터
+travel/                    # 모든 여행의 정본 보관소
+  kyoto-kobe-trip/
+    index.html             # 교토·고베 앱 진입점
+    trip.json              # 여행지별 일정·장소 데이터
+  jeju-sports-trip/
+    index.html
+    trip.json
+  <destination-slug>/      # 다음 여행도 이 아래에만 추가
+    index.html
+    trip.json
+kyoto-kobe-trip/            # 기존 공개 URL용 호환 엔트리
+  index.html
+jeju-sports-trip/           # 기존 공개 URL용 호환 엔트리
+  index.html
 src/                       # 공통 모바일 앱 엔진
   travel-ui/
     components.tsx         # 모든 여행이 공유하는 헤더·카드·범례·시트·하단 메뉴
@@ -83,7 +94,7 @@ prompts/
   travel-app-build.md      # 계획/조사자료 → 앱 생성·검수·선택적 배포
 ```
 
-새 여행은 `<destination-slug>/index.html`과 `<destination-slug>/trip.json`을 추가하고, 루트 `index.html`에 여행지 카드를 연결합니다. 공통 UI는 `src/travel-ui/` 컴포넌트와 `src/prototype.css`를 재사용하고 여행별 내용은 각 폴더의 `trip.json`으로 분리합니다.
+새 여행은 `travel/<destination-slug>/index.html`과 `travel/<destination-slug>/trip.json`을 추가하고, 루트 `index.html`에 여행지 카드를 연결합니다. Pages 빌드가 기존의 `/<destination-slug>/` 공개 경로를 자동으로 만들어 주므로 저장소 루트에는 새 여행 폴더를 만들지 않습니다. 공통 UI는 `src/travel-ui/` 컴포넌트와 `src/prototype.css`를 재사용합니다.
 
 ## 새 여행 추가 흐름
 
@@ -91,11 +102,11 @@ prompts/
 
 1. 이 저장소를 clone하고 `README.md`의 [가장 쉬운 입력 방법](#가장-쉬운-입력-방법-권장)에 여행지·기간·숙소·희망 장소만 적습니다.
 2. AI에게 계획과 조사자료를 전달합니다. 장소명만 있거나 Google Maps 링크가 없어도 주소·지도 검색 링크·운영 정보를 조사하도록 요청할 수 있습니다.
-3. AI가 기존 폴더와 겹치지 않는 `<destination-slug>/` 폴더, `index.html`, `trip.json`, 루트 허브 카드를 만듭니다.
+3. AI가 `travel/<destination-slug>/` 아래에 `index.html`과 `trip.json`을 만들고 루트 허브 카드만 추가합니다. 저장소 루트의 새 여행 폴더는 만들지 않습니다.
 4. `npm run validate:trip`, `npm run check:runtime`, `npm run build`, `npm run test:sites`로 생성 결과를 확인합니다.
 5. 변경을 `main`에 push하면 GitHub Actions가 `dist/client`를 GitHub Pages에 배포합니다. 완료 후 허브에서 새 여행 카드를 열어 모바일 화면을 확인합니다.
 
-여행별 URL은 일반 프로젝트 저장소 기준 `https://<github-id>.github.io/<repository-name>/<destination-slug>/` 형태입니다. 일정이 여러 개이면 각 여행 폴더의 `trip.json`만 별도로 관리하므로 한 여행의 장소 추가·삭제·실제 방문 체크가 다른 여행에 섞이지 않습니다.
+여행별 URL은 일반 프로젝트 저장소 기준 `https://<github-id>.github.io/<repository-name>/<destination-slug>/` 형태입니다. 일정이 여러 개이면 `travel/<destination-slug>/trip.json`만 별도로 관리하므로 한 여행의 장소 추가·삭제·실제 방문 체크가 다른 여행에 섞이지 않습니다.
 
 ---
 
@@ -110,7 +121,7 @@ prompts/
 - 사용자 페이지 저장소의 여행 앱: `https://<github-id>.github.io/<destination-slug>/`
 - Actions workflow: [`.github/workflows/deploy-pages.yml`](./.github/workflows/deploy-pages.yml)
 - 빌드 결과: `dist/client`
-- 여러 여행 폴더를 Pages에 포함하기 위해 workflow가 `vite.pages.config.ts`로 `index.html`·`trip.json`이 함께 있는 목적지 폴더를 자동 발견합니다.
+- `travel/` 아래의 `index.html`·`trip.json` 목적지 폴더를 Pages 빌드가 자동 발견하고, 배포 산출물에는 기존 `/<destination-slug>/` 경로로 출력합니다.
 
 복사한 저장소에서 최초 1회만 `Settings → Pages → Build and deployment → Source`를 `GitHub Actions`로 설정하세요. 이후 각자의 `main`에 push하거나 Actions의 `Deploy to GitHub Pages`를 수동 실행하면 본인 GitHub Pages에 빌드·배포됩니다.
 
@@ -125,7 +136,7 @@ fork 저장소는 GitHub Actions가 기본적으로 꺼져 있을 수 있으므�
 
 배포 전 확인:
 
-1. 새 여행 폴더에 `<destination-slug>/index.html`과 `trip.json`이 있는지 확인합니다.
+1. `travel/<destination-slug>/index.html`과 `travel/<destination-slug>/trip.json`이 있는지 확인합니다.
 2. 루트 `index.html`에 새 여행 카드가 연결되어 있는지 확인합니다.
 3. `npm run build`가 `dist/client`를 만드는지 확인합니다.
 4. Actions의 `build`와 `deploy`가 모두 성공한 뒤 프로젝트 저장소는 `https://<github-id>.github.io/<repository-name>/<destination-slug>/`, 사용자 페이지 저장소는 `https://<github-id>.github.io/<destination-slug>/`를 엽니다.
@@ -149,7 +160,7 @@ fork 저장소는 GitHub Actions가 기본적으로 꺼져 있을 수 있으므�
 - 여행 중 체크/즐겨찾기/메모: LocalStorage
 - 오프라인: 서비스 워커가 앱 셸과 접속한 리소스를 캐시
 
-Notion 토큰은 프론트 코드에 포함하지 않습니다. 여행 데이터는 각 여행지 폴더의 `trip.json` 정적 스냅샷으로 관리합니다.
+Notion 토큰은 프론트 코드에 포함하지 않습니다. 여행 데이터는 `travel/<destination-slug>/trip.json` 정적 스냅샷으로 관리합니다. 루트의 기존 여행 폴더는 공개 URL을 지키기 위한 호환 엔트리이므로 JSON을 새로 만들거나 수정하지 않습니다.
 
 ---
 
@@ -188,17 +199,18 @@ npm run dev
 - 조사자료 전달: [`research-packet.md`](./.agents/skills/travel-map-builder/references/research-packet.md)
 - UI-only 스킬: [`.agents/skills/travel-ui/SKILL.md`](./.agents/skills/travel-ui/SKILL.md)
 
-새 여행을 만들 때는 기존 여행을 덮어쓰지 않고 새 `<destination-slug>/`와 `trip.json`을 만들며, `src/travel-ui/`의 공통 컴포넌트를 그대로 사용합니다. 여행 폴더에 별도 dashboard, 헤더, 카드 JSX, 하단 메뉴, CSS를 만들지 않습니다.
+새 여행을 만들 때는 기존 여행을 덮어쓰지 않고 `travel/<destination-slug>/`와 `trip.json`을 만들며, `src/travel-ui/`의 공통 컴포넌트를 그대로 사용합니다. 여행 폴더에 별도 dashboard, 헤더, 카드 JSX, 하단 메뉴, CSS를 만들지 않습니다.
 
 ---
 
 ## 현재 작업 완료 내역
 
-현재 기준 여행은 19일~22일 교토·고베 일정과 10월 1일~4일 제주 스포츠 투어 일정입니다. 기존 `kyoto-kobe-trip/` 데이터는 유지하고, 새 일정은 `jeju-sports-trip/`에 별도로 보관합니다.
+현재 기준 여행은 19일~22일 교토·고베 일정과 10월 1일~4일 제주 스포츠 투어 일정입니다. 두 여행의 정본 데이터는 `travel/` 아래에 보관하고, 기존 `kyoto-kobe-trip/`·`jeju-sports-trip/` 폴더는 공개 URL 호환 엔트리로만 유지합니다.
 
 - 루트 여행 허브에서 여행지별 앱으로 이동합니다. 공개 주소는 저장소를 가져간 계정의 Pages 주소를 사용합니다.
-- 교토·고베 앱은 `kyoto-kobe-trip/`에 독립적으로 보관되며, GitHub Pages에서는 `<destination-slug>` 경로로 열립니다.
+- 교토·고베와 제주 데이터는 각각 `travel/<destination-slug>/`에 보관되며, GitHub Pages에서는 기존 `<destination-slug>` 경로로 열립니다.
 - Leaflet + OpenFreeMap/OpenStreetMap 기반 한글 지도, 날짜별 경로 미리보기, 장소별 Google Maps 장소 보기·길찾기를 제공합니다.
+- 지도는 권한이 이미 허용된 경우 현재 위치를 자동으로 조회하고, 첫 권한 요청은 `내 위치` 버튼에서 시작합니다. 조회 중·권한 거부·실패·시간 초과를 화면에 안내하며, 성공하면 현재 위치 마커와 지도 중심 이동을 제공합니다.
 - 일정 화면의 지도는 헤더 아래에 compact 높이로 고정되고, 현재 DAY·날짜와 이전/다음 이동 버튼은 여행 기간 옆 헤더(`.header-copy .header-meta`)에 표시합니다. 지도 자체에는 날짜 버튼을 겹쳐 놓지 않습니다. 일정 스크롤이 시작되면 지도는 route 요약만 남긴 작은 고정 바로 접혀 장소 카드가 가려지지 않습니다. 지도 마커를 누르면 상세 시트를 열지 않고 해당 장소 카드로 이동·강조하고 카드 본문을 눌렀을 때만 상세 정보를 엽니다.
 - 숙소·사진 명소·맛집·카페·역·공항·짐 보관/이동을 아이콘·색상·범례로 구분하고, 지도 숫자 마커와 목록 번호에도 같은 카테고리 색상을 적용합니다.
 - 카드와 상세 화면에 주소, 영업시간, 휴무일, 가격, 입장료, 예약 상태, 운영 메모를 표시합니다. 식당·카페의 휴무일은 별도 표시하며 확인하지 못한 값은 `확인 필요`로 표시합니다.
@@ -328,7 +340,7 @@ import type { Place, Trip, View } from "./travel-ui";
 - 지도 마커 클릭은 카드 포커스, 카드 클릭은 상세 BottomSheet라는 분리된 동작
 - 360px 내외 모바일에서도 제목·버튼·썸네일·휴무일·메뉴가 잘리지 않는 반응형 레이아웃
 
-아래와 같은 별도 초록색 대시보드, 상단 통계 3칸, 여행마다 다른 CSS/헤더/하단 메뉴가 생성되면 디자인 계약을 지키지 않은 결과입니다. 먼저 [공통 디자인 계약](./.agents/skills/travel-map-builder/references/design-system.md)과 [공통 UI 컴포넌트 계약](./.agents/skills/travel-map-builder/references/component-contract.md)을 읽고, `src/travel-ui/` 컴포넌트를 사용하며 여행별 차이는 `trip.json`으로만 표현하도록 요청하세요.
+아래와 같은 별도 초록색 대시보드, 상단 통계 3칸, 여행마다 다른 CSS/헤더/하단 메뉴가 생성되면 디자인 계약을 지키지 않은 결과입니다. 먼저 [공통 디자인 계약](./.agents/skills/travel-map-builder/references/design-system.md)과 [공통 UI 컴포넌트 계약](./.agents/skills/travel-map-builder/references/component-contract.md)을 읽고, `src/travel-ui/` 컴포넌트를 사용하며 여행별 차이는 `travel/<destination-slug>/trip.json`으로만 표현하도록 요청하세요.
 
 ```text
 디자인 요구사항:
@@ -464,7 +476,7 @@ node scripts/capture-readme-screenshots.mjs
 | 단계 | 정본 파일 | 결과 |
 | --- | --- | --- |
 | 1. 계획·조사 | [`prompts/travel-plan-research.md`](./prompts/travel-plan-research.md) | 날짜별 일정, 장소 정보, 지도 링크, 메뉴, 이미지, 출처가 들어간 `travel-research.v1` JSON |
-| 2. 앱 생성 | [`prompts/travel-app-build.md`](./prompts/travel-app-build.md) | 새 destination 폴더, `trip.json`, 허브 카드, 공통 UI 적용, 검수, 요청 시 GitHub Pages 배포 |
+| 2. 앱 생성 | [`prompts/travel-app-build.md`](./prompts/travel-app-build.md) | `travel/<destination-slug>/`의 `trip.json`, 허브 카드, 공통 UI 적용, 검수, 요청 시 GitHub Pages 배포 |
 
 ```text
 1) 여행 계획·조사 프롬프트에 여행지·기간·숙소·가고 싶은 곳만 입력한다.
@@ -493,7 +505,7 @@ node scripts/capture-readme-screenshots.mjs
 디자인은 현재 저장소의 공통 travel-map-builder 디자인 계약과 교토·고베 실제 화면을 그대로 유지해줘. 새 여행마다 별도 dashboard나 독립 CSS를 만들지 말고 `src/travel-ui/components.tsx`의 공통 컴포넌트와 `src/prototype.css`를 재사용해줘. 자세한 API는 `.agents/skills/travel-map-builder/references/component-contract.md`를 따라줘.
 부족한 주소·Google Maps 링크·좌표·영업시간·휴무일·가격·메뉴·대표 이미지는 조사해서 채워줘.
 확인할 수 없는 내용은 추측하지 말고 화면에 `확인 필요`로 표시해줘.
-기존 여행은 수정하지 말고 새 destination-slug 폴더와 루트 허브 카드를 만들어줘.
+기존 여행은 수정하지 말고 `travel/<destination-slug>/` 폴더와 루트 허브 카드를 만들어줘. 저장소 루트에는 새 여행 폴더를 만들지 마.
 일본어 메뉴는 원문 아래에 한국어 번역과 가격을 표시하고, 식당별 휴무일·대체 식당·출처 링크도 포함해줘.
 모바일 화면에서 잘리지 않는지 검사하고, 배포를 요청한 경우에만 GitHub Pages까지 배포해줘.
 실제 여행 중 방문 체크·즐겨찾기·메모·장소 수정/삭제/추가를 저장하고, 빠른 메뉴에서 JSON 데이터 내보내기(카카오톡·클립보드·파일)와 가져오기(붙여넣기·파일)를 제공해줘.
@@ -504,21 +516,23 @@ node scripts/capture-readme-screenshots.mjs
 
 ### 여행별로 분리되는 방식
 
-새 여행은 기존 여행을 덮어쓰지 않고 고유한 `destination-slug` 폴더로 만들어집니다.
+새 여행은 기존 여행을 덮어쓰지 않고 `travel/` 아래의 고유한 `destination-slug` 폴더로 만들어집니다.
 
 ```text
-travel/
-├─ index.html                    # 모든 여행을 보여주는 허브
+travel/                          # 여행 데이터·진입점 정본 보관소
 ├─ kyoto-kobe-trip/
 │  ├─ index.html
 │  └─ trip.json
-├─ fukuoka-trip/                 # 새로 입력한 후쿠오카 여행
+├─ jeju-sports-trip/
 │  ├─ index.html
 │  └─ trip.json
-└─ src/                          # 모든 여행이 공유하는 모바일 UI
+└─ fukuoka-trip/                 # 새로 입력한 후쿠오카 여행
+   ├─ index.html
+   └─ trip.json
+src/                             # 모든 여행이 공유하는 모바일 UI
 ```
 
-입력한 여행지는 루트 여행 허브에 카드로 추가되고, 해당 여행의 일정·장소·가격·메뉴·지도 정보는 그 여행 폴더의 `trip.json`에만 저장됩니다. 따라서 교토·고베 데이터를 유지한 채 후쿠오카, 도쿄, 오키나와 여행을 각각 별도로 관리할 수 있습니다.
+입력한 여행지는 루트 여행 허브에 카드로 추가되고, 해당 여행의 일정·장소·가격·메뉴·지도 정보는 `travel/<destination-slug>/trip.json`에만 저장됩니다. Pages 빌드는 이를 기존 `/<destination-slug>/` 주소로 내보내므로 공개된 교토·고베 주소와 제주 주소를 바꾸지 않습니다.
 
 ### 가장 쉬운 입력 방법 (권장)
 
@@ -527,7 +541,7 @@ travel/
 먼저 아래 한 문장을 붙이고, 바로 다음 줄에 알고 있는 여행 정보만 적으면 됩니다.
 
 ```text
-이 저장소의 travel-map-builder 스킬을 사용해 아래 여행 정보를 새 여행 앱으로 만들어줘. 내가 적지 않은 장소 정보와 지도 링크는 조사해서 채우고, 확인할 수 없는 값은 `확인 필요`로 표시해줘. 기존 여행은 수정하지 말고 새 여행 폴더로 만들어줘. 모바일 화면에서 보기 좋게 구성하고, 내가 “배포까지”라고 쓴 경우에만 GitHub Pages에 배포해줘.
+이 저장소의 travel-map-builder 스킬을 사용해 아래 여행 정보를 새 여행 앱으로 만들어줘. 내가 적지 않은 장소 정보와 지도 링크는 조사해서 채우고, 확인할 수 없는 값은 `확인 필요`로 표시해줘. 기존 여행은 수정하지 말고 `travel/<destination-slug>/` 아래에 새 여행을 만들어줘. 저장소 루트에는 여행 폴더를 만들지 마. 모바일 화면에서 보기 좋게 구성하고, 내가 “배포까지”라고 쓴 경우에만 GitHub Pages에 배포해줘.
 
 중요: 현재 저장소의 교토·고베 앱 디자인을 공통 기준으로 그대로 재사용해줘. 새 여행마다 별도 초록색 dashboard나 다른 헤더/카드/CSS를 만들지 말고, `src/travel-ui/components.tsx`의 `TravelHeader`, `TravelBottomNav`, `TravelCategoryLegend`, `TravelPlaceCard`, `TravelDataTransferSheet`와 `src/prototype.css`를 사용해줘. 여행별 폴더에는 데이터와 진입점만 두고 공통 JSX를 복사하지 마. 헤더의 `.header-copy .header-meta` 안에 DAY/date 이동을 배치하고 지도 위에는 날짜 버튼을 만들지 마. compact sticky 지도·카테고리 색상 카드·하단 내비게이션의 구조와 반응형 규칙을 유지하고, 실제 360~430px 및 넓은 웹 스크린샷으로 제목·기간·DAY 버튼·메뉴가 겹치지 않는지 검수해줘. 여행 기록 공유/복원용 JSON 내보내기·가져오기와 slug 검증도 유지해줘.
 ```
@@ -644,7 +658,7 @@ AI는 부족한 정보를 다음 원칙으로 보완합니다.
 ```text
 이 저장소의 travel-map-builder 스킬을 사용해 아래 `travel-research.v1` 조사자료를 새 여행 앱으로 변환해줘.
 
-- 기존 여행은 건드리지 말고 새 destination-slug 폴더와 trip.json을 만들어줘.
+- 기존 여행은 건드리지 말고 `travel/<destination-slug>/` 아래에 `index.html`과 `trip.json`을 만들어줘.
 - 조사자료의 날짜·도시·장소 순서·출처·확인 필요 상태를 보존해줘.
 - `src/travel-ui/` 공통 컴포넌트와 `src/prototype.css`를 사용하고, 여행별 헤더·카드·하단 메뉴·CSS를 복사하지 마.
 - alternatives는 기본 동선이 아닌 optional 대체 후보로 변환해줘.
@@ -815,7 +829,7 @@ AI는 이 정보를 바탕으로 날짜별 동선을 제안하되, 사용자가 
 - 계획에 없는 세부 정보는 공식 사이트와 신뢰할 수 있는 지도·관광 자료를 조사해 채운다.
 - 내가 주지 않은 값을 모두 다시 물어보지 말고, 결과에 영향을 주는 필수 정보가 없을 때만 짧게 질문한다.
 - 기존 여행 데이터는 절대 덮어쓰지 않는다.
-- 새 여행은 여행지명을 바탕으로 고유한 kebab-case 폴더 `<destination-slug>/`를 만들고, 그 안에 `index.html`과 `trip.json`을 만든다.
+- 새 여행은 여행지명을 바탕으로 `travel/` 아래에 고유한 kebab-case 폴더 `travel/<destination-slug>/`를 만들고, 그 안에 `index.html`과 `trip.json`을 만든다.
 - 루트 여행 허브에도 새 여행 카드를 추가한다.
 - 공통 UI와 모바일 런타임은 기존 `src/`를 재사용한다.
 
@@ -826,7 +840,7 @@ AI는 이 정보를 바탕으로 날짜별 동선을 제안하되, 사용자가 
    `.agents/skills/travel-map-builder/references/component-contract.md`와
    기존 여행 폴더를 읽는다. 조사자료 JSON이 함께 오면
    `.agents/skills/travel-map-builder/references/research-packet.md`도 읽는다.
-2. 기존 destination 폴더와 ID를 확인해 새 여행과 충돌하지 않는지 확인한다.
+2. `travel/` 아래의 기존 destination 폴더와 ID를 확인해 새 여행과 충돌하지 않는지 확인한다.
 3. 아래 계획을 날짜·도시·방문 순서가 보존되는 `trip.json`으로 정규화한다. 날짜별 장소가 없으면 여행 기간, 도시 이동, 희망 장소, 이동 시간, 예산을 기준으로 초안을 만들고 조사한 추천 장소는 `optional` 후보로 구분한다.
 4. 모든 장소에 다음 허용 카테고리 중 하나를 지정한다:
    `photo`, `restaurant`, `cafe`, `hotel`, `station`, `airport`, `logistics`.

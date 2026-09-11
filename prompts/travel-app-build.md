@@ -16,7 +16,7 @@
    `.agents/skills/travel-map-builder/references/design-system.md`,
    `.agents/skills/travel-map-builder/references/component-contract.md`를 읽어줘.
 2. `travel-research.v1` 자료가 있으면 날짜·도시·장소 순서·사용자 지정 링크·출처·확인 필요 상태를 우선 보존해. 자료가 없거나 부족하면 여행지·기간·숙소·희망 장소만으로 조사하고, 확인할 수 없는 정보는 추측하지 말고 `확인 필요`로 남겨.
-3. 기존 여행은 수정하지 말고 고유한 kebab-case `<destination-slug>/` 폴더, `index.html`, `trip.json`을 새로 만들어. 루트 허브 `index.html`에도 새 여행 카드를 추가해.
+3. 기존 여행은 수정하지 말고 `travel/<destination-slug>/` 아래에 고유한 kebab-case 폴더, `index.html`, `trip.json`을 새로 만들어. 저장소 루트에는 새 여행 폴더를 만들지 말고, 루트 허브 `index.html`에도 새 여행 카드를 추가해. Pages 빌드가 기존 `/<destination-slug>/` 공개 경로를 유지한다.
 4. 주소·정확한 Google Maps 링크·좌표·영업시간·라스트오더·휴무일·가격·입장료·예약·대표 이미지·출처를 보완해. Google Maps 링크가 없으면 정확한 검색 링크를 만들고 정확한 핀을 검증하지 못한 좌표는 null로 둬. 식당·카페는 휴무일을 별도 표시하고 모르면 `확인 필요`로 표시해.
 5. 일본어 메뉴는 일본어 원문 아래에 한국어 번역과 가격을 넣고, 가능한 메뉴별 음식 사진과 출처를 연결해. 사용자가 제공한 숙소/장소 이미지는 `public/assets/`에 반영하고, 원격 이미지가 실패해도 지도·카테고리 폴백이 보이게 해. 나무위키·블로그는 설명 보완용으로만 사용하고 운영 정보는 공식 자료와 교차 확인해.
 6. 대체 식당은 `optional: true`, `alternativeFor`, `nearbyWalk`로 기본 동선과 분리해.
@@ -46,7 +46,7 @@
 - UI 계약이 바뀌면 `design-system.md`, `component-contract.md`, `README.md`도 함께 업데이트해.
 
 완료 보고:
-- 생성/수정한 destination 폴더와 장소 수
+- 생성/수정한 `travel/<destination-slug>/` 폴더와 장소 수
 - 확인 필요 항목과 출처 누락 항목
 - 실행한 검수 결과
 - 배포를 요청한 경우에만 실제 GitHub Pages URL과 Actions 결과

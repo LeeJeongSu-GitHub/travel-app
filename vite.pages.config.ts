@@ -5,15 +5,15 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 const repoRoot = fileURLToPath(new URL(".", import.meta.url));
-const excludedRootDirectories = new Set([".agents", ".claude", ".gemini", ".github", ".openai", "dist", "node_modules", "public", "src", "tests"]);
+const travelRoot = resolve(repoRoot, "travel");
 
 function getDestinationInputs() {
   return Object.fromEntries(
-    readdirSync(repoRoot, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory() && !excludedRootDirectories.has(entry.name))
+    readdirSync(travelRoot, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name)
-      .filter((slug) => existsSync(resolve(repoRoot, slug, "index.html")) && existsSync(resolve(repoRoot, slug, "trip.json")))
-      .map((slug) => [slug, resolve(repoRoot, slug, "index.html")]),
+      .filter((slug) => existsSync(resolve(travelRoot, slug, "index.html")) && existsSync(resolve(travelRoot, slug, "trip.json")))
+      .map((slug) => [`${slug}/index`, resolve(travelRoot, slug, "index.html")]),
   );
 }
 

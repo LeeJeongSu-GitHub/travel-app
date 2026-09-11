@@ -32,12 +32,12 @@ import {
 import { BottomSheet, KeyboardInput, KeyboardTextarea, MobileScroll, useKeyboard } from "./mobile";
 import { CATEGORY_COLORS, CATEGORY_CONFIGS, TravelBottomNav, TravelCategoryLegend, TravelDataTransferSheet, TravelHeader, TravelPlaceCard, categoryIcons, categoryLabels, type CategoryConfig } from "./travel-ui";
 import type { Category, CategoryFilter, Coordinate, DayFilter, LocalTripState, MapPlace, MenuImageKey, MenuItem, Place, PlaceDraft, ReservationStatus, TransferMode, TransferPayload, TransferStatus, Trip, TripDay, View } from "./travel-ui";
-const tripDataFiles = import.meta.glob("../*/trip.json", { eager: true, import: "default" }) as Record<string, Trip>;
+const tripDataFiles = import.meta.glob("../travel/*/trip.json", { eager: true, import: "default" }) as Record<string, Trip>;
 
 setWorkerUrl(maplibreWorkerUrl);
 
 const tripSlug = window.location.pathname.split("/").filter(Boolean).at(-1) ?? "kyoto-kobe-trip";
-const trip = tripDataFiles[`../${tripSlug}/trip.json`] ?? tripDataFiles["../kyoto-kobe-trip/trip.json"] ?? { title: "여행 지도", days: [] };
+const trip = tripDataFiles[`../travel/${tripSlug}/trip.json`] ?? tripDataFiles["../travel/kyoto-kobe-trip/trip.json"] ?? { title: "여행 지도", days: [] };
 const tripStorageKey = `travel-map-state-${tripSlug}`;
 const tripDestinationLabel = trip.title.replace(/\s*여행(?:\s*지도)?$/, "").trim();
 const tripDateLabel = trip.days.length ? `${trip.days[0].dayOfMonth}일 ~ ${trip.days[trip.days.length - 1].dayOfMonth}일 · ${tripDestinationLabel || trip.days[0].city}` : "여행 일정";
@@ -291,7 +291,7 @@ function duplicateMarkerOffsets(places: MapPlace[]) {
 
 const currentLocationIcon = L.divIcon({ className: "current-location-icon", html: '<span class="current-location-dot" aria-hidden="true"></span>', iconSize: [24, 24], iconAnchor: [12, 12] });
 
-function MapViewport({ routePlaces, selectedPlace, userLocation }: { routePlaces: MapPlace[]; selectedPlace: Place | null; userLocation: Coordinate | null }) {
+function MapViewport({ routePlaces, selectedPlace, userLocation, locationRequestId }: { routePlaces: MapPlace[]; selectedPlace: Place | null; userLocation: Coordinate | null; locationRequestId: number }) {
   const map = useMap();
   const routeKey = routePlaces.map((place) => place.id).join("|");
 
@@ -302,10 +302,14 @@ function MapViewport({ routePlaces, selectedPlace, userLocation }: { routePlaces
 
   useEffect(() => {
     const points = routePlaces.map(coordinates).filter((point): point is Coordinate => Boolean(point));
-    if (userLocation) points.push(userLocation);
     if (points.length === 1) map.setView(points[0], 15, { animate: false });
     if (points.length > 1) map.fitBounds(L.latLngBounds(points), { padding: [28, 28], maxZoom: 15, animate: false });
-  }, [map, routeKey, userLocation]);
+  }, [map, routeKey]);
+
+  useEffect(() => {
+    if (!userLocation || locationRequestId === 0) return;
+    map.flyTo(userLocation, Math.max(map.getZoom(), 14), { duration: 0.45 });
+  }, [locationRequestId, map, userLocation]);
 
   useEffect(() => {
     const point = selectedPlace ? coordinates(selectedPlace) : null;
@@ -347,13 +351,13 @@ function KoreanMapLayer({ onReady, onError }: { onReady: () => void; onError: ()
   return null;
 }
 
-function MapButtons({ routePlaces, onLocate }: { routePlaces: MapPlace[]; onLocate: () => void }) {
+function MapButtons({ routePlaces, onLocate, locationStatus }: { routePlaces: MapPlace[]; onLocate: () => void; locationStatus: LocationStatus }) {
   const map = useMap();
   const fitRoute = () => {
     const points = routePlaces.map(coordinates).filter((point): point is Coordinate => Boolean(point));
     if (points.length > 1) map.fitBounds(L.latLngBounds(points), { padding: [28, 28], maxZoom: 15 });
   };
-  return <div className="map-actions" aria-label="지도 조작"><button type="button" className="map-action" onClick={onLocate} aria-label="내 위치 보기"><LocateFixed size={18} strokeWidth={1.9} /><span>내 위치</span></button><button type="button" className="map-action" onClick={fitRoute} aria-label="오늘 경로 맞춤 보기"><MapPinned size={18} strokeWidth={1.9} /><span>경로 맞춤</span></button></div>;
+  return <div className="map-actions" aria-label="지도 조작"><button type="button" className="map-action" onClick={onLocate} disabled={locationStatus === "locating"} aria-label={locationStatus === "ready" ? "현재 위치 새로고침" : "내 위치 보기"}><LocateFixed size={18} strokeWidth={1.9} /><span>{locationStatus === "locating" ? "확인 중" : "내 위치"}</span></button><button type="button" className="map-action" onClick={fitRoute} aria-label="오늘 경로 맞춤 보기"><MapPinned size={18} strokeWidth={1.9} /><span>경로 맞춤</span></button></div>;
 }
 
 function MapResizeWatcher({ condensed }: { condensed: boolean }) {
@@ -370,10 +374,15 @@ function OfflineMapFallback({ places, onSelect }: { places: MapPlace[]; onSelect
   return <div className="offline-map" role="status"><div className="offline-map-icon"><MapIcon size={20} /></div><strong>지도를 불러올 수 없습니다</strong><p>저장된 일정과 주소는 계속 확인할 수 있어요.</p><div className="offline-place-list">{places.filter((place) => !place.optional).slice(0, 5).map((place) => <button type="button" key={place.id} onClick={() => onSelect(place)}><span className="offline-place-number" style={{ "--number-color": CATEGORY_COLORS[place.category] } as CSSProperties}>{place.order}</span><span>{place.name}</span><ChevronRight size={15} /></button>)}</div></div>;
 }
 
+type LocationStatus = "idle" | "locating" | "ready" | "error";
+
 function TripMap({ places, routePlaces, selectedPlace, onSelect, onMarkerSelect, userLocation, onUserLocation, mode = "day" }: { places: MapPlace[]; routePlaces: MapPlace[]; selectedPlace: Place | null; onSelect: (place: MapPlace) => void; onMarkerSelect?: (place: MapPlace) => void; userLocation: Coordinate | null; onUserLocation: (location: Coordinate) => void; mode?: "day" | "all" }) {
   const [mapError, setMapError] = useState(false);
   const [isOnline, setIsOnline] = useState(() => navigator.onLine);
   const [mapCondensed, setMapCondensed] = useState(false);
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>(() => userLocation ? "ready" : "idle");
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [locationRequestId, setLocationRequestId] = useState(0);
   const mapPlaces = places.filter((place) => coordinates(place));
   const markerOffsets = duplicateMarkerOffsets(mapPlaces);
   const routePoints = routePlaces.map(coordinates).filter((point): point is Coordinate => Boolean(point));
@@ -399,10 +408,51 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, onMarkerSelect,
     return () => scroll.removeEventListener("scroll", update);
   }, [mode]);
 
-  const requestLocation = () => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition((position) => onUserLocation([position.coords.latitude, position.coords.longitude]), () => undefined, { enableHighAccuracy: false, timeout: 7000, maximumAge: 300000 });
-  };
+  const requestLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setLocationStatus("error");
+      setLocationError("이 브라우저에서는 현재 위치를 사용할 수 없습니다.");
+      return;
+    }
+    setLocationStatus("locating");
+    setLocationError(null);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        onUserLocation([position.coords.latitude, position.coords.longitude]);
+        setLocationStatus("ready");
+        setLocationError(null);
+        setLocationRequestId((current) => current + 1);
+      },
+      (error) => {
+        const message = error.code === error.PERMISSION_DENIED
+          ? "위치 권한을 허용해야 현재 위치를 표시할 수 있어요."
+          : error.code === error.POSITION_UNAVAILABLE
+            ? "현재 위치를 확인하지 못했어요. 다시 시도해 주세요."
+            : "위치 확인 시간이 초과됐어요. 다시 시도해 주세요.";
+        setLocationStatus("error");
+        setLocationError(message);
+      },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 120000 },
+    );
+  }, [onUserLocation]);
+
+  useEffect(() => {
+    if (userLocation) setLocationStatus("ready");
+  }, [userLocation]);
+
+  useEffect(() => {
+    if (userLocation || !navigator.geolocation || !navigator.permissions?.query) return;
+    let active = true;
+    navigator.permissions.query({ name: "geolocation" }).then((permission) => {
+      if (!active) return;
+      if (permission.state === "granted") requestLocation();
+      if (permission.state === "denied") {
+        setLocationStatus("error");
+        setLocationError("브라우저 설정에서 위치 권한이 차단되어 있습니다.");
+      }
+    }).catch(() => undefined);
+    return () => { active = false; };
+  }, [mode, requestLocation, userLocation]);
   const mapUnavailable = !isOnline || mapError;
 
   const tripMap = <section className={`trip-map ${mode === "all" ? "is-all-map" : "is-schedule-map"}${mapCondensed && mode === "day" ? " is-condensed" : ""}`} aria-label={mode === "all" ? "전체 여행 지도" : "오늘 일정 지도"}>
@@ -411,12 +461,13 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, onMarkerSelect,
       {mapUnavailable ? <OfflineMapFallback places={places} onSelect={onSelect} /> : <MapContainer center={center} zoom={13} minZoom={1} zoomControl={false} scrollWheelZoom doubleClickZoom className="leaflet-map" aria-label="한글 여행 지도">
         <MapResizeWatcher condensed={mapCondensed} />
         <KoreanMapLayer onReady={handleMapReady} onError={handleMapError} />
-        <MapViewport routePlaces={routePlaces} selectedPlace={selectedPlace} userLocation={userLocation} />
+        <MapViewport routePlaces={routePlaces} selectedPlace={selectedPlace} userLocation={userLocation} locationRequestId={locationRequestId} />
         <ZoomControl position="bottomright" />
-        <MapButtons routePlaces={routePlaces} onLocate={requestLocation} />
+        <MapButtons routePlaces={routePlaces} onLocate={requestLocation} locationStatus={locationStatus} />
         {routePoints.length > 1 ? <Polyline positions={routePoints} pathOptions={{ color: "#1457d9", weight: 3, opacity: 0.8, dashArray: "6 8" }} /> : null}
         {mapPlaces.map((place) => { const point = coordinates(place); if (!point) return null; const color = CATEGORY_COLORS[place.category]; const label = mode === "all" ? `${place.dayNumber}·${place.order}` : String(place.order); const Icon = categoryIcons[place.category]; return <Marker key={`${place.id}-${place.order}`} position={point} icon={createNumberIcon(label, selectedPlace?.id === place.id, Boolean(place.optional), color, markerOffsets.get(place.id) ?? 0)} eventHandlers={{ click: () => (onMarkerSelect ?? onSelect)(place) }} alt={`DAY ${place.dayNumber} ${place.order}번 ${place.name}`}><Tooltip direction="top" offset={[0, -14]} opacity={0.96}><span className="map-tooltip"><Icon size={12} /> {place.name}<small>{categoryLabels[place.category]}</small></span></Tooltip></Marker>; })}
       </MapContainer>}
+      {locationStatus === "locating" || locationError ? <p className={`map-location-status${locationError ? " is-error" : ""}`} role="status">{locationStatus === "locating" ? "현재 위치 확인 중…" : locationError}</p> : null}
       {mapUnavailable ? <button type="button" className="map-retry" onClick={() => { setMapError(false); setIsOnline(navigator.onLine); }}><MapIcon size={15} /> 지도 다시 불러오기</button> : null}
     </div>
     <p className="map-caption"><span className="route-dash" /> 선은 실제 도로가 아닌 방문 순서입니다.</p>

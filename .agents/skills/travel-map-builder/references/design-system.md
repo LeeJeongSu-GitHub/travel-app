@@ -11,6 +11,7 @@
 - 일정 화면에서 전체 폭을 차지하는 `DAY 1`~`DAY 4` 탭은 두지 않습니다. 날짜 이동은 `.trip-header .header-copy .header-meta` 안에서 여행 기간 텍스트 옆에 현재 `DAY N · 날짜`와 이전/다음 버튼을 compact하게 표시하고, 헤더 버튼으로 날짜를 이동합니다. 기간 텍스트는 남는 폭을 사용하고 길면 말줄임 처리하며, 날짜 컨트롤은 줄어들지 않는 고정 폭으로 유지합니다.
 - 일정 화면은 날짜 소개, 동일 높이의 실제 방문·장소 추가·대체 후보 컨트롤, 지도, 오늘의 동선 섹션, 장소 카드 순서입니다.
 - 지도는 `ROUTE PREVIEW` 카드 안에서 헤더 아래에 sticky로 유지하고, 장소 목록은 그 아래에서 스크롤합니다. 지도는 장소 순서와 마커만 보여주는 route preview이며 DAY 이동 버튼을 지도 위에 겹쳐 그리지 않습니다. 일정 지도는 모바일에서 Triple과 비슷한 compact 높이를 사용하며, 일정 스크롤이 시작되면 지도 이미지가 작은 고정 바로 접혀 카드 내용을 가리지 않게 합니다. 축소할 때는 확장 지도 슬롯의 높이를 유지해 스크롤 문서가 재배치되거나 튕기지 않게 합니다. sticky `top` 값은 고정 숫자를 따로 추정하지 말고 실제 헤더 box 높이와 일치시켜 헤더·지도·콘텐츠가 겹치지 않게 합니다.
+- 현재 위치는 권한이 이미 허용된 경우 일정·전체 지도 진입 시 자동으로 조회하고, 첫 권한 요청은 `내 위치` 버튼에서 시작합니다. 조회 중·권한 거부·위치 확인 실패·시간 초과는 지도 위에 `role="status"` 안내를 표시하며, 성공하면 현재 위치 마커와 지도 중심 이동을 함께 제공합니다.
 - 지도 마커를 누르면 상세 시트를 열지 않고 해당 장소 카드로 이동·강조합니다. 장소 카드 본문을 눌렀을 때만 `BottomSheet` 상세 화면을 엽니다.
 - 장소 카드는 둥근 흰색 surface, 얇은 경계선, 왼쪽 category accent, category 색상의 순번 원, 카테고리 아이콘, 오른쪽 대표 이미지·즐겨찾기·방문 체크로 구성합니다.
 - 상세 정보는 새 페이지나 일반 desktop modal이 아니라 휴대폰 화면 안의 스크롤 가능한 `BottomSheet`입니다.
@@ -77,7 +78,7 @@ Prototype
 
 ## 컴포넌트 구현 규칙
 
-1. 여행을 추가할 때는 `src/travel-ui/index.ts`의 공통 컴포넌트·타입·카테고리를 `src/Prototype.tsx`에서 조합하고, `<destination-slug>/trip.json`과 루트 허브 카드만 추가합니다. 구현은 `components.tsx`, `types.ts`, `category.ts`에 분리하되 새 화면의 import는 단일 진입점을 우선합니다.
+1. 여행을 추가할 때는 `src/travel-ui/index.ts`의 공통 컴포넌트·타입·카테고리를 `src/Prototype.tsx`에서 조합하고, `travel/<destination-slug>/index.html`, `travel/<destination-slug>/trip.json`과 루트 허브 카드만 추가합니다. Pages 빌드는 공개 주소를 기존 `/<destination-slug>/`로 유지합니다. 구현은 `components.tsx`, `types.ts`, `category.ts`에 분리하되 새 화면의 import는 단일 진입점을 우선합니다.
 2. 기존 템플릿이 있는 저장소에서 여행별 `index.html`, `App.tsx`, 독립 CSS, 새 라우터를 만들어 화면을 다시 그리지 않습니다. 여행 폴더는 데이터와 진입점만 소유합니다.
 3. 앱 전용 고정 영역은 `MobileScroll` 안에 중복해서 만들지 않습니다. `TravelHeader`·`TravelBottomNav`·상세 시트는 현재 런타임 계약을 따르고, 스크롤 콘텐츠는 `MobileScroll` 안에 둡니다.
 4. 헤더의 `.header-copy`는 `min-width: 0`인 단일 콘텐츠 열이어야 합니다. `.header-meta`는 기간 텍스트와 날짜 컨트롤을 한 줄 flex로 배치하고, 기간 텍스트에는 `overflow: hidden`·`text-overflow: ellipsis`·`white-space: nowrap`, 날짜 컨트롤에는 `flex: 0 0 auto`를 적용해 제목·기간·메뉴와 겹치지 않게 합니다. 360px 내외에서는 gap과 버튼 폭만 줄이고 글자를 임의로 두 줄로 만들지 않습니다.

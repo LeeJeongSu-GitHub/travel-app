@@ -8,7 +8,7 @@
 - `src/travel-ui/index.ts`: 새 화면에서 사용하는 공통 UI 진입점(barrel export)
 - `src/prototype.css`: 공통 토큰과 반응형 레이아웃
 
-`src/Prototype.tsx`는 여행 데이터 로딩, 지도 효과, 로컬 상태, 화면 조합만 담당합니다. `<destination-slug>/` 폴더는 진입점과 `trip.json`만 소유합니다.
+`src/Prototype.tsx`는 여행 데이터 로딩, 지도 효과, 로컬 상태, 화면 조합만 담당합니다. `travel/<destination-slug>/` 폴더는 진입점과 `trip.json`만 소유합니다. GitHub Pages 빌드는 이 정본을 기존 `/<destination-slug>/` 공개 경로로 출력하며, 저장소 루트의 기존 목적지 폴더는 호환 엔트리로만 유지합니다.
 
 ## 표준 컴포넌트
 
@@ -56,11 +56,12 @@ import type { Place, Trip, View } from "./travel-ui";
 
 ## 데이터와 스타일 경계
 
-- 여행명·날짜·장소·메뉴·이미지 출처·좌표·휴무일은 각 `trip.json`에 둡니다.
+- 여행명·날짜·장소·메뉴·이미지 출처·좌표·휴무일은 각 `travel/<destination-slug>/trip.json`에 둡니다.
 - 색상·카테고리 아이콘·라벨은 `src/travel-ui/category.ts`, 카드 구조·헤더 간격·지도 축소 동작·시트 스크롤은 공통 컴포넌트/CSS에 둡니다.
 - 여행별 `App.tsx`, dashboard, 독립 CSS, 별도 헤더/탭/하단 내비게이션은 만들지 않습니다.
 - `MobileScroll`, `BottomSheet`, `KeyboardInput`, `KeyboardTextarea`의 런타임 계약을 우회하지 않습니다.
 - 모든 장소 카드와 지도 마커는 같은 `Place.id`·`category`를 사용합니다. 마커 클릭은 카드 포커스, 카드 본문 클릭은 상세 시트 열기입니다.
+- 지도는 공통 현재 위치 동작을 유지합니다. 권한이 허용된 경우 자동 조회하고, 최초 권한 요청은 `내 위치` 액션에서 시작하며, 조회 중·실패 상태를 알리고 성공 시 현재 위치로 지도를 이동합니다.
 
 ## 완료 기준
 

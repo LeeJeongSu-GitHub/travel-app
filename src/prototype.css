@@ -605,6 +605,39 @@
   color: var(--blue);
 }
 
+.map-action:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.map-location-status {
+  position: absolute;
+  z-index: 500;
+  top: 56px;
+  left: 11px;
+  max-width: calc(100% - 22px);
+  margin: 0;
+  padding: 6px 9px;
+  overflow: hidden;
+  border: 1px solid rgba(211, 222, 235, 0.95);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 760;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: 0 4px 11px rgba(29, 51, 84, 0.1);
+}
+
+.map-location-status.is-error {
+  border-color: #f0c8c1;
+  background: #fff8f6;
+  color: #a34d43;
+  white-space: normal;
+}
+
 .map-caption {
   display: flex;
   align-items: center;
@@ -1831,10 +1864,29 @@
 }
 
 .detail-ja {
-  margin: -8px 0 0 41px;
-  color: #8997a8;
-  font-size: 0.76rem;
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 8px;
+  margin: 4px 0 10px 41px;
+  padding: 7px 9px;
+  border: 1px solid #e7ecf3;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #68778c;
+  font-size: 0.78rem;
   font-weight: 650;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.detail-ja::before {
+  flex: 0 0 auto;
+  color: #8b99aa;
+  content: "일본어 원문";
+  font-size: 0.62rem;
+  font-weight: 760;
+  letter-spacing: 0.02em;
 }
 
 .detail-facts {
