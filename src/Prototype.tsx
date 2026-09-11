@@ -13,6 +13,7 @@ import {
   CalendarDays,
   Camera,
   Check,
+  ChevronLeft,
   ChevronRight,
   CircleDollarSign,
   Clock3,
@@ -408,13 +409,23 @@ function MapButtons({ routePlaces, onLocate }: { routePlaces: MapPlace[]; onLoca
   return <div className="map-actions" aria-label="지도 조작"><button type="button" className="map-action" onClick={onLocate} aria-label="내 위치 보기"><LocateFixed size={18} strokeWidth={1.9} /><span>내 위치</span></button><button type="button" className="map-action" onClick={fitRoute} aria-label="오늘 경로 맞춤 보기"><MapPinned size={18} strokeWidth={1.9} /><span>경로 맞춤</span></button></div>;
 }
 
+function MapResizeWatcher({ condensed }: { condensed: boolean }) {
+  const map = useMap();
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => map.invalidateSize());
+    return () => window.cancelAnimationFrame(frame);
+  }, [condensed, map]);
+  return null;
+}
+
 function OfflineMapFallback({ places, onSelect }: { places: MapPlace[]; onSelect: (place: MapPlace) => void }) {
   return <div className="offline-map" role="status"><div className="offline-map-icon"><MapIcon size={20} /></div><strong>지도를 불러올 수 없습니다</strong><p>저장된 일정과 주소는 계속 확인할 수 있어요.</p><div className="offline-place-list">{places.filter((place) => !place.optional).slice(0, 5).map((place) => <button type="button" key={place.id} onClick={() => onSelect(place)}><span className="offline-place-number" style={{ "--number-color": CATEGORY_COLORS[place.category] } as CSSProperties}>{place.order}</span><span>{place.name}</span><ChevronRight size={15} /></button>)}</div></div>;
 }
 
-function TripMap({ places, routePlaces, selectedPlace, onSelect, onMarkerSelect, userLocation, onUserLocation, mode = "day" }: { places: MapPlace[]; routePlaces: MapPlace[]; selectedPlace: Place | null; onSelect: (place: MapPlace) => void; onMarkerSelect?: (place: MapPlace) => void; userLocation: Coordinate | null; onUserLocation: (location: Coordinate) => void; mode?: "day" | "all" }) {
+function TripMap({ places, routePlaces, selectedPlace, onSelect, onMarkerSelect, userLocation, onUserLocation, mode = "day", dayLabel, onPreviousDay, onNextDay }: { places: MapPlace[]; routePlaces: MapPlace[]; selectedPlace: Place | null; onSelect: (place: MapPlace) => void; onMarkerSelect?: (place: MapPlace) => void; userLocation: Coordinate | null; onUserLocation: (location: Coordinate) => void; mode?: "day" | "all"; dayLabel?: string; onPreviousDay?: () => void; onNextDay?: () => void }) {
   const [mapError, setMapError] = useState(false);
   const [isOnline, setIsOnline] = useState(() => navigator.onLine);
+  const [mapCondensed, setMapCondensed] = useState(false);
   const mapPlaces = places.filter((place) => coordinates(place));
   const markerOffsets = duplicateMarkerOffsets(mapPlaces);
   const routePoints = routePlaces.map(coordinates).filter((point): point is Coordinate => Boolean(point));
@@ -430,16 +441,28 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, onMarkerSelect,
     return () => { window.removeEventListener("online", online); window.removeEventListener("offline", offline); };
   }, []);
 
+  useEffect(() => {
+    if (mode !== "day") return;
+    const scroll = document.querySelector<HTMLElement>('[data-testid="mobile-scroll"]');
+    if (!scroll) return;
+    const update = () => setMapCondensed(scroll.scrollTop > 180);
+    update();
+    scroll.addEventListener("scroll", update, { passive: true });
+    return () => scroll.removeEventListener("scroll", update);
+  }, [mode]);
+
   const requestLocation = () => {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition((position) => onUserLocation([position.coords.latitude, position.coords.longitude]), () => undefined, { enableHighAccuracy: false, timeout: 7000, maximumAge: 300000 });
   };
   const mapUnavailable = !isOnline || mapError;
 
-  return <section className={`trip-map ${mode === "all" ? "is-all-map" : "is-schedule-map"}`} aria-label={mode === "all" ? "전체 여행 지도" : "오늘 일정 지도"}>
+  return <section className={`trip-map ${mode === "all" ? "is-all-map" : "is-schedule-map"}${mapCondensed && mode === "day" ? " is-condensed" : ""}`} aria-label={mode === "all" ? "전체 여행 지도" : "오늘 일정 지도"}>
     <div className="map-label-row"><div><span className="eyebrow">ROUTE PREVIEW</span><strong>{mode === "all" ? "전체 경로" : "방문 순서"}</strong></div><span className="map-count">{mapPlaces.length}곳 표시</span></div>
     <div className="map-frame" data-scroll-drag="ignore">
+      {dayLabel ? <div className="map-day-nav" aria-label="여행 날짜 이동"><button type="button" onClick={onPreviousDay} disabled={!onPreviousDay} aria-label="이전 날짜"><ChevronLeft size={16} /></button><strong>{dayLabel}</strong><button type="button" onClick={onNextDay} disabled={!onNextDay} aria-label="다음 날짜"><ChevronRight size={16} /></button></div> : null}
       {mapUnavailable ? <OfflineMapFallback places={places} onSelect={onSelect} /> : <MapContainer center={center} zoom={13} minZoom={1} zoomControl={false} scrollWheelZoom doubleClickZoom className="leaflet-map" aria-label="한글 여행 지도">
+        <MapResizeWatcher condensed={mapCondensed} />
         <KoreanMapLayer onReady={handleMapReady} onError={handleMapError} />
         <MapViewport routePlaces={routePlaces} selectedPlace={selectedPlace} userLocation={userLocation} />
         <ZoomControl position="bottomright" />
@@ -456,10 +479,6 @@ function TripMap({ places, routePlaces, selectedPlace, onSelect, onMarkerSelect,
 function AppHeader({ view, menuOpen, setMenuOpen, setView }: { view: View; menuOpen: boolean; setMenuOpen: (open: boolean) => void; setView: (view: View) => void }) {
   const title = view === "schedule" ? trip.title : view === "map" ? "전체 지도" : view === "reservations" ? "예약·운영 확인" : "저장한 장소";
   return <header className="trip-header"><button type="button" className="icon-button header-back" aria-label={view === "schedule" ? "일정 홈" : "일정으로 돌아가기"} onClick={() => setView("schedule")}><ArrowLeft size={22} strokeWidth={1.8} /></button><div className="header-copy"><strong>{title}</strong><span>{tripDateLabel}</span></div><button type="button" className="icon-button header-menu-button" aria-label="빠른 메뉴" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={21} strokeWidth={1.8} /> : <Menu size={22} strokeWidth={1.8} />}</button>{menuOpen ? <div className="quick-menu" role="menu"><button type="button" role="menuitem" onClick={() => { setView("schedule"); setMenuOpen(false); }}><CalendarDays size={16} /> 오늘 일정</button><button type="button" role="menuitem" onClick={() => { setView("map"); setMenuOpen(false); }}><MapIcon size={16} /> 전체 지도</button><button type="button" role="menuitem" onClick={() => { setView("reservations"); setMenuOpen(false); }}><Bookmark size={16} /> 예약 확인</button></div> : null}</header>;
-}
-
-function DayTabs({ days, selectedDay, onChange }: { days: TripDay[]; selectedDay: number; onChange: (day: number) => void }) {
-  return <nav className="day-tabs" aria-label="여행 날짜 선택">{days.map((day) => <button key={day.id} type="button" className={selectedDay === day.dayOfMonth ? "is-active" : ""} onClick={() => onChange(day.dayOfMonth)} aria-pressed={selectedDay === day.dayOfMonth}><span>DAY {day.dayNumber}</span><strong>{day.dayOfMonth}일</strong></button>)}</nav>;
 }
 
 function ReservationBadge({ status, completed }: { status?: ReservationStatus; completed?: boolean }) {
@@ -553,14 +572,15 @@ function ScheduleView({ activeDay, selectedPlace, selectedPlaceId, showAlternati
   const restaurantAlternatives = activeDay.places.filter((place) => place.optional && place.category === "restaurant");
   const otherAlternatives = activeDay.places.filter((place) => place.optional && place.category !== "restaurant");
   const withDay = (place: Place): MapPlace => ({ ...place, dayNumber: activeDay.dayNumber, dayOfMonth: activeDay.dayOfMonth, dayTitle: activeDay.title });
+  const activeDayIndex = trip.days.findIndex((day) => day.dayOfMonth === activeDay.dayOfMonth);
+  const previousDay = activeDayIndex > 0 ? trip.days[activeDayIndex - 1] : undefined;
+  const nextDay = activeDayIndex >= 0 && activeDayIndex < trip.days.length - 1 ? trip.days[activeDayIndex + 1] : undefined;
   const visitedCount = activeDay.places.filter((place) => completedIds.includes(place.id)).length;
   const renderCard = (place: Place) => <PlaceCard place={place} day={activeDay} selected={selectedPlaceId === place.id} completed={completedIds.includes(place.id)} favorite={favoriteIds.includes(place.id)} onSelect={() => onSelectPlace(withDay(place))} onToggleComplete={() => onToggleComplete(place.id)} onToggleFavorite={() => onToggleFavorite(place.id)} />;
   return (
     <main className="schedule-view">
-      <DayTabs days={trip.days} selectedDay={activeDay.dayOfMonth} onChange={onDayChange} />
       <section className="day-intro">
         <div className="day-intro-copy">
-          <span className="eyebrow">DAY {activeDay.dayNumber} · {activeDay.dayOfMonth}일</span>
           <h1>{activeDay.title}</h1>
           <p>{activeDay.city}</p>
         </div>
@@ -570,7 +590,7 @@ function ScheduleView({ activeDay, selectedPlace, selectedPlaceId, showAlternati
           <label className="alternative-toggle"><input type="checkbox" checked={showAlternatives} onChange={(event) => setShowAlternatives(event.target.checked)} /><span className="toggle-track" /><span>대체 후보</span></label>
         </div>
       </section>
-      <TripMap places={primaryPlaces.map(withDay)} routePlaces={primaryPlaces.map(withDay)} selectedPlace={selectedPlace} onSelect={onSelectPlace} onMarkerSelect={onFocusPlace} userLocation={userLocation} onUserLocation={onUserLocation} />
+      <TripMap places={primaryPlaces.map(withDay)} routePlaces={primaryPlaces.map(withDay)} selectedPlace={selectedPlace} onSelect={onSelectPlace} onMarkerSelect={onFocusPlace} userLocation={userLocation} onUserLocation={onUserLocation} dayLabel={`DAY ${activeDay.dayNumber} · ${activeDay.dayOfMonth}일`} onPreviousDay={previousDay ? () => onDayChange(previousDay.dayOfMonth) : undefined} onNextDay={nextDay ? () => onDayChange(nextDay.dayOfMonth) : undefined} />
       <section className="itinerary-section" aria-label={`${activeDay.dayOfMonth}일 일정 목록`}>
         <div className="section-heading"><div><span className="eyebrow">{primaryPlaces.length} STOPS</span><h2>{actualOnly ? "실제 방문 기록" : "오늘의 동선"}</h2></div><span className="section-hint">체크=실제 방문</span></div>
         <CategoryLegend />

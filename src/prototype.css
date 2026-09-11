@@ -17,8 +17,6 @@
 
 .trip-app {
   --trip-header-height: 110px;
-  --day-tabs-header-gap: 10px;
-  --day-tabs-sticky-height: 90px;
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -297,7 +295,7 @@
 
 .trip-map.is-schedule-map {
   position: sticky;
-  top: calc(var(--trip-header-height) + var(--day-tabs-sticky-height));
+  top: calc(var(--trip-header-height) + 10px);
   z-index: 8;
   background: var(--paper);
   box-shadow: 0 10px 22px rgba(28, 53, 87, 0.1);
@@ -337,6 +335,137 @@
   border-radius: 15px;
   background: #dce7ef;
   box-shadow: 0 6px 20px rgba(40, 68, 102, 0.08);
+}
+
+.trip-map.is-schedule-map .map-frame {
+  height: clamp(220px, 65vw, 290px);
+}
+
+.map-day-nav {
+  position: absolute;
+  z-index: 650;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid rgba(220, 229, 240, 0.96);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px rgba(29, 51, 84, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.map-day-nav strong {
+  min-width: 76px;
+  color: var(--ink);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.map-day-nav button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--blue);
+}
+
+.map-day-nav button:hover,
+.map-day-nav button:focus-visible {
+  background: #edf3ff;
+}
+
+.map-day-nav button:disabled {
+  color: #b9c5d4;
+  cursor: default;
+  opacity: 0.65;
+}
+
+.trip-map.is-schedule-map.is-condensed {
+  display: grid;
+  height: 56px;
+  min-height: 56px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  overflow: visible;
+}
+
+.trip-map.is-schedule-map.is-condensed .map-label-row {
+  min-width: 0;
+  align-items: center;
+  padding: 0;
+  border-bottom: 0;
+}
+
+.trip-map.is-schedule-map.is-condensed .map-label-row > div {
+  display: block;
+  min-width: 0;
+}
+
+.trip-map.is-schedule-map.is-condensed .map-label-row .eyebrow,
+.trip-map.is-schedule-map.is-condensed .map-count {
+  display: none;
+}
+
+.trip-map.is-schedule-map.is-condensed .map-label-row strong {
+  display: block;
+  overflow: hidden;
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trip-map.is-schedule-map.is-condensed .map-frame {
+  display: flex;
+  width: auto;
+  height: 36px;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.trip-map.is-schedule-map.is-condensed .leaflet-map,
+.trip-map.is-schedule-map.is-condensed .offline-map,
+.trip-map.is-schedule-map.is-condensed .map-retry {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.trip-map.is-schedule-map.is-condensed .map-day-nav {
+  position: static;
+  top: auto;
+  right: auto;
+  min-height: 34px;
+}
+
+.trip-map.is-schedule-map.is-condensed .map-day-nav strong {
+  min-width: 68px;
+  font-size: 0.62rem;
+}
+
+.trip-map.is-schedule-map.is-condensed .map-day-nav button {
+  width: 27px;
+  height: 27px;
+}
+
+.trip-map.is-schedule-map.is-condensed .map-caption {
+  display: none;
 }
 
 .leaflet-map {
@@ -597,57 +726,6 @@
   box-shadow: 0 4px 12px rgba(29, 51, 84, 0.1);
 }
 
-.day-tabs {
-  position: sticky;
-  top: calc(var(--trip-header-height) + var(--day-tabs-header-gap));
-  z-index: 9;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 5px;
-  margin: var(--day-tabs-header-gap) 14px 16px;
-  padding: 6px 8px;
-  border: 1px solid #dfe6f0;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 5px 16px rgba(28, 53, 87, 0.045);
-  backdrop-filter: blur(14px);
-}
-
-.day-tabs button {
-  display: grid;
-  min-height: 51px;
-  align-content: center;
-  gap: 3px;
-  padding: 6px 2px;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  color: #91a0b2;
-}
-
-.day-tabs button span {
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.day-tabs button strong {
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.day-tabs button:hover,
-.day-tabs button:focus-visible {
-  background: #edf2f8;
-  color: var(--ink);
-}
-
-.day-tabs button.is-active {
-  background: var(--ink);
-  color: white;
-  box-shadow: 0 4px 10px rgba(23, 32, 51, 0.15);
-}
-
 .itinerary-section,
 .all-map-list,
 .saved-section,
@@ -675,10 +753,6 @@
 .alternatives-section {
   overflow: hidden;
   border-top: 3px solid #b9c9e2;
-}
-
-.full-screen-screen .day-tabs {
-  top: calc(var(--trip-header-height) + var(--day-tabs-header-gap));
 }
 
 .full-screen-screen .trip-app {
@@ -2372,16 +2446,6 @@ a:focus-visible {
     gap: 6px;
   }
 
-  .day-tabs {
-    gap: 2px;
-    padding-right: 9px;
-    padding-left: 9px;
-  }
-
-  .day-tabs button {
-    min-height: 47px;
-  }
-
   .detail-facts {
     grid-template-columns: 1fr;
   }
@@ -2517,16 +2581,6 @@ a:focus-visible {
 
   .section-heading {
     gap: 6px;
-  }
-
-  .day-tabs {
-    gap: 2px;
-    padding-right: 9px;
-    padding-left: 9px;
-  }
-
-  .day-tabs button {
-    min-height: 47px;
   }
 
   .detail-facts {
