@@ -77,6 +77,15 @@ When any text-entry control loses focus, dismiss the simulated keyboard. If the 
 
 When a user supplies a travel plan, PRD, notes, screenshots, or place research and asks to create or update a trip, read and follow `.agents/skills/travel-map-builder/SKILL.md` and its linked data and component contracts. This repository also exposes the same workflow through `.claude/skills/travel-map-builder/` and `.gemini/skills/travel-map-builder/` for Claude Code and Gemini CLI. Treat the user's current request as authoritative, keep uncertain research marked for confirmation, and publish only when the user explicitly requests it.
 
+## Portable travel agent bootstrap
+
+This file is the repository-level agent guide and travels with every clone or fork. The repository must be usable without changing the original maintainer's GitHub ID, repository name, or local path.
+
+1. From the cloned repository root, run `npm ci`, `npm run validate:trip`, `npm run check:runtime`, and `npm run build`.
+2. For Codex, use `.agents/skills/travel-map-builder/SKILL.md`; for Claude Code, use `CLAUDE.md` and `.claude/skills/travel-map-builder/SKILL.md`; for Gemini CLI, use `GEMINI.md` and `.gemini/skills/travel-map-builder/SKILL.md`. These all resolve to the same canonical skill and references.
+3. If the request is research-only, return the `travel-research.v1` JSON packet described in `.agents/skills/travel-map-builder/references/research-packet.md` and do not edit the app. If app generation is requested, create a new destination folder and use the shared `src/travel-ui/` components.
+4. Run the visual and Sites checks before handoff. Only commit, push, or deploy when the user explicitly asks for that action. GitHub Pages base paths are derived from `GITHUB_REPOSITORY`.
+
 ## Travel app visual contract
 
 The current Kyoto/Kobe app is the reusable visual baseline for every destination. Before creating a new trip, read `.agents/skills/travel-map-builder/references/design-system.md` and `.agents/skills/travel-map-builder/references/component-contract.md`. Keep the shared components in `src/travel-ui/` for the header with header-owned DAY/date navigation, compact sticky route map, category-colored itinerary cards, phone-scoped detail sheet, bottom navigation, Pretendard-first typography, spacing, and responsive behavior. Do not recreate a full-width DAY tab strip or overlay day controls on the map. When itinerary scrolling begins, collapse the sticky map to its route-summary bar without changing the reserved scroll layout height so the page does not bounce and place cards remain readable. A destination folder owns data and its entry point; it must not introduce a separate generic dashboard theme, duplicate shared JSX, or independent CSS when the shared app engine is available.

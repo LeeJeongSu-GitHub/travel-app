@@ -1,6 +1,6 @@
 # Trip data contract
 
-Use the existing TypeScript types in `src/Prototype.tsx` as the final authority. This reference captures the fields an agent must preserve when creating a new destination.
+Use the shared TypeScript types in `src/travel-ui/types.ts` as the final authority. `src/Prototype.tsx` is the screen orchestrator; it should not become a second copy of the data contract. This reference captures the fields an agent must preserve when creating a new destination.
 
 ## Trip and day
 

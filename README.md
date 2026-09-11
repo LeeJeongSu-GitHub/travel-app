@@ -32,6 +32,7 @@
 - [디자인 고정 규칙](#디자인-고정-규칙)
 - [공통 UI 컴포넌트 계약](#공통-ui-컴포넌트-계약)
 - [새 여행 입력 방법](#가장-쉬운-입력-방법-권장)
+- [조사자료 받기용 프롬프트](#조사자료-받기용-프롬프트)
 - [자동 조사·이미지 출처 규칙](#자동-조사-시-출처이미지-처리-규칙)
 - [스킬·데이터 계약](#스킬과-문서)
 - [실제 화면 미리보기](#실제-화면-미리보기)
@@ -144,6 +145,43 @@ Notion 토큰은 프론트 코드에 포함하지 않습니다. 여행 데이터
 
 ---
 
+## Clone·fork 후 같은 앱으로 시작하기
+
+이 저장소는 코드·공통 컴포넌트·스킬·에이전트 지침을 함께 포함한 portable template입니다. 다른 사람이 clone, fork, 또는 `Use this template`으로 가져가도 원래 계정명이나 로컬 절대경로를 수정할 필요가 없습니다.
+
+### 1. 저장소 복사와 초기 검증
+
+```bash
+git clone https://github.com/<github-id>/<repository-name>.git
+cd <repository-name>
+npm ci
+npm run validate:trip
+npm run check:runtime
+npm run build
+npm run dev
+```
+
+브라우저에서 `http://localhost:5173/`을 열고 기존 교토·고베 앱이 같은 헤더, 지도, 카테고리 카드, 상세 시트, 하단 메뉴로 보이는지 확인합니다. GitHub Pages는 저장소의 `GITHUB_REPOSITORY`를 읽어 각자의 경로를 자동으로 계산합니다.
+
+### 2. 사용하는 에이전트와 스킬
+
+| 도구 | 자동으로 읽는 파일 | 역할 |
+| --- | --- | --- |
+| Codex | `AGENTS.md` → `.agents/skills/travel-map-builder/SKILL.md` | 공통 UI를 사용해 여행 앱 생성·수정 |
+| Claude Code | `CLAUDE.md` → `.claude/skills/travel-map-builder/SKILL.md` | canonical 스킬을 참조하는 동일 작업 |
+| Gemini CLI | `GEMINI.md` → `.gemini/skills/travel-map-builder/SKILL.md` | canonical 스킬을 참조하는 동일 작업 |
+
+세 환경 모두 `.agents/skills/travel-map-builder/`를 기준으로 하며, 다음 계약을 공유합니다.
+
+- UI 구조: [`component-contract.md`](./.agents/skills/travel-map-builder/references/component-contract.md)
+- 디자인: [`design-system.md`](./.agents/skills/travel-map-builder/references/design-system.md)
+- 앱 데이터: [`trip-data-contract.md`](./.agents/skills/travel-map-builder/references/trip-data-contract.md)
+- 조사자료 전달: [`research-packet.md`](./.agents/skills/travel-map-builder/references/research-packet.md)
+
+새 여행을 만들 때는 기존 여행을 덮어쓰지 않고 새 `<destination-slug>/`와 `trip.json`을 만들며, `src/travel-ui/`의 공통 컴포넌트를 그대로 사용합니다. 여행 폴더에 별도 dashboard, 헤더, 카드 JSX, 하단 메뉴, CSS를 만들지 않습니다.
+
+---
+
 ## 현재 작업 완료 내역
 
 현재 기준 여행은 19일~22일 교토·고베 일정이며, 총 4일·39개 장소가 `kyoto-kobe-trip/`에 들어 있습니다.
@@ -178,7 +216,9 @@ Notion 토큰은 프론트 코드에 포함하지 않습니다. 여행 데이터
 - JSON 필드 계약: `.agents/skills/travel-map-builder/references/trip-data-contract.md`
 - 공통 디자인 계약: `.agents/skills/travel-map-builder/references/design-system.md`
 - 공통 UI 컴포넌트 계약: `.agents/skills/travel-map-builder/references/component-contract.md`
+- 조사자료 전달 계약: `.agents/skills/travel-map-builder/references/research-packet.md`
 - 공통 UI 구현: `src/travel-ui/components.tsx`, 공통 타입: `src/travel-ui/types.ts`, 공통 카테고리: `src/travel-ui/category.ts`
+- clone/fork용 에이전트 진입점: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/skills/travel-map-builder/agents/openai.yaml`
 - 짧은 여행 입력부터 상세 조사자료까지 지원하며, 사용자는 여행지·기간·숙소·가고 싶은 곳 정도만 입력해도 됩니다.
 - 새 기능이나 데이터 필드가 추가되면 이 README의 작업 완료 내역, 입력 포맷, 생성 결과 목록도 함께 갱신합니다. 공통 UI를 바꿀 때는 컴포넌트 계약과 실제 교토·고베 화면도 함께 갱신합니다.
 
@@ -438,6 +478,102 @@ AI는 부족한 정보를 다음 원칙으로 보완합니다.
 
 나무위키나 특정 사이트의 정보는 참고할 수 있지만, 영업시간·휴무일·가격·예약 가능 여부는 가능한 한 공식 출처와 교차 확인합니다. 대표 이미지는 사용자가 제공한 이미지, 공식 페이지의 안정적인 이미지, Wikimedia 등 사용 허용 범위가 명확한 이미지 순으로 선택합니다. 페이지의 대표 이미지 URL이나 직접 이미지 URL을 사용할 때는 원문 페이지 출처를 함께 남기며, Google 이미지 검색 썸네일·만료되는 CDN·blob/data URL·저작권이 불명확한 이미지는 저장하거나 연결하지 않습니다.
 
+### 조사자료 받기용 프롬프트
+
+여행 계획을 바로 앱으로 만들지 않고 먼저 조사하고 싶다면, 아래 프롬프트를 조사 기능이 있는 AI에게 보내세요. 결과는 다른 AI나 이 저장소의 `travel-map-builder` 스킬에 그대로 전달할 수 있는 `travel-research.v1` JSON 패킷으로 받습니다. 이 단계에서는 코드·HTML·앱을 만들지 않도록 명시합니다.
+
+```text
+아래 여행 계획을 앱 생성 전 단계의 조사자료로 정리해줘. 코드를 만들거나 HTML을 작성하지 말고, 장소·운영 정보·출처·이미지·메뉴를 조사해줘.
+
+조사 규칙:
+- 내가 준 계획, 링크, 문서, 이미지의 장소·날짜·순서를 우선 보존해줘.
+- 사용자가 준 Google Maps 링크가 있으면 가장 먼저 사용하고, 없으면 공식 장소 결과를 확인한 뒤 정확한 Google Maps 검색 링크를 만들어줘.
+- 정확한 핀을 검증하지 못하면 좌표를 추측하지 말고 coordinates를 null로 둬.
+- 장소별로 주소, 영업시간, 라스트오더, 휴무일, 가격, 입장료, 예약 상태, 예약 링크, 공식 정보 출처를 확인해줘.
+- 식당·카페는 휴무일을 반드시 별도 필드로 넣어줘. 확인하지 못하면 `확인 필요`와 확인 사유를 적어줘.
+- 일본어 메뉴는 nameJa와 nameKo를 함께 적고 가격은 출처 표기를 그대로 유지해줘. 메뉴별 사진은 메뉴 원문 페이지와 이미지 URL·출처·사용 권한을 함께 적어줘.
+- 대표 이미지는 사용자가 제공한 이미지, 공식 페이지의 안정적인 이미지, 사용 허용 범위가 명확한 Wikimedia 순으로 조사해줘. Google 검색 썸네일, blob/data URL, 만료 URL, 권한이 불명확한 이미지는 제외해줘.
+- 나무위키·블로그는 장소 설명 보완용으로만 쓰고, 시간·가격·휴무일·예약은 공식 출처와 교차 확인해줘.
+- 출처가 충돌하거나 확인되지 않은 값은 확정하지 말고 `확인 필요`, confidence `low` 또는 `medium`, needsConfirmation에 남겨줘.
+- 계획에 없는 추천 장소는 기본 동선에 넣지 말고 alternatives에만 넣어줘. 대체 식당에는 기준 장소, 도보 거리, 예산, 예약 조건을 기록해줘.
+
+출력 형식:
+1) 먼저 조사 범위와 확인 필요 항목을 짧게 요약해줘.
+2) 그 다음 `schemaVersion: "travel-research.v1"`인 JSON 객체를 하나 출력해줘.
+3) JSON의 최상위 키는 trip, lodging, fixedEvents, days, researchLog를 사용해줘.
+4) days[].stops[]에는 order, name, nameJa, category, plannedTime, purpose, address, googleMapsUrl, directionsUrl, coordinates, hours, lastOrder, closedDays, price, admission, reservationStatus, reservationUrl, infoSourceUrl, image, menu, alternatives, notes, confidence, needsConfirmation을 넣어줘.
+5) 이미지 객체는 pageUrl, imageUrl, rightsNote를 사용하고, 메뉴 항목은 nameJa, nameKo, price, note, sourceUrl, image를 사용해줘.
+6) 모르는 값은 빈 문자열로 숨기지 말고 null 또는 `확인 필요`로 명시해줘. JSON 외에 JSON 내부를 설명하는 주석은 넣지 마.
+
+여행 계획:
+[여기에 여행지, 기간, 숙소, 고정 일정, 가고 싶은 곳, 예산, 참고 링크·문서·이미지를 붙여넣기]
+```
+
+조사 AI가 반환해야 하는 최소 형태는 다음과 같습니다. 실제 장소 수만큼 `stops`와 출처를 확장해서 받으세요.
+
+```json
+{
+  "schemaVersion": "travel-research.v1",
+  "researchedAt": "2026-09-11",
+  "trip": { "title": "후쿠오카 3박 4일", "destination": "일본 후쿠오카", "dateStart": "2026-10-10", "dateEnd": "2026-10-13", "timezone": "Asia/Tokyo", "travelers": "성인 2명", "style": "맛집 중심", "budget": "1인 하루 10,000엔", "constraints": [] },
+  "lodging": [{ "city": "후쿠오카", "name": "숙소명", "address": "확인 필요", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=...", "coordinates": null, "status": "candidate", "sources": ["https://..."], "confidence": "low", "needsConfirmation": ["정확한 숙소 핀"] }],
+  "fixedEvents": [],
+  "days": [{
+    "dayNumber": 1,
+    "date": "2026-10-10",
+    "city": "후쿠오카",
+    "title": "도착 후 시내 일정",
+    "startLocation": "후쿠오카 공항",
+    "endLocation": "후쿠오카 숙소",
+    "stops": [{
+      "order": 1,
+      "name": "장소명",
+      "nameJa": "場所名",
+      "category": "restaurant",
+      "plannedTime": "12:00–13:30",
+      "purpose": "점심",
+      "address": "확인된 주소",
+      "googleMapsUrl": "https://www.google.com/maps/...",
+      "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=...",
+      "coordinates": { "lat": 33.5902, "lng": 130.4017 },
+      "hours": "11:00–21:00",
+      "lastOrder": "20:30",
+      "closedDays": "화요일",
+      "price": "약 ¥1,000–¥2,000",
+      "admission": "해당 없음",
+      "reservationStatus": "recommended",
+      "reservationUrl": null,
+      "infoSourceUrl": "https://...",
+      "image": { "pageUrl": "https://...", "imageUrl": "https://...", "rightsNote": "공식 페이지" },
+      "menu": [{ "nameJa": "もつ鍋", "nameKo": "모츠나베", "price": "¥1,500", "note": null, "sourceUrl": "https://...", "image": null }],
+      "alternatives": [{ "name": "대체 식당", "googleMapsUrl": "https://...", "nearbyWalk": "도보 6분", "budget": "1인 ¥2,000 이하", "reservation": "예약 없이 입장 가능", "sourceUrls": ["https://..."] }],
+      "notes": null,
+      "confidence": "high",
+      "needsConfirmation": []
+    }]
+  }],
+  "researchLog": [{ "claim": "장소명 화요일 휴무", "sourceUrl": "https://...", "checkedAt": "2026-09-11", "confidence": "high", "notes": null }]
+}
+```
+
+받은 JSON을 앱으로 바꿀 때는 아래처럼 두 번째 AI에게 전달하세요.
+
+```text
+이 저장소의 travel-map-builder 스킬을 사용해 아래 `travel-research.v1` 조사자료를 새 여행 앱으로 변환해줘.
+
+- 기존 여행은 건드리지 말고 새 destination-slug 폴더와 trip.json을 만들어줘.
+- 조사자료의 날짜·도시·장소 순서·출처·확인 필요 상태를 보존해줘.
+- `src/travel-ui/` 공통 컴포넌트와 `src/prototype.css`를 사용하고, 여행별 헤더·카드·하단 메뉴·CSS를 복사하지 마.
+- alternatives는 기본 동선이 아닌 optional 대체 후보로 변환해줘.
+- 일본어 메뉴 아래에 한국어 번역·가격·메뉴 사진을 표시해줘.
+- 생성 후 validate-trip, runtime, build, Sites 테스트와 360/393/430px 화면 검수를 실행해줘.
+
+조사자료 JSON:
+[여기에 travel-research.v1 JSON 전체 붙여넣기]
+```
+
+상세 필드와 예시는 [`research-packet.md`](./.agents/skills/travel-map-builder/references/research-packet.md)에 따로 정리되어 있습니다.
+
 <details>
 <summary>상세 입력 포맷 펼치기 (선택)</summary>
 
@@ -602,8 +738,11 @@ AI는 이 정보를 바탕으로 날짜별 동선을 제안하되, 사용자가 
 
 작업 순서:
 1. 먼저 README.md, AGENTS.md, `.agents/skills/travel-map-builder/SKILL.md`,
-   `.agents/skills/travel-map-builder/references/trip-data-contract.md`와
-   기존 여행 폴더를 읽는다.
+   `.agents/skills/travel-map-builder/references/trip-data-contract.md`,
+   `.agents/skills/travel-map-builder/references/design-system.md`,
+   `.agents/skills/travel-map-builder/references/component-contract.md`와
+   기존 여행 폴더를 읽는다. 조사자료 JSON이 함께 오면
+   `.agents/skills/travel-map-builder/references/research-packet.md`도 읽는다.
 2. 기존 destination 폴더와 ID를 확인해 새 여행과 충돌하지 않는지 확인한다.
 3. 아래 계획을 날짜·도시·방문 순서가 보존되는 `trip.json`으로 정규화한다. 날짜별 장소가 없으면 여행 기간, 도시 이동, 희망 장소, 이동 시간, 예산을 기준으로 초안을 만들고 조사한 추천 장소는 `optional` 후보로 구분한다.
 4. 모든 장소에 다음 허용 카테고리 중 하나를 지정한다:
@@ -626,6 +765,8 @@ AI는 이 정보를 바탕으로 날짜별 동선을 제안하되, 사용자가 
     장소 카드, 상세 정보, 메뉴, 이미지가 잘리지 않는지 확인한다.
 12. 기존 교토·고베 화면과 비교해 새 여행의 header 안 날짜 이동, compact sticky 지도,
    category 카드, bottom navigation, BottomSheet 디자인이 동일한 계층과 밀도를 갖는지 확인한다.
+   `TravelHeader`, `TravelBottomNav`, `TravelCategoryLegend`, `TravelPlaceCard`,
+   `TravelDataTransferSheet`를 실제로 조합했는지 확인하고, 여행 폴더에 공통 JSX를 복사하지 않는다.
 
 조사 원칙:
 - 사용자가 지정한 사이트는 직접 확인하고, 장소 정보의 원문 URL을 `infoSourceUrl`로 남긴다. 나무위키는 보조 정보로 사용하고 운영 정보는 공식 출처와 교차 확인한다.

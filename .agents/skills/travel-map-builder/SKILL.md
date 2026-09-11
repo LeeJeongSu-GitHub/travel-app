@@ -1,6 +1,6 @@
 ---
 name: travel-map-builder
-description: Turn a travel plan, PRD, notes, screenshots, PDFs, or links into a destination-scoped, visually consistent mobile itinerary map app with structured place research, Korean category UI, translated menus, photos, closure days, alternatives, live trip records, and optional GitHub Pages deployment. Use when adding or enriching a trip in this repository.
+description: Turn travel plans, research packets, PRDs, screenshots, PDFs, or links into destination-scoped mobile itinerary map apps with the shared travel UI, structured place research, translated menus, photos, closure days, alternatives, live trip records, and portable GitHub Pages deployment. Use when researching, adding, or enriching a trip in this repository.
 ---
 
 # Travel Map Builder
@@ -9,7 +9,7 @@ Use this repository as a reusable travel-app template. Convert the user's curren
 
 ## Inspect first
 
-Read `README.md`, the nearest `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `src/Prototype.tsx`, `src/travel-ui/components.tsx`, `src/travel-ui/types.ts`, `src/prototype.css`, [references/trip-data-contract.md](references/trip-data-contract.md), [references/design-system.md](references/design-system.md), and [references/component-contract.md](references/component-contract.md) before editing. Inspect existing destination folders and the root travel hub first. When deployment is requested, also inspect `.github/workflows/deploy-pages.yml` and `vite.config.ts`. Do not overwrite another destination when the user gives a new trip. Keep `.agents/skills/travel-map-builder/` canonical; `.claude/skills/travel-map-builder/` and `.gemini/skills/travel-map-builder/` are lightweight pointers to it.
+Read `README.md`, the nearest `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `src/Prototype.tsx`, `src/travel-ui/components.tsx`, `src/travel-ui/types.ts`, `src/travel-ui/category.ts`, `src/prototype.css`, [references/trip-data-contract.md](references/trip-data-contract.md), [references/design-system.md](references/design-system.md), [references/component-contract.md](references/component-contract.md), and [references/research-packet.md](references/research-packet.md) when research output is supplied or requested. Inspect existing destination folders and the root travel hub first. When deployment is requested, also inspect `.github/workflows/deploy-pages.yml` and `vite.config.ts`. Do not overwrite another destination when the user gives a new trip. Keep `.agents/skills/travel-map-builder/` canonical; `.claude/skills/travel-map-builder/` and `.gemini/skills/travel-map-builder/` are lightweight pointers to it.
 
 ## Build the destination
 
@@ -23,7 +23,7 @@ Read `README.md`, the nearest `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `src/Prototyp
 8. Add nearby restaurant alternatives with `optional: true`, `alternativeFor`, and `nearbyWalk`. Keep alternatives linked to the same day/primary place and show them as candidates, not confirmed replacements.
 9. Preserve the live travel record: visit checks, favorites, notes, reservation state, manual additions, edits, deletions/hiding, actual-only filtering, and reload persistence must remain destination-scoped in local storage. A manual place without a map link gets generated Google Maps search/directions links; without coordinates it remains list-only and visibly says the pin needs confirmation.
 
-For the exact JSON fields, allowed values, uncertainty rules, and menu example, read [references/trip-data-contract.md](references/trip-data-contract.md). For the copyable short input and prompt, use the `README.md` section “가장 쉬운 입력 방법 (권장)”.
+For the exact JSON fields, allowed values, uncertainty rules, and menu example, read [references/trip-data-contract.md](references/trip-data-contract.md). When the user provides a research bundle or asks for a research-only deliverable, read [references/research-packet.md](references/research-packet.md). For the copyable short input and prompt, use the `README.md` section “가장 쉬운 입력 방법 (권장)”.
 
 For the required visual hierarchy, tokens, responsive behavior, prohibited design drift, and exact component APIs, read [references/design-system.md](references/design-system.md) and [references/component-contract.md](references/component-contract.md). A new destination should look like the current Kyoto/Kobe app with different content, not like a new generic travel dashboard.
 
@@ -66,6 +66,14 @@ Only commit and push when the user asks to publish/deploy (or has already explic
 ## Cross-model handoff
 
 Keep this workflow provider-neutral: do not depend on Codex-only tool syntax, hidden state, or a particular model. A new agent should be able to load the canonical skill, read the README prompt format, receive a plan/research bundle, create or update only the requested destination folder, run the verification commands, and return the public URL if deployment was requested. Preserve the `.claude` and `.gemini` pointer files when updating the canonical skill.
+
+## Portable clone/fork agent
+
+The repository is the portable agent package. A clone or fork must work without replacing account names, repository names, absolute paths, or UI code. Read the nearest root `AGENTS.md` first; Claude Code uses `CLAUDE.md` plus `.claude/skills/travel-map-builder/SKILL.md`, Gemini CLI uses `GEMINI.md` plus `.gemini/skills/travel-map-builder/SKILL.md`, and Codex uses `AGENTS.md` plus `.agents/skills/travel-map-builder/SKILL.md`. All three point to the same canonical contracts.
+
+After cloning, verify with `npm ci`, `npm run validate:trip`, `npm run check:runtime`, and `npm run build`. Add a trip only as a new `<destination-slug>/trip.json` and entry point; use the shared `src/travel-ui/` components. Derive Pages URLs from `GITHUB_REPOSITORY`; never hardcode the original maintainer's GitHub ID. Do not publish or push unless the user explicitly requests it.
+
+If the user asks only for research, return a `travel-research.v1` JSON packet and do not edit the app. If the user asks to build the app, consume that packet, preserve its sources and uncertainty, then run the full verification flow.
 
 ## Input and handoff
 
