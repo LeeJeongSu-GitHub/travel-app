@@ -2,6 +2,18 @@
 
 여행지별 폴더를 하나의 모바일 우선 정적 웹앱 허브에서 관리합니다. 현재는 `kyoto-kobe-trip/`에 19일부터 22일까지의 교토·고베 일정이 들어 있습니다.
 
+## 빠른 이동
+
+- [공개 여행지 허브](https://sgustjd2.github.io/travel/)
+- [교토·고베 앱](https://sgustjd2.github.io/travel/kyoto-kobe-trip/)
+- [로컬 실행](#실행)
+- [GitHub Pages 배포](#배포)
+- [새 여행 추가 흐름](#새-여행-추가-흐름)
+- [현재 구현·작업 내역](#현재-작업-완료-내역)
+- [새 여행 입력 방법](#가장-쉬운-입력-방법-권장)
+- [자동 조사·이미지 출처 규칙](#자동-조사-시-출처이미지-처리-규칙)
+- [스킬·데이터 계약](#스킬과-문서)
+
 ## 실행
 
 ```bash
@@ -22,9 +34,40 @@ public/                    # 공통 디바이스·지도 자산
 
 새 여행은 `<destination-slug>/index.html`과 `<destination-slug>/trip.json`을 추가하고, 루트 `index.html`에 여행지 카드를 연결합니다. 공통 UI는 `src/`를 재사용하고 여행별 내용은 각 폴더의 `trip.json`으로 분리합니다.
 
+## 새 여행 추가 흐름
+
+아래 순서만 따르면 기존 교토·고베 여행을 건드리지 않고 새 여행을 하나 더 만들 수 있습니다.
+
+1. 이 저장소를 clone하고 `README.md`의 [가장 쉬운 입력 방법](#가장-쉬운-입력-방법-권장)에 여행지·기간·숙소·희망 장소만 적습니다.
+2. AI에게 계획과 조사자료를 전달합니다. 장소명만 있거나 Google Maps 링크가 없어도 주소·지도 검색 링크·운영 정보를 조사하도록 요청할 수 있습니다.
+3. AI가 기존 폴더와 겹치지 않는 `<destination-slug>/` 폴더, `index.html`, `trip.json`, 루트 허브 카드를 만듭니다.
+4. `npm run validate:trip`, `npm run check:runtime`, `npm run build`, `npm run test:sites`로 생성 결과를 확인합니다.
+5. 변경을 `main`에 push하면 GitHub Actions가 `dist/client`를 GitHub Pages에 배포합니다. 완료 후 허브에서 새 여행 카드를 열어 모바일 화면을 확인합니다.
+
+여행별 URL은 항상 `https://sgustjd2.github.io/travel/<destination-slug>/` 형태입니다. 일정이 여러 개이면 각 여행 폴더의 `trip.json`만 별도로 관리하므로 한 여행의 장소 추가·삭제·실제 방문 체크가 다른 여행에 섞이지 않습니다.
+
 ## 배포
 
-`main` 브랜치에 push하면 GitHub Actions가 `dist/client`를 GitHub Pages에 배포합니다.
+이 저장소는 별도 서버 없이 GitHub Pages의 정적 배포로 운영합니다.
+
+- 저장소: `https://github.com/sgustjd2/travel`
+- 허브: `https://sgustjd2.github.io/travel/`
+- 여행 앱: `https://sgustjd2.github.io/travel/<destination-slug>/`
+- Actions workflow: [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml)
+- 빌드 결과: `dist/client`
+
+최초 1회만 GitHub 저장소의 `Settings → Pages → Build and deployment → Source`를 `GitHub Actions`로 설정하세요. 이후 `main`에 push하거나 Actions의 `Deploy to GitHub Pages`를 수동 실행하면 빌드·배포됩니다.
+
+배포 전 확인:
+
+1. 새 여행 폴더에 `<destination-slug>/index.html`과 `trip.json`이 있는지 확인합니다.
+2. 루트 `index.html`에 새 여행 카드가 연결되어 있는지 확인합니다.
+3. `npm run build`가 `dist/client`를 만드는지 확인합니다.
+4. Actions의 `build`와 `deploy`가 모두 성공한 뒤 `https://sgustjd2.github.io/travel/<destination-slug>/`를 엽니다.
+
+GitHub Pages 경로(`/travel/`)는 `vite.config.ts`의 build base와 자산 경로에 반영되어 있습니다. 로컬에서는 `/`, 배포에서는 `/travel/`을 사용하므로 이미지·manifest·스크립트에 루트 절대경로를 하드코딩하지 않습니다.
+
+기본 기능:
 
 - 지도: Leaflet + OpenFreeMap/OpenStreetMap
 - 실제 길찾기: 장소별 Google Maps URL
@@ -126,6 +169,9 @@ AI는 부족한 정보를 다음 원칙으로 보완합니다.
 4. 나무위키 등 백과사전형 페이지는 별칭·역사·장소 설명을 보완하는 참고자료
 
 나무위키나 특정 사이트의 정보는 참고할 수 있지만, 영업시간·휴무일·가격·예약 가능 여부는 가능한 한 공식 출처와 교차 확인합니다. 대표 이미지는 사용자가 제공한 이미지, 공식 페이지의 안정적인 이미지, Wikimedia 등 사용 허용 범위가 명확한 이미지 순으로 선택합니다. 페이지의 대표 이미지 URL이나 직접 이미지 URL을 사용할 때는 원문 페이지 출처를 함께 남기며, Google 이미지 검색 썸네일·만료되는 CDN·blob/data URL·저작권이 불명확한 이미지는 저장하거나 연결하지 않습니다.
+
+<details>
+<summary>상세 입력 포맷 펼치기 (선택)</summary>
 
 ### 상세 입력 포맷 (선택)
 
@@ -248,6 +294,8 @@ Google Maps 링크:
 -
 ```
 
+</details>
+
 ### 짧은 입력 예시
 
 계획이 아직 정리되지 않았다면 다음 정도만 보내도 됩니다.
@@ -264,6 +312,9 @@ Google Maps 링크:
 ```
 
 AI는 이 정보를 바탕으로 날짜별 동선을 제안하되, 사용자가 지정한 고정 일정과 숙소를 우선합니다. 정보가 부족한 장소는 임의로 확정하지 않고 조사 후 `확인 필요`로 표시합니다.
+
+<details>
+<summary>기본 작업 프롬프트 펼치기</summary>
 
 ### AI에게 작업을 맡길 때 사용할 기본 프롬프트
 
@@ -336,6 +387,8 @@ AI는 이 정보를 바탕으로 날짜별 동선을 제안하되, 사용자가 
 [여기에 위 입력 포맷으로 작성한 여행 계획을 붙여넣기]
 ----- 여행 계획 끝 -----
 ```
+
+</details>
 
 ### Google Maps 링크가 없을 때의 처리
 

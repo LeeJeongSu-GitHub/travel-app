@@ -9,7 +9,7 @@ Use this repository as a reusable travel-app template. Convert the user's curren
 
 ## Inspect first
 
-Read `README.md`, the nearest `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `src/Prototype.tsx`, `src/prototype.css`, and [references/trip-data-contract.md](references/trip-data-contract.md) before editing. Inspect existing destination folders and the root travel hub first. Do not overwrite another destination when the user gives a new trip. Keep `.agents/skills/travel-map-builder/` canonical; `.claude/skills/travel-map-builder/` and `.gemini/skills/travel-map-builder/` are lightweight pointers to it.
+Read `README.md`, the nearest `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, `src/Prototype.tsx`, `src/prototype.css`, and [references/trip-data-contract.md](references/trip-data-contract.md) before editing. Inspect existing destination folders and the root travel hub first. When deployment is requested, also inspect `.github/workflows/deploy-pages.yml` and `vite.config.ts`. Do not overwrite another destination when the user gives a new trip. Keep `.agents/skills/travel-map-builder/` canonical; `.claude/skills/travel-map-builder/` and `.gemini/skills/travel-map-builder/` are lightweight pointers to it.
 
 ## Build the destination
 
@@ -51,7 +51,7 @@ Run these checks after data or UI changes:
 
 Open the local app in a mobile frame and inspect every day, at least one lodging detail, one restaurant menu with Japanese/Korean lines and food thumbnails, one alternative restaurant, map/directions links, representative-image fallback behavior, closure-day display, the first/last scroll positions, manual edit/add/delete behavior, and actual-only filtering. Ensure no header, card content, image, or bottom navigation is clipped at narrow widths.
 
-Only commit and push when the user asks to publish/deploy (or has already explicitly requested deployment for the current trip). When publishing, monitor the GitHub Pages workflow to completion, open the public URL with a cache-busting query, and report unresolved `확인 필요` items. Do not claim deployment from a local build alone.
+Only commit and push when the user asks to publish/deploy (or has already explicitly requested deployment for the current trip). GitHub Pages is a static site: preserve `.github/workflows/deploy-pages.yml`, the Vite build base `/travel/`, the `dist/client` artifact, and destination URLs under `/travel/<destination-slug>/`. When publishing, monitor the GitHub Pages workflow to completion, open the public URL with a cache-busting query, and report unresolved `확인 필요` items. Do not claim deployment from a local build alone.
 
 ## Cross-model handoff
 
@@ -73,7 +73,7 @@ Return a short summary of created/updated destination folders, researched fields
 
 ## Documentation maintenance
 
-When a user-visible feature, data field, asset rule, or workflow changes, update `README.md` in the same change. Keep the README's current-work summary, short input prompt, detailed prompt, generated-results list, and unresolved-confirmation guidance consistent with the implementation. Update [references/trip-data-contract.md](references/trip-data-contract.md) when the JSON contract changes. Do not turn a one-off trip fact into a reusable rule; record trip-specific facts in that destination's `trip.json`.
+When a user-visible feature, data field, asset rule, or workflow changes, update `README.md` in the same change. Keep the README easy to scan: maintain quick links near the top, put the current-work summary and short input first, and keep long forms/prompts inside collapsible `<details>` sections. Keep deployment URLs/settings, generated-results list, and unresolved-confirmation guidance consistent with the implementation. Update [references/trip-data-contract.md](references/trip-data-contract.md) when the JSON contract changes. Do not turn a one-off trip fact into a reusable rule; record trip-specific facts in that destination's `trip.json`.
 
 ## Minimal input example
 
