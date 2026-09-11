@@ -8,6 +8,7 @@ import "leaflet/dist/leaflet.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
   ArrowLeft,
+  ArrowUp,
   Bookmark,
   CalendarDays,
   Camera,
@@ -607,6 +608,22 @@ function BottomNav({ view, setView }: { view: View; setView: (view: View) => voi
   return <nav className="trip-bottom-nav" aria-label="주요 메뉴">{items.map(({ key, label, icon: Icon }) => <button type="button" key={key} className={view === key ? "is-active" : ""} onClick={() => setView(key)} aria-current={view === key ? "page" : undefined}><Icon size={20} fill={key === "saved" && view === key ? "currentColor" : "none"} /><span>{label}</span></button>)}</nav>;
 }
 
+function ScrollToTopButton() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const scroll = document.querySelector<HTMLElement>('[data-testid="mobile-scroll"]');
+    if (!scroll) return;
+    const update = () => setVisible(scroll.scrollTop > 280);
+    update();
+    scroll.addEventListener("scroll", update, { passive: true });
+    return () => scroll.removeEventListener("scroll", update);
+  }, []);
+
+  if (!visible) return null;
+  return <button type="button" className="scroll-top-button" aria-label="맨 위로 이동" onClick={() => document.querySelector<HTMLElement>('[data-testid="mobile-scroll"]')?.scrollTo({ top: 0, behavior: "smooth" })}><ArrowUp size={19} strokeWidth={2.1} /></button>;
+}
+
 export default function Prototype() {
   const persisted = useMemo(() => readLocalState(), []);
   const [view, setView] = useState<View>("schedule");
@@ -690,5 +707,5 @@ export default function Prototype() {
   };
   const appContent: ReactNode = view === "schedule" ? <ScheduleView activeDay={activeDay} selectedPlace={selectedPlace} selectedPlaceId={selectedPlaceId} showAlternatives={showAlternatives} setShowAlternatives={setShowAlternatives} actualOnly={actualOnly} onToggleActualOnly={() => { setActualOnly((current) => !current); setSheetOpen(false); }} onAddPlace={() => openEditor()} onSelectPlace={selectPlace} onFocusPlace={focusPlace} onToggleComplete={(id) => toggleId(setCompletedIds, id)} onToggleFavorite={(id) => toggleId(setFavoriteIds, id)} completedIds={completedIds} favoriteIds={favoriteIds} userLocation={userLocation} onUserLocation={setUserLocation} onDayChange={selectDay} /> : view === "map" ? <AllMapView allPlaces={allPlaces} selectedPlace={selectedPlace} onSelectPlace={selectPlace} onUserLocation={setUserLocation} userLocation={userLocation} /> : view === "reservations" ? <ReservationsView places={allPlaces} reservationDoneIds={reservationDoneIds} onToggleReservation={(id) => toggleId(setReservationDoneIds, id)} onSelectPlace={selectPlace} /> : <SavedView places={allPlaces} favoriteIds={favoriteIds} notes={notes} onSelectPlace={selectPlace} />;
 
-  return <div className="trip-app"><MobileScroll className="trip-scroll"><div className="trip-scroll-content"><AppHeader view={view} menuOpen={menuOpen} setMenuOpen={setMenuOpen} setView={setView} />{appContent}</div></MobileScroll><BottomNav view={view} setView={(nextView) => { setView(nextView); setMenuOpen(false); }} /><PlaceDetailSheet place={selectedPlace} day={selectedPlaceDay} open={sheetOpen} onClose={() => setSheetOpen(false)} note={selectedPlace ? notes[selectedPlace.id] ?? "" : ""} onNoteChange={(note) => { if (selectedPlace) setNotes((current) => ({ ...current, [selectedPlace.id]: note })); }} completed={selectedPlace ? completedIds.includes(selectedPlace.id) : false} favorite={selectedPlace ? favoriteIds.includes(selectedPlace.id) : false} onToggleComplete={() => { if (selectedPlace) toggleId(setCompletedIds, selectedPlace.id); }} onToggleFavorite={() => { if (selectedPlace) toggleId(setFavoriteIds, selectedPlace.id); }} onEdit={() => { if (selectedPlace) openEditor(selectedPlace); }} onDelete={deleteSelectedPlace} /><PlaceEditorSheet place={editorPlace} open={editorOpen} completed={editorPlace ? completedIds.includes(editorPlace.id) : false} onClose={() => { setEditorOpen(false); setEditorPlace(null); }} onSave={savePlaceDraft} /></div>;
+  return <div className="trip-app"><MobileScroll className="trip-scroll"><div className="trip-scroll-content"><AppHeader view={view} menuOpen={menuOpen} setMenuOpen={setMenuOpen} setView={setView} />{appContent}</div></MobileScroll><ScrollToTopButton /><BottomNav view={view} setView={(nextView) => { setView(nextView); setMenuOpen(false); }} /><PlaceDetailSheet place={selectedPlace} day={selectedPlaceDay} open={sheetOpen} onClose={() => setSheetOpen(false)} note={selectedPlace ? notes[selectedPlace.id] ?? "" : ""} onNoteChange={(note) => { if (selectedPlace) setNotes((current) => ({ ...current, [selectedPlace.id]: note })); }} completed={selectedPlace ? completedIds.includes(selectedPlace.id) : false} favorite={selectedPlace ? favoriteIds.includes(selectedPlace.id) : false} onToggleComplete={() => { if (selectedPlace) toggleId(setCompletedIds, selectedPlace.id); }} onToggleFavorite={() => { if (selectedPlace) toggleId(setFavoriteIds, selectedPlace.id); }} onEdit={() => { if (selectedPlace) openEditor(selectedPlace); }} onDelete={deleteSelectedPlace} /><PlaceEditorSheet place={editorPlace} open={editorOpen} completed={editorPlace ? completedIds.includes(editorPlace.id) : false} onClose={() => { setEditorOpen(false); setEditorPlace(null); }} onSave={savePlaceDraft} /></div>;
 }

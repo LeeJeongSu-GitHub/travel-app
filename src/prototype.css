@@ -1629,6 +1629,29 @@
   backdrop-filter: blur(16px);
 }
 
+.scroll-top-button {
+  position: absolute;
+  z-index: 13;
+  right: 14px;
+  bottom: calc(var(--device-safe-area-bottom, 34px) + 82px);
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid #d8e2ee;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--blue);
+  box-shadow: 0 8px 20px rgba(31, 50, 78, 0.14);
+  backdrop-filter: blur(12px);
+}
+
+.scroll-top-button:hover,
+.scroll-top-button:focus-visible {
+  border-color: #9fb9e4;
+  background: #f3f7ff;
+}
+
 .full-screen-screen .trip-bottom-nav {
   bottom: var(--device-safe-area-bottom, 0px);
 }
