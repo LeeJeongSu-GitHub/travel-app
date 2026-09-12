@@ -8,7 +8,7 @@
 - `src/travel-ui/index.ts`: 새 화면에서 사용하는 공통 UI 진입점(barrel export)
 - `src/prototype.css`: 공통 토큰과 반응형 레이아웃
 
-`src/Prototype.tsx`는 여행 데이터 로딩, 지도 효과, 로컬 상태, 화면 조합만 담당합니다. `travel/<destination-slug>/` 폴더는 진입점과 `trip.json`만 소유합니다. GitHub Pages 빌드는 이 정본을 기존 `/<destination-slug>/` 공개 경로로 출력하며, 저장소 루트의 기존 목적지 폴더는 호환 엔트리로만 유지합니다.
+`src/Prototype.tsx`는 여행 데이터 로딩, 지도 효과, 로컬 상태, 화면 조합만 담당합니다. `travel/<destination-slug>/` 폴더는 `trip.json`, `page/<destination-slug>/` 폴더는 `index.html`을 소유합니다. GitHub Pages 빌드는 이 정본을 기존 `/<destination-slug>/` 공개 경로로 출력합니다.
 
 ## 표준 컴포넌트
 

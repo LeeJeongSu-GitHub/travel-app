@@ -40,10 +40,6 @@ jobs:
           echo "GitHub Pages base: $pages_base"
       - name: Build
         run: npm run build
-      - name: Include all destination pages
-        run: npx vite build --config vite.pages.config.ts --emptyOutDir false
-      - name: Preserve destination URL paths
-        run: node scripts/prepare-pages-destinations.mjs
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

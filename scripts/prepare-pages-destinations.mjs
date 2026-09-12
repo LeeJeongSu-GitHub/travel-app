@@ -5,15 +5,16 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const travelRoot = path.join(root, "travel");
+const pageRoot = path.join(root, "page");
 const clientRoot = path.join(root, "dist", "client");
-const generatedRoot = path.join(clientRoot, "travel");
+const generatedRoot = path.join(clientRoot, "page");
 
-if (!existsSync(travelRoot) || !existsSync(clientRoot)) throw new Error("Missing travel or Pages build directory");
+if (!existsSync(travelRoot) || !existsSync(pageRoot) || !existsSync(clientRoot)) throw new Error("Missing travel, page, or Pages build directory");
 
-const slugs = readdirSync(travelRoot, { withFileTypes: true })
+const slugs = readdirSync(pageRoot, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name)
-  .filter((slug) => existsSync(path.join(travelRoot, slug, "index.html")) && existsSync(path.join(travelRoot, slug, "trip.json")));
+  .filter((slug) => existsSync(path.join(pageRoot, slug, "index.html")) && existsSync(path.join(travelRoot, slug, "trip.json")));
 
 for (const slug of slugs) {
   const generatedIndex = path.join(generatedRoot, slug, "index.html");

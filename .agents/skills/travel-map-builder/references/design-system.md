@@ -24,6 +24,17 @@
 - `public/assets/readme/place-detail.png`: 장소 상세 BottomSheet
 - `public/assets/readme/saved-records.png`: 저장·현지 메모 화면
 
+## 여행별 파일 경계
+
+화면 계약과 여행 자료를 섞지 않습니다. 새 목적지는 아래 두 정본만 추가하고, 기존 공통 화면·런타임·CSS를 복사하지 않습니다.
+
+- `travel/<destination-slug>/trip.json`: 날짜, 장소, 좌표, 운영정보, 메뉴, 이미지 출처, 휴무일, 불확실성 등 여행 데이터
+- `page/<destination-slug>/index.html`: 공통 `src/main.tsx`를 로드하는 배포 진입점
+- 루트 `index.html`: 여행 목록 허브 카드만 관리
+- `dist/client/<destination-slug>/index.html`: 빌드가 `page/` 엔트리에서 생성하는 공개 URL 산출물이며 직접 편집하지 않음
+
+공개 URL은 `/<destination-slug>/`를 유지하고, 저장소 루트에 목적지별 폴더나 목적지 전용 dashboard/CSS를 만들지 않습니다. 이 파일 경계는 디자인 계약과 함께 README, AGENTS.md, `travel-map-builder` 스킬에서 동일하게 유지해야 합니다.
+
 ## 컴포넌트 계층과 API
 
 새 여행은 아래 공통 트리를 그대로 사용하고 `trip.json` 데이터만 바꿉니다.
@@ -78,7 +89,7 @@ Prototype
 
 ## 컴포넌트 구현 규칙
 
-1. 여행을 추가할 때는 `src/travel-ui/index.ts`의 공통 컴포넌트·타입·카테고리를 `src/Prototype.tsx`에서 조합하고, `travel/<destination-slug>/index.html`, `travel/<destination-slug>/trip.json`과 루트 허브 카드만 추가합니다. Pages 빌드는 공개 주소를 기존 `/<destination-slug>/`로 유지합니다. 구현은 `components.tsx`, `types.ts`, `category.ts`에 분리하되 새 화면의 import는 단일 진입점을 우선합니다.
+1. 여행을 추가할 때는 `src/travel-ui/index.ts`의 공통 컴포넌트·타입·카테고리를 `src/Prototype.tsx`에서 조합하고, `travel/<destination-slug>/trip.json`, `page/<destination-slug>/index.html`과 루트 허브 카드만 추가합니다. Pages 빌드는 공개 주소를 기존 `/<destination-slug>/`로 유지합니다. 구현은 `components.tsx`, `types.ts`, `category.ts`에 분리하되 새 화면의 import는 단일 진입점을 우선합니다.
 2. 기존 템플릿이 있는 저장소에서 여행별 `index.html`, `App.tsx`, 독립 CSS, 새 라우터를 만들어 화면을 다시 그리지 않습니다. 여행 폴더는 데이터와 진입점만 소유합니다.
 3. 앱 전용 고정 영역은 `MobileScroll` 안에 중복해서 만들지 않습니다. `TravelHeader`·`TravelBottomNav`·상세 시트는 현재 런타임 계약을 따르고, 스크롤 콘텐츠는 `MobileScroll` 안에 둡니다.
 4. 헤더의 `.header-copy`는 `min-width: 0`인 단일 콘텐츠 열이어야 합니다. `.header-meta`는 기간 텍스트와 날짜 컨트롤을 한 줄 flex로 배치하고, 기간 텍스트에는 `overflow: hidden`·`text-overflow: ellipsis`·`white-space: nowrap`, 날짜 컨트롤에는 `flex: 0 0 auto`를 적용해 제목·기간·메뉴와 겹치지 않게 합니다. 360px 내외에서는 gap과 버튼 폭만 줄이고 글자를 임의로 두 줄로 만들지 않습니다.

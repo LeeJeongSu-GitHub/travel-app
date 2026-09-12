@@ -2,6 +2,8 @@
 
 여행 정보가 아직 메모 수준일 때 사용합니다. 이 프롬프트는 코드를 만들지 않고, 다른 AI나 이 저장소의 `travel-map-builder`가 바로 사용할 수 있는 `travel-research.v1` JSON을 만듭니다.
 
+도구별로 복사할 수 있는 Claude Code·Gemini CLI·GPT/Codex용 웹 조사 프롬프트는 [README의 여행계획 조사 프롬프트](../README.md#claudegeminigpt-여행계획-조사-프롬프트)에 있습니다. 어느 도구를 사용하든 원문 페이지를 직접 열고 같은 JSON 계약과 불확실성 규칙을 지켜야 합니다.
+
 ```text
 여행 계획을 완성하고 장소 정보를 조사해줘. 코드를 만들거나 HTML을 작성하지 말고, 아래 입력을 바탕으로 사람이 읽을 수 있는 일정 요약과 자동 변환 가능한 `travel-research.v1` JSON을 만들어줘.
 
@@ -28,8 +30,8 @@
 9. 기준 장소에서 도보 10분 안팎의 대체 식당을 조사할 때는 `alternativeFor`, `nearbyWalk`, `budget`, `reservation`, `sourceUrls`를 함께 기록하고 기본 동선과 분리해.
 
 출력 규칙:
-1. 먼저 추천 일정의 날짜별 요약과 조사하지 못한 항목을 짧게 보여줘.
-2. 그 다음 유효한 JSON 객체 하나를 출력해. JSON 앞뒤에 설명, Markdown 주석, trailing comma를 넣지 마.
+1. 먼저 `조사 요약:` 아래에 추천 일정의 날짜별 요약과 조사하지 못한 항목을 짧게 보여줘.
+2. 그 다음 `JSON:` 아래에 유효한 JSON 객체 하나를 출력해. JSON 내부에는 설명, Markdown 주석, trailing comma를 넣지 마.
 3. 최상위 키는 반드시 `schemaVersion`, `researchedAt`, `trip`, `lodging`, `fixedEvents`, `days`, `researchLog`를 사용하고 `schemaVersion`은 정확히 `travel-research.v1`로 해.
 4. `days[].stops[]`에는 `order`, `name`, `nameJa`, `category`, `plannedTime`, `purpose`, `address`, `googleMapsUrl`, `directionsUrl`, `coordinates`, `hours`, `lastOrder`, `closedDays`, `price`, `admission`, `reservationStatus`, `reservationUrl`, `infoSourceUrl`, `image`, `menu`, `alternatives`, `notes`, `confidence`, `needsConfirmation`을 넣어.
 5. `category`는 `photo`, `restaurant`, `cafe`, `hotel`, `station`, `airport`, `logistics` 중 하나만 사용해. `coordinates`는 `{ "lat": number, "lng": number }` 또는 null로 해.

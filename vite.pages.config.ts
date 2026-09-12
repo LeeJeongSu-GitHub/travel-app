@@ -6,14 +6,15 @@ import react from "@vitejs/plugin-react";
 
 const repoRoot = fileURLToPath(new URL(".", import.meta.url));
 const travelRoot = resolve(repoRoot, "travel");
+const pageRoot = resolve(repoRoot, "page");
 
 function getDestinationInputs() {
   return Object.fromEntries(
-    readdirSync(travelRoot, { withFileTypes: true })
+    readdirSync(pageRoot, { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name)
-      .filter((slug) => existsSync(resolve(travelRoot, slug, "index.html")) && existsSync(resolve(travelRoot, slug, "trip.json")))
-      .map((slug) => [`${slug}/index`, resolve(travelRoot, slug, "index.html")]),
+      .filter((slug) => existsSync(resolve(pageRoot, slug, "index.html")) && existsSync(resolve(travelRoot, slug, "trip.json")))
+      .map((slug) => [`${slug}/index`, resolve(pageRoot, slug, "index.html")]),
   );
 }
 

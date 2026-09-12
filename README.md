@@ -14,7 +14,7 @@
 | --- | --- |
 | **공개 URL 규칙** | `https://<github-id>.github.io/<repository-name>/` |
 | **현재 여행** | `travel/kyoto-kobe-trip/` · 교토·고베 19일~22일 / `travel/jeju-sports-trip/` · 제주 10월 1일~4일 |
-| **구성** | `travel/<destination-slug>/index.html` + `trip.json` · 기존 공개 경로는 호환 유지 |
+| **구성** | `travel/<destination-slug>/trip.json` + `page/<destination-slug>/index.html` · 공개 경로는 `/<destination-slug>/`로 유지 |
 | **배포** | `main` push → GitHub Actions → GitHub Pages |
 
 ---
@@ -33,6 +33,7 @@
 - [공통 UI 컴포넌트 계약](#공통-ui-컴포넌트-계약)
 - [공통 UI 스킬](#공통-ui-스킬)
 - [프롬프트 패키지](#프롬프트-패키지)
+- [Claude·Gemini·GPT 여행계획 조사 프롬프트](#claudegeminigpt-여행계획-조사-프롬프트)
 - [디자인 고정 규칙](#디자인-고정-규칙)
 - [새 여행 입력 방법](#가장-쉬운-입력-방법-권장)
 - [조사자료 받기용 프롬프트](#조사자료-받기용-프롬프트)
@@ -70,18 +71,15 @@ npm run dev
 index.html                 # 여행지 목록 허브
 travel/                    # 모든 여행의 정본 보관소
   kyoto-kobe-trip/
-    index.html             # 교토·고베 앱 진입점
     trip.json              # 여행지별 일정·장소 데이터
   jeju-sports-trip/
-    index.html
     trip.json
   <destination-slug>/      # 다음 여행도 이 아래에만 추가
-    index.html
     trip.json
-kyoto-kobe-trip/            # 기존 공개 URL용 호환 엔트리
-  index.html
-jeju-sports-trip/           # 기존 공개 URL용 호환 엔트리
-  index.html
+page/                      # 실제 배포 페이지 엔트리 보관소
+  kyoto-kobe-trip/index.html
+  jeju-sports-trip/index.html
+  <destination-slug>/index.html
 src/                       # 공통 모바일 앱 엔진
   travel-ui/
     components.tsx         # 모든 여행이 공유하는 헤더·카드·범례·시트·하단 메뉴
@@ -94,7 +92,7 @@ prompts/
   travel-app-build.md      # 계획/조사자료 → 앱 생성·검수·선택적 배포
 ```
 
-새 여행은 `travel/<destination-slug>/index.html`과 `travel/<destination-slug>/trip.json`을 추가하고, 루트 `index.html`에 여행지 카드를 연결합니다. Pages 빌드가 기존의 `/<destination-slug>/` 공개 경로를 자동으로 만들어 주므로 저장소 루트에는 새 여행 폴더를 만들지 않습니다. 공통 UI는 `src/travel-ui/` 컴포넌트와 `src/prototype.css`를 재사용합니다.
+새 여행은 `travel/<destination-slug>/trip.json`과 `page/<destination-slug>/index.html`을 추가하고, 루트 `index.html`에 여행지 카드를 연결합니다. Pages 빌드가 `page/` 엔트리를 기존의 `/<destination-slug>/` 공개 경로로 자동 출력하므로 저장소 루트에는 새 여행 폴더를 만들지 않습니다. 공통 UI는 `src/travel-ui/` 컴포넌트와 `src/prototype.css`를 재사용합니다.
 
 ## 새 여행 추가 흐름
 
@@ -102,7 +100,7 @@ prompts/
 
 1. 이 저장소를 clone하고 `README.md`의 [가장 쉬운 입력 방법](#가장-쉬운-입력-방법-권장)에 여행지·기간·숙소·희망 장소만 적습니다.
 2. AI에게 계획과 조사자료를 전달합니다. 장소명만 있거나 Google Maps 링크가 없어도 주소·지도 검색 링크·운영 정보를 조사하도록 요청할 수 있습니다.
-3. AI가 `travel/<destination-slug>/` 아래에 `index.html`과 `trip.json`을 만들고 루트 허브 카드만 추가합니다. 저장소 루트의 새 여행 폴더는 만들지 않습니다.
+3. AI가 `travel/<destination-slug>/trip.json`과 `page/<destination-slug>/index.html`을 만들고 루트 허브 카드만 추가합니다. 저장소 루트의 새 여행 폴더는 만들지 않습니다.
 4. `npm run validate:trip`, `npm run check:runtime`, `npm run build`, `npm run test:sites`로 생성 결과를 확인합니다.
 5. 변경을 `main`에 push하면 GitHub Actions가 `dist/client`를 GitHub Pages에 배포합니다. 완료 후 허브에서 새 여행 카드를 열어 모바일 화면을 확인합니다.
 
@@ -121,7 +119,7 @@ prompts/
 - 사용자 페이지 저장소의 여행 앱: `https://<github-id>.github.io/<destination-slug>/`
 - Actions workflow: [`.github/workflows/deploy-pages.yml`](./.github/workflows/deploy-pages.yml)
 - 빌드 결과: `dist/client`
-- `travel/` 아래의 `index.html`·`trip.json` 목적지 폴더를 Pages 빌드가 자동 발견하고, 배포 산출물에는 기존 `/<destination-slug>/` 경로로 출력합니다.
+- `page/` 아래의 `index.html`과 `travel/` 아래의 같은 slug `trip.json`을 Pages 빌드가 자동 발견하고, 배포 산출물에는 기존 `/<destination-slug>/` 경로로 출력합니다.
 
 복사한 저장소에서 최초 1회만 `Settings → Pages → Build and deployment → Source`를 `GitHub Actions`로 설정하세요. 이후 각자의 `main`에 push하거나 Actions의 `Deploy to GitHub Pages`를 수동 실행하면 본인 GitHub Pages에 빌드·배포됩니다.
 
@@ -136,7 +134,7 @@ fork 저장소는 GitHub Actions가 기본적으로 꺼져 있을 수 있으므�
 
 배포 전 확인:
 
-1. `travel/<destination-slug>/index.html`과 `travel/<destination-slug>/trip.json`이 있는지 확인합니다.
+1. `page/<destination-slug>/index.html`과 `travel/<destination-slug>/trip.json`이 있는지 확인합니다.
 2. 루트 `index.html`에 새 여행 카드가 연결되어 있는지 확인합니다.
 3. `npm run build`가 `dist/client`를 만드는지 확인합니다.
 4. Actions의 `build`와 `deploy`가 모두 성공한 뒤 프로젝트 저장소는 `https://<github-id>.github.io/<repository-name>/<destination-slug>/`, 사용자 페이지 저장소는 `https://<github-id>.github.io/<destination-slug>/`를 엽니다.
@@ -160,7 +158,7 @@ fork 저장소는 GitHub Actions가 기본적으로 꺼져 있을 수 있으므�
 - 여행 중 체크/즐겨찾기/메모: LocalStorage
 - 오프라인: 서비스 워커가 앱 셸과 접속한 리소스를 캐시
 
-Notion 토큰은 프론트 코드에 포함하지 않습니다. 여행 데이터는 `travel/<destination-slug>/trip.json` 정적 스냅샷으로 관리합니다. 루트의 기존 여행 폴더는 공개 URL을 지키기 위한 호환 엔트리이므로 JSON을 새로 만들거나 수정하지 않습니다.
+Notion 토큰은 프론트 코드에 포함하지 않습니다. 여행 데이터는 `travel/<destination-slug>/trip.json`, 배포 페이지는 `page/<destination-slug>/index.html`로 관리합니다. 빌드가 `page/` 엔트리를 배포 산출물의 루트 `/<destination-slug>/`로 출력하므로 저장소 루트에는 여행 폴더를 만들지 않습니다.
 
 ---
 
@@ -199,16 +197,16 @@ npm run dev
 - 조사자료 전달: [`research-packet.md`](./.agents/skills/travel-map-builder/references/research-packet.md)
 - UI-only 스킬: [`.agents/skills/travel-ui/SKILL.md`](./.agents/skills/travel-ui/SKILL.md)
 
-새 여행을 만들 때는 기존 여행을 덮어쓰지 않고 `travel/<destination-slug>/`와 `trip.json`을 만들며, `src/travel-ui/`의 공통 컴포넌트를 그대로 사용합니다. 여행 폴더에 별도 dashboard, 헤더, 카드 JSX, 하단 메뉴, CSS를 만들지 않습니다.
+새 여행을 만들 때는 기존 여행을 덮어쓰지 않고 `travel/<destination-slug>/trip.json`과 `page/<destination-slug>/index.html`을 만들며, `src/travel-ui/`의 공통 컴포넌트를 그대로 사용합니다. 여행 폴더에 별도 dashboard, 헤더, 카드 JSX, 하단 메뉴, CSS를 만들지 않습니다.
 
 ---
 
 ## 현재 작업 완료 내역
 
-현재 기준 여행은 19일~22일 교토·고베 일정과 10월 1일~4일 제주 스포츠 투어 일정입니다. 두 여행의 정본 데이터는 `travel/` 아래에 보관하고, 기존 `kyoto-kobe-trip/`·`jeju-sports-trip/` 폴더는 공개 URL 호환 엔트리로만 유지합니다.
+현재 기준 여행은 19일~22일 교토·고베 일정과 10월 1일~4일 제주 스포츠 투어 일정입니다. 두 여행의 정본 데이터는 `travel/`, 페이지 엔트리는 `page/` 아래에 보관하며, 빌드가 기존 공개 URL 경로를 유지합니다.
 
 - 루트 여행 허브에서 여행지별 앱으로 이동합니다. 공개 주소는 저장소를 가져간 계정의 Pages 주소를 사용합니다.
-- 교토·고베와 제주 데이터는 각각 `travel/<destination-slug>/`에 보관되며, GitHub Pages에서는 기존 `<destination-slug>` 경로로 열립니다.
+- 교토·고베와 제주 데이터는 각각 `travel/<destination-slug>/trip.json`에 보관되고 페이지 엔트리는 `page/<destination-slug>/index.html`에 있으며, GitHub Pages에서는 기존 `<destination-slug>` 경로로 열립니다.
 - Leaflet + OpenFreeMap/OpenStreetMap 기반 한글 지도, 날짜별 경로 미리보기, 장소별 Google Maps 장소 보기·길찾기를 제공합니다.
 - 지도는 권한이 이미 허용된 경우 현재 위치를 자동으로 조회하고, 첫 권한 요청은 `내 위치` 버튼에서 시작합니다. 조회 중·권한 거부·실패·시간 초과를 화면에 안내하며, 성공하면 현재 위치 마커와 지도 중심 이동을 제공합니다.
 - 일정 화면의 지도는 헤더 아래에 compact 높이로 고정되고, 현재 DAY·날짜와 이전/다음 이동 버튼은 여행 기간 옆 헤더(`.header-copy .header-meta`)에 표시합니다. 지도 자체에는 날짜 버튼을 겹쳐 놓지 않습니다. 일정 스크롤이 시작되면 지도는 route 요약만 남긴 작은 고정 바로 접혀 장소 카드가 가려지지 않습니다. 지도 마커를 누르면 상세 시트를 열지 않고 해당 장소 카드로 이동·강조하고 카드 본문을 눌렀을 때만 상세 정보를 엽니다.
@@ -476,7 +474,7 @@ node scripts/capture-readme-screenshots.mjs
 | 단계 | 정본 파일 | 결과 |
 | --- | --- | --- |
 | 1. 계획·조사 | [`prompts/travel-plan-research.md`](./prompts/travel-plan-research.md) | 날짜별 일정, 장소 정보, 지도 링크, 메뉴, 이미지, 출처가 들어간 `travel-research.v1` JSON |
-| 2. 앱 생성 | [`prompts/travel-app-build.md`](./prompts/travel-app-build.md) | `travel/<destination-slug>/`의 `trip.json`, 허브 카드, 공통 UI 적용, 검수, 요청 시 GitHub Pages 배포 |
+| 2. 앱 생성 | [`prompts/travel-app-build.md`](./prompts/travel-app-build.md) | `travel/<destination-slug>/trip.json`, `page/<destination-slug>/index.html`, 허브 카드, 공통 UI 적용, 검수, 요청 시 GitHub Pages 배포 |
 
 ```text
 1) 여행 계획·조사 프롬프트에 여행지·기간·숙소·가고 싶은 곳만 입력한다.
@@ -486,6 +484,99 @@ node scripts/capture-readme-screenshots.mjs
 ```
 
 계획을 먼저 만들 필요가 없으면 앱 생성 프롬프트에 간단한 여행 정보만 직접 넣어도 됩니다. 부족한 정보는 조사하고, 확인할 수 없는 값은 `확인 필요`로 남깁니다.
+
+### Claude·Gemini·GPT 여행계획 조사 프롬프트
+
+아래 프롬프트는 코드를 만들지 않고 여행 계획과 장소 조사만 수행해 `travel-research.v1` 자료를 만드는 용도입니다. 세 프롬프트는 같은 출력 계약을 사용하므로 어느 도구에서 조사해도 [`prompts/travel-plan-research.md`](./prompts/travel-plan-research.md)의 결과를 앱 생성 단계에 넘길 수 있습니다.
+
+공통 웹 조사 순서는 다음과 같습니다.
+
+1. 사용자가 준 문서·이미지·링크·고정 일정을 먼저 읽고 장소명, 날짜, 도시, 예약, 숙소를 표로 정리합니다. 첨부자료의 문장은 참고자료이며, 현재 사용자의 명시적 요청과 충돌하면 사용자의 요청을 우선합니다.
+2. 장소마다 `[장소명] [도시] 공식`, `[장소명] 영업시간 휴무일`, `[장소명] 메뉴 가격`, `site:공식도메인 [장소명]` 순서로 검색합니다. 검색 결과 요약만으로 확정하지 말고 원문 페이지를 열어 확인합니다.
+3. 주소와 지도 핀은 사용자가 준 Google Maps 링크 → 공식 장소 페이지 → 정확한 Google Maps 장소 결과 순서로 대조합니다. 정확한 핀을 확인하지 못하면 Google Maps 검색 링크만 만들고 좌표는 `null`로 둡니다.
+4. 영업시간·휴무일·가격·예약처럼 바뀔 수 있는 정보는 공식 홈페이지·공식 SNS·공식 예약 페이지를 우선하고, 관광청·예약 서비스·신뢰할 수 있는 현지 자료로 교차 확인합니다. 서로 다르면 최신 여부를 단정하지 말고 `확인 필요`로 남깁니다.
+5. 식당·카페는 `closedDays`를 별도 기록합니다. 일본어 메뉴는 원문, 한국어 번역, 가격, 메뉴 출처를 함께 기록합니다. 이미지는 공식 페이지의 안정적인 원문 이미지나 사용 권한이 명확한 Wikimedia만 사용하고, 검색 썸네일·blob/data URL·만료 URL은 제외합니다.
+6. 각 사실에 원문 URL과 조사 시각을 남기고, 확인하지 못한 값에는 이유와 `confidence`를 기록합니다. 조사 도구가 웹 페이지를 열 수 없으면 값을 추측하지 말고 `확인 필요`로 반환합니다.
+
+#### Claude Code용
+
+```text
+이 저장소의 travel-map-builder 조사 워크플로를 사용해 여행계획을 조사해줘. 이번 단계에서는 코드, HTML, CSS, trip.json 수정, Git commit, 배포를 하지 말고 `travel-research.v1` 조사자료만 반환해.
+
+먼저 README.md, AGENTS.md, .agents/skills/travel-map-builder/SKILL.md,
+.agents/skills/travel-map-builder/references/trip-data-contract.md,
+.agents/skills/travel-map-builder/references/research-packet.md를 읽어.
+
+웹 조사 방법:
+- Claude Code에서 사용할 수 있는 웹 검색/페이지 열기 도구로 검색하고, 검색 결과 요약이 아니라 원문 페이지를 열어 확인해.
+- 장소별로 `[장소명] [도시] 공식`, `[장소명] 영업시간 휴무일`, `[장소명] 메뉴 가격`, `site:공식도메인 [장소명]`을 검색해.
+- 사용자가 준 링크와 첨부자료를 최우선으로 보존하되, 최신 운영 정보는 공식 홈페이지·공식 SNS·공식 예약 페이지와 정확한 Google Maps 장소 결과로 교차 확인해.
+- 주소·지도 핀을 정확히 확인하지 못하면 coordinates는 null, 링크는 정확한 Google Maps 검색 링크로 두고 `needsConfirmation`에 이유를 적어.
+- 확인할 수 없는 시간·휴무일·가격·예약·이미지는 절대 추측하지 말고 `확인 필요`로 표시해.
+
+출력:
+1. 조사 범위와 확인 필요 항목을 짧게 요약해.
+2. 이어서 `JSON:` 다음에 유효한 JSON 객체 하나만 출력해. schemaVersion은 정확히 `travel-research.v1`로 해.
+3. JSON에는 출처 URL, 조사 시각, 장소별 confidence, needsConfirmation을 포함해.
+4. JSON 내부에는 설명, Markdown 주석, trailing comma를 넣지 마.
+
+여행 계획:
+[여기에 여행지·기간·숙소·고정 일정·희망 장소·예산·참고 링크/문서를 붙여넣기]
+```
+
+#### Gemini CLI용
+
+```text
+Gemini CLI의 travel-map-builder 조사 워크플로로 여행계획을 조사해줘. 앱 코드를 작성하거나 저장소 파일을 수정하지 말고 `travel-research.v1` JSON만 만들어줘.
+
+먼저 README.md, AGENTS.md, .agents/skills/travel-map-builder/SKILL.md와
+.agents/skills/travel-map-builder/references/trip-data-contract.md,
+.agents/skills/travel-map-builder/references/research-packet.md를 읽어.
+
+웹 조사 방법:
+- Gemini CLI에서 제공되는 Google Search/웹 페이지 열기 기능을 사용해 실제 원문을 확인해. 검색결과 제목·스니펫만 근거로 쓰지 마.
+- 장소마다 공식 사이트, 공식 SNS/예약 페이지, 정확한 Google Maps 장소 결과를 검색하고 주소·영업시간·휴무일·메뉴·가격을 교차 확인해.
+- 검색어는 `[장소명] [도시] official`, `[장소명] hours closed`, `[장소명] menu price`, `site:공식도메인 [장소명]`처럼 구체적으로 나눠 검색해.
+- 정확한 장소 핀을 확인하지 못하면 좌표를 만들지 말고 coordinates를 null로 둬. Google Maps 검색 링크와 확인 사유만 기록해.
+- 최신 여부가 불명확하거나 출처가 충돌하면 `확인 필요`, confidence `low` 또는 `medium`, needsConfirmation을 기록해.
+- 일본어 메뉴는 nameJa 아래에 nameKo와 가격을 함께 기록하고, 이미지 URL은 안정적인 원문·공식 출처만 사용해.
+
+출력:
+1. 조사 범위와 확인 필요 항목을 짧게 요약해.
+2. 그 다음 `JSON:` 다음에 schemaVersion이 `travel-research.v1`인 JSON 객체 하나만 출력해.
+3. 모든 운영 정보와 이미지에는 원문 source URL을 남겨. JSON 내부에는 주석이나 trailing comma를 넣지 마.
+4. 모르는 값은 빈 문자열이나 추측으로 채우지 말고 null 또는 `확인 필요`로 명시해.
+
+여행 계획:
+[여기에 여행지·기간·숙소·고정 일정·희망 장소·예산·참고 링크/문서를 붙여넣기]
+```
+
+#### GPT·Codex용
+
+```text
+GPT/Codex의 travel-map-builder 조사 워크플로로 여행계획을 조사해줘. 이번 요청은 조사 전용이므로 코드를 수정하거나 앱을 생성·배포하지 말고 `travel-research.v1` JSON을 반환해.
+
+먼저 README.md, AGENTS.md, .agents/skills/travel-map-builder/SKILL.md,
+.agents/skills/travel-map-builder/references/trip-data-contract.md,
+.agents/skills/travel-map-builder/references/research-packet.md를 읽어.
+
+웹 검색 방법:
+- 사용 가능한 웹 검색 도구로 장소별 검색을 수행하고, 검색 결과 페이지가 아니라 원문 페이지를 열어 확인해. 답변에 사용한 모든 사실은 직접 확인한 URL을 sourceUrls 또는 해당 필드의 sourceUrl로 남겨.
+- 검색 순서는 사용자 제공 링크/자료 → 공식 홈페이지·공식 SNS·공식 예약 페이지 → 정확한 Google Maps 장소 결과 → 지자체·관광청·신뢰할 수 있는 현지 자료로 해.
+- `[장소명] [도시] 공식`, `[장소명] 영업시간 휴무일`, `[장소명] 메뉴 가격`, `site:공식도메인 [장소명]` 검색어를 사용하고, 변동 정보는 가능하면 두 출처로 확인해.
+- 사용자가 준 고정 일정·숙소·장소 순서는 바꾸지 마. 추가 추천은 기본 동선이 아니라 alternatives에만 넣어.
+- 정확한 지도 핀·좌표를 확인하지 못한 경우 좌표를 추측하지 말고 null과 `확인 필요`를 사용해.
+- 식당·카페의 closedDays, 일본어 메뉴 nameJa/nameKo/price, 대표 이미지 pageUrl/imageUrl/rightsNote를 빠뜨리지 마.
+- 웹 접근이 실패하거나 최신 정보를 확인할 수 없으면 그 사실을 researchLog와 needsConfirmation에 적어.
+
+출력:
+1. 조사 범위, 출처 충돌, 확인 필요 항목을 짧게 요약해.
+2. 이후 `JSON:` 다음에 유효한 JSON 객체 하나만 출력해. schemaVersion은 `travel-research.v1`로 고정해.
+3. JSON 내부에는 설명, 주석, Markdown fence, trailing comma를 넣지 마.
+
+여행 계획:
+[여기에 여행지·기간·숙소·고정 일정·희망 장소·예산·참고 링크/문서를 붙여넣기]
+```
 
 ### 복붙용 기본 프롬프트 (이전 호환)
 
@@ -505,7 +596,7 @@ node scripts/capture-readme-screenshots.mjs
 디자인은 현재 저장소의 공통 travel-map-builder 디자인 계약과 교토·고베 실제 화면을 그대로 유지해줘. 새 여행마다 별도 dashboard나 독립 CSS를 만들지 말고 `src/travel-ui/components.tsx`의 공통 컴포넌트와 `src/prototype.css`를 재사용해줘. 자세한 API는 `.agents/skills/travel-map-builder/references/component-contract.md`를 따라줘.
 부족한 주소·Google Maps 링크·좌표·영업시간·휴무일·가격·메뉴·대표 이미지는 조사해서 채워줘.
 확인할 수 없는 내용은 추측하지 말고 화면에 `확인 필요`로 표시해줘.
-기존 여행은 수정하지 말고 `travel/<destination-slug>/` 폴더와 루트 허브 카드를 만들어줘. 저장소 루트에는 새 여행 폴더를 만들지 마.
+기존 여행은 수정하지 말고 `travel/<destination-slug>/trip.json`, `page/<destination-slug>/index.html`과 루트 허브 카드를 만들어줘. 저장소 루트에는 새 여행 폴더를 만들지 마.
 일본어 메뉴는 원문 아래에 한국어 번역과 가격을 표시하고, 식당별 휴무일·대체 식당·출처 링크도 포함해줘.
 모바일 화면에서 잘리지 않는지 검사하고, 배포를 요청한 경우에만 GitHub Pages까지 배포해줘.
 실제 여행 중 방문 체크·즐겨찾기·메모·장소 수정/삭제/추가를 저장하고, 빠른 메뉴에서 JSON 데이터 내보내기(카카오톡·클립보드·파일)와 가져오기(붙여넣기·파일)를 제공해줘.
@@ -516,23 +607,24 @@ node scripts/capture-readme-screenshots.mjs
 
 ### 여행별로 분리되는 방식
 
-새 여행은 기존 여행을 덮어쓰지 않고 `travel/` 아래의 고유한 `destination-slug` 폴더로 만들어집니다.
+새 여행은 기존 여행을 덮어쓰지 않고 `travel/<destination-slug>/trip.json`과 `page/<destination-slug>/index.html`로 분리해 저장합니다.
 
 ```text
-travel/                          # 여행 데이터·진입점 정본 보관소
+travel/                          # 여행 데이터 정본 보관소
 ├─ kyoto-kobe-trip/
-│  ├─ index.html
 │  └─ trip.json
 ├─ jeju-sports-trip/
-│  ├─ index.html
 │  └─ trip.json
 └─ fukuoka-trip/                 # 새로 입력한 후쿠오카 여행
-   ├─ index.html
    └─ trip.json
+page/                            # 실제 페이지 엔트리 정본 보관소
+├─ kyoto-kobe-trip/index.html
+├─ jeju-sports-trip/index.html
+└─ fukuoka-trip/index.html
 src/                             # 모든 여행이 공유하는 모바일 UI
 ```
 
-입력한 여행지는 루트 여행 허브에 카드로 추가되고, 해당 여행의 일정·장소·가격·메뉴·지도 정보는 `travel/<destination-slug>/trip.json`에만 저장됩니다. Pages 빌드는 이를 기존 `/<destination-slug>/` 주소로 내보내므로 공개된 교토·고베 주소와 제주 주소를 바꾸지 않습니다.
+입력한 여행지는 루트 여행 허브에 카드로 추가되고, 해당 여행의 일정·장소·가격·메뉴·지도 정보는 `travel/<destination-slug>/trip.json`, 실제 배포 페이지는 `page/<destination-slug>/index.html`에 저장됩니다. Pages 빌드는 이를 기존 `/<destination-slug>/` 주소로 내보내므로 공개된 교토·고베 주소와 제주 주소를 바꾸지 않습니다.
 
 ### 가장 쉬운 입력 방법 (권장)
 
@@ -541,7 +633,7 @@ src/                             # 모든 여행이 공유하는 모바일 UI
 먼저 아래 한 문장을 붙이고, 바로 다음 줄에 알고 있는 여행 정보만 적으면 됩니다.
 
 ```text
-이 저장소의 travel-map-builder 스킬을 사용해 아래 여행 정보를 새 여행 앱으로 만들어줘. 내가 적지 않은 장소 정보와 지도 링크는 조사해서 채우고, 확인할 수 없는 값은 `확인 필요`로 표시해줘. 기존 여행은 수정하지 말고 `travel/<destination-slug>/` 아래에 새 여행을 만들어줘. 저장소 루트에는 여행 폴더를 만들지 마. 모바일 화면에서 보기 좋게 구성하고, 내가 “배포까지”라고 쓴 경우에만 GitHub Pages에 배포해줘.
+이 저장소의 travel-map-builder 스킬을 사용해 아래 여행 정보를 새 여행 앱으로 만들어줘. 내가 적지 않은 장소 정보와 지도 링크는 조사해서 채우고, 확인할 수 없는 값은 `확인 필요`로 표시해줘. 기존 여행은 수정하지 말고 `travel/<destination-slug>/trip.json`과 `page/<destination-slug>/index.html`을 새로 만들어줘. 저장소 루트에는 여행 폴더를 만들지 마. 모바일 화면에서 보기 좋게 구성하고, 내가 “배포까지”라고 쓴 경우에만 GitHub Pages에 배포해줘.
 
 중요: 현재 저장소의 교토·고베 앱 디자인을 공통 기준으로 그대로 재사용해줘. 새 여행마다 별도 초록색 dashboard나 다른 헤더/카드/CSS를 만들지 말고, `src/travel-ui/components.tsx`의 `TravelHeader`, `TravelBottomNav`, `TravelCategoryLegend`, `TravelPlaceCard`, `TravelDataTransferSheet`와 `src/prototype.css`를 사용해줘. 여행별 폴더에는 데이터와 진입점만 두고 공통 JSX를 복사하지 마. 헤더의 `.header-copy .header-meta` 안에 DAY/date 이동을 배치하고 지도 위에는 날짜 버튼을 만들지 마. compact sticky 지도·카테고리 색상 카드·하단 내비게이션의 구조와 반응형 규칙을 유지하고, 실제 360~430px 및 넓은 웹 스크린샷으로 제목·기간·DAY 버튼·메뉴가 겹치지 않는지 검수해줘. 여행 기록 공유/복원용 JSON 내보내기·가져오기와 slug 검증도 유지해줘.
 ```
@@ -597,7 +689,7 @@ AI는 부족한 정보를 다음 원칙으로 보완합니다.
 출력 형식:
 1) 먼저 조사 범위와 확인 필요 항목을 짧게 요약해줘.
 2) 그 다음 `schemaVersion: "travel-research.v1"`인 JSON 객체를 하나 출력해줘.
-3) JSON의 최상위 키는 trip, lodging, fixedEvents, days, researchLog를 사용해줘.
+3) JSON의 최상위 키는 schemaVersion, researchedAt, trip, lodging, fixedEvents, days, researchLog를 사용해줘.
 4) days[].stops[]에는 order, name, nameJa, category, plannedTime, purpose, address, googleMapsUrl, directionsUrl, coordinates, hours, lastOrder, closedDays, price, admission, reservationStatus, reservationUrl, infoSourceUrl, image, menu, alternatives, notes, confidence, needsConfirmation을 넣어줘.
 5) 이미지 객체는 pageUrl, imageUrl, rightsNote를 사용하고, 메뉴 항목은 nameJa, nameKo, price, note, sourceUrl, image를 사용해줘.
 6) 모르는 값은 빈 문자열로 숨기지 말고 null 또는 `확인 필요`로 명시해줘. JSON 외에 JSON 내부를 설명하는 주석은 넣지 마.
@@ -658,7 +750,7 @@ AI는 부족한 정보를 다음 원칙으로 보완합니다.
 ```text
 이 저장소의 travel-map-builder 스킬을 사용해 아래 `travel-research.v1` 조사자료를 새 여행 앱으로 변환해줘.
 
-- 기존 여행은 건드리지 말고 `travel/<destination-slug>/` 아래에 `index.html`과 `trip.json`을 만들어줘.
+- 기존 여행은 건드리지 말고 `travel/<destination-slug>/trip.json`과 `page/<destination-slug>/index.html`을 만들어줘.
 - 조사자료의 날짜·도시·장소 순서·출처·확인 필요 상태를 보존해줘.
 - `src/travel-ui/` 공통 컴포넌트와 `src/prototype.css`를 사용하고, 여행별 헤더·카드·하단 메뉴·CSS를 복사하지 마.
 - alternatives는 기본 동선이 아닌 optional 대체 후보로 변환해줘.
@@ -829,7 +921,7 @@ AI는 이 정보를 바탕으로 날짜별 동선을 제안하되, 사용자가 
 - 계획에 없는 세부 정보는 공식 사이트와 신뢰할 수 있는 지도·관광 자료를 조사해 채운다.
 - 내가 주지 않은 값을 모두 다시 물어보지 말고, 결과에 영향을 주는 필수 정보가 없을 때만 짧게 질문한다.
 - 기존 여행 데이터는 절대 덮어쓰지 않는다.
-- 새 여행은 여행지명을 바탕으로 `travel/` 아래에 고유한 kebab-case 폴더 `travel/<destination-slug>/`를 만들고, 그 안에 `index.html`과 `trip.json`을 만든다.
+- 새 여행은 여행지명을 바탕으로 `travel/` 아래에 고유한 kebab-case 폴더 `travel/<destination-slug>/`를 만들고 `trip.json`을 저장한다. 실제 페이지 엔트리는 `page/<destination-slug>/index.html`에 둔다.
 - 루트 여행 허브에도 새 여행 카드를 추가한다.
 - 공통 UI와 모바일 런타임은 기존 `src/`를 재사용한다.
 

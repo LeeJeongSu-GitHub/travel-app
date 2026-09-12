@@ -43,8 +43,14 @@
     </main>
     <script>
       if (["localhost", "127.0.0.1", "terminal.local"].includes(window.location.hostname)) {
+        const tripSlugs = [...document.querySelectorAll("[data-trip-slug]")].map((link) => link.dataset.tripSlug);
+        const pathParts = window.location.pathname.split("/").filter(Boolean);
+        const pathSlug = pathParts.at(-1);
+        if (pathSlug && tripSlugs.includes(pathSlug) && !pathParts.includes("page")) {
+          window.location.replace(`${window.location.origin}/page/${pathSlug}/${window.location.search}${window.location.hash}`);
+        }
         document.querySelectorAll("[data-trip-slug]").forEach((link) => {
-          link.href = `./travel/${link.dataset.tripSlug}/`;
+          link.href = `./page/${link.dataset.tripSlug}/`;
         });
       }
     </script>
