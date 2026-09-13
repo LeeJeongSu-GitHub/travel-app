@@ -6,7 +6,7 @@
       "dayNumber": 1,
       "dayOfMonth": 19,
       "city": "오사카 → 교토",
-      "title": "입국 후 교토 체크인",
+      "title": "입국 후 교토 체크인·가모강 야경",
       "places": [
         {
           "id": "kix",
@@ -78,11 +78,34 @@
           "latitude": 34.9834591,
           "longitude": 135.7443191,
           "address": "교토시 미나미구 하치조미나모토초 68-13 (601-8477)",
-          "plannedTime": "체크인",
+          "plannedTime": "저녁 후 체크인·짐 정리",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=68-13+Hachijominamotocho+Minami+Ward+Kyoto+601-8477",
           "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=34.9834591,135.7443191",
           "reservationStatus": "check_required",
           "notes": "사용자가 공유한 숙소 핀 기준 · 예약 정보와 주소 최종 대조"
+        },
+        {
+          "id": "kamogawa-shijo-night",
+          "order": 5,
+          "name": "가모강·시조대교 야경",
+          "nameJa": "鴨川・四条大橋 夜景",
+          "category": "photo",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/0/08/Kamo_River%2C_night.JPG",
+          "latitude": 35.00382,
+          "longitude": 135.77154,
+          "address": "시조대교 주변, 교토시 시모교구 사이토초·나카교구",
+          "plannedTime": "21:00–22:00 야경 산책",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=35.00382,135.77154",
+          "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=35.00382,135.77154",
+          "reservationStatus": "not_required",
+          "hours": "야외 하천변·산책로 상시 관람 · 야간 산책 가능",
+          "closedDays": "없음(야외 구간 · 행사·공사 시 변동)",
+          "price": "무료",
+          "admission": "무료 야외 관람",
+          "photoPoint": "시조대교와 가모강 수면에 비치는 폰토초·가와라마치 불빛",
+          "operatingNote": "가모강은 구간이 넓어 이 일정은 시조대교 주변으로 기록했습니다. 야간에는 강변 계단과 수변 안전에 유의하세요.",
+          "infoSourceUrl": "https://www.japan.travel/en/spot/1183/",
+          "notes": "숙소에 짐을 푼 뒤 방문 · JNTO가 소개한 야간 가모강 산책 구간 · 대표 이미지: Wikimedia Commons(CC BY-SA)"
         }
       ]
     },
