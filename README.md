@@ -85,6 +85,9 @@ https://<github-id>.github.io/<repository-name>/<destination-slug>/
 
 가장 간단한 방법은 아래 프롬프트에 여행 정보만 채워 `$travel-map-builder` 스킬을 호출하는 것입니다.
 
+<details>
+<summary>복붙용 앱 생성 프롬프트 열기</summary>
+
 ```text
 이 저장소의 $travel-map-builder 스킬을 사용해 새 여행 앱을 만들어줘.
 
@@ -109,9 +112,14 @@ page/<destination-slug>/index.html과 루트 허브 카드를 새로 만들어�
 
 전체 작업 지침은 [`prompts/travel-app-build.md`](./prompts/travel-app-build.md)에 있습니다.
 
+</details>
+
 ## 여행계획 조사 프롬프트
 
 여행 정보가 메모 수준이면 먼저 아래 프롬프트로 `travel-research.v1` 조사자료를 만듭니다. 이 단계는 코드를 수정하지 않고, 다음 앱 생성 단계가 읽을 수 있는 JSON을 만듭니다.
+
+<details>
+<summary>복붙용 여행계획 조사 프롬프트 열기</summary>
 
 ```text
 여행 계획을 완성하고 장소 정보를 조사해줘. 코드를 만들지 말고
@@ -140,9 +148,14 @@ page/<destination-slug>/index.html과 루트 허브 카드를 새로 만들어�
 
 전체 JSON 필드와 Claude·Gemini·GPT/Codex별 조사 방식은 [`prompts/travel-plan-research.md`](./prompts/travel-plan-research.md)를 참고하세요.
 
+</details>
+
 ## UI만 수정할 때
 
 데이터나 여행 폴더는 건드리지 않고 헤더·지도·카드·상세 시트·반응형만 고칠 때는 `$travel-ui`를 사용합니다.
+
+<details>
+<summary>복붙용 UI 수정 프롬프트 열기</summary>
 
 ```text
 이 저장소의 $travel-ui 스킬을 사용해 UI만 수정해줘.
@@ -159,6 +172,8 @@ Prototype.tsx는 상태·데이터 조합만 담당하게 하고 공통 UI는 sr
 ```
 
 자세한 규칙은 [`.agents/skills/travel-ui/SKILL.md`](./.agents/skills/travel-ui/SKILL.md)에 있습니다.
+
+</details>
 
 ## 저장소 구조
 
