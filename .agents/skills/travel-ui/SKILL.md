@@ -5,7 +5,7 @@ description: Build or refactor this repository's travel screens with the shared 
 
 # Travel UI
 
-Use this skill for UI-only work: visual fixes, responsive behavior, shared component extraction, layout refactors, and regression repair. For new destinations, place research, trip data, or GitHub Pages deployment, use `travel-map-builder` and load this skill only for the UI portion.
+Use this skill for UI-only work: visual fixes, responsive behavior, shared component extraction, layout refactors, and regression repair. For new destinations, place research, trip data, travel-record behavior, or GitHub Pages deployment, use `travel-map-builder` and load this skill only for the UI portion.
 
 ## Source of truth
 
@@ -30,6 +30,12 @@ Use the shared components as the default public UI API:
 - `TravelDataTransferSheet`: scrollable travel-record JSON export/import sheet.
 
 Use `src/travel-ui/index.ts` for new imports when practical. A destination may add a thin data adapter for preview text or images, but may not copy the full header, card, navigation, or sheet JSX. Do not add destination-specific dashboard markup, duplicate CSS, or a second design system.
+
+## Boundary with travel records
+
+The travel app already exposes place add/edit/delete, visit checks, favorites, notes, and JSON export/import through the shared screen. Preserve those entry points while changing layout. Do not move record state into a destination folder or redesign the transfer flow as a UI-only shortcut; `Prototype.tsx` remains the state/orchestration owner and `TravelDataTransferSheet` remains the shared surface.
+
+For documentation changes, keep the user-facing route in `README.md` short and link to this skill, the canonical `travel-map-builder` skill, and the four reference contracts instead of copying their full instructions. The README must keep actual GitHub Pages demo links clickable and explain that JSON is required to share LocalStorage records.
 
 ## Visual and interaction invariants
 
