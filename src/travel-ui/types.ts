@@ -1,0 +1,48 @@
+export type Category = "photo" | "restaurant" | "cafe" | "hotel" | "station" | "airport" | "logistics";
+export type ReservationStatus = "required" | "recommended" | "not_required" | "check_required" | "completed";
+export type Coordinate = [number, number];
+export type View = "schedule" | "map" | "reservations" | "saved" | "planner";
+export type DayFilter = number | "all";
+export type CategoryFilter = Category | "all";
+export type MenuImageKey = "ramen" | "gyoza" | "rice" | "udon" | "tempura" | "curry" | "omurice" | "croquette" | "stew" | "soba" | "oyakodon" | "sushi" | "unagi" | "potato-salad" | "steak" | "karaage" | "sausage" | "pilaf" | "beer" | "coffee" | "pudding" | "pancake" | "katsu";
+export type MenuItem = { name: string; nameJa?: string; nameKo?: string; price: string; note?: string; imageKey?: MenuImageKey; imageUrl?: string };
+
+export type Place = {
+  id: string;
+  order: number;
+  name: string;
+  nameJa?: string;
+  category: Category;
+  latitude?: number;
+  longitude?: number;
+  address?: string;
+  plannedTime?: string;
+  googleMapsUrl: string;
+  directionsUrl?: string;
+  reservationUrl?: string;
+  reservationStatus?: ReservationStatus;
+  imageUrl?: string;
+  photoPoint?: string;
+  menuPoint?: string;
+  menu?: MenuItem[];
+  budget?: string;
+  hours?: string;
+  closedDays?: string;
+  price?: string;
+  admission?: string;
+  operatingNote?: string;
+  infoSourceUrl?: string;
+  alternativeFor?: string;
+  nearbyWalk?: string;
+  optional?: boolean;
+  notes?: string;
+};
+
+export type TripDay = { id: string; dayNumber: number; dayOfMonth: number; city: string; title: string; places: Place[] };
+export type Trip = { title: string; days: TripDay[] };
+export type MapPlace = Place & { dayNumber: number; dayOfMonth: number; dayTitle: string };
+export type PlaceDraft = { name: string; category: Category; plannedTime: string; address: string; hours: string; closedDays: string; price: string; admission: string; latitude: string; longitude: string; googleMapsUrl: string; directionsUrl: string; notes: string; markVisited: boolean };
+export type LocalTripState = { selectedDay: number; completedPlaceIds: string[]; favoritePlaceIds: string[]; notes: Record<string, string>; reservationDoneIds: string[]; placeEdits: Record<string, Partial<Place>>; hiddenPlaceIds: string[]; addedPlaces: MapPlace[]; actualOnly: boolean; plannerText?: string };
+export type TransferPayload = { schemaVersion: 1; kind: "travel-map-state"; tripSlug: string; tripTitle: string; exportedAt: string; tripSnapshot: Trip; state: LocalTripState };
+export type TransferMode = "export" | "import";
+export type TransferStatus = { tone: "info" | "success" | "error"; message: string } | null;

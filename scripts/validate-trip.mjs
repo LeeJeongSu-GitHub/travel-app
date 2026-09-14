@@ -107,15 +107,16 @@ function validateTrip(file) {
 }
 
 const requestedFiles = process.argv.slice(2).map((file) => path.resolve(root, file));
+const canonicalTravelRoot = path.join(root, "travel");
 const files = requestedFiles.length > 0
   ? requestedFiles
-  : readdirSync(root, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && !entry.name.startsWith(".") && !["dist", "node_modules", "public", "src", "tests"].includes(entry.name))
-    .map((entry) => path.join(root, entry.name, "trip.json"))
+  : (existsSync(canonicalTravelRoot) ? readdirSync(canonicalTravelRoot, { withFileTypes: true }) : [])
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => path.join(canonicalTravelRoot, entry.name, "trip.json"))
     .filter((file) => existsSync(file));
 
 if (files.length === 0) {
-  console.error("No trip.json files found. Pass a file path, for example: npm run validate:trip -- kyoto-kobe-trip/trip.json");
+  console.error("No trip.json files found. Pass a file path, for example: npm run validate:trip -- travel/kyoto-kobe-trip/trip.json");
   process.exit(1);
 }
 
